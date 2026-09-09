@@ -1,7 +1,7 @@
 .backdrop {
   position: fixed;
   inset: 0;
-  z-index: 200;
+  z-index: var(--z-user-menu);
   background: var(--backdrop);
   display: flex;
   align-items: flex-start;

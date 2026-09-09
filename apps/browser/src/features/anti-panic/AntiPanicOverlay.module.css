@@ -1,7 +1,7 @@
 .overlay {
   position: fixed;
   inset: 0;
-  z-index: 1000;
+  z-index: var(--z-crisis);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -56,7 +56,7 @@
 
 .exit {
   position: relative;
-  z-index: 1;
+  z-index: var(--z-local);
   width: 5.75rem;
   height: 5.75rem;
   border-radius: 50%;

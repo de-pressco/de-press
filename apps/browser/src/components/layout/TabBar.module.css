@@ -7,7 +7,7 @@
   background: var(--bg-sidebar);
   border-top: 1px solid var(--border-subtle);
   flex-shrink: 0;
-  z-index: 50;
+  z-index: var(--z-tabbar);
 }
 
 .tab,

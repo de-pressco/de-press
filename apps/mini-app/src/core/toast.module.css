@@ -2,7 +2,7 @@
   position: fixed;
   inset-inline-end: 1rem;
   bottom: calc(1rem + env(safe-area-inset-bottom));
-  z-index: 80;
+  z-index: var(--z-toast);
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -82,7 +82,7 @@
 .backdrop {
   position: fixed;
   inset: 0;
-  z-index: 85;
+  z-index: var(--z-toast-modal);
   background: var(--backdrop);
   display: flex;
   align-items: center;

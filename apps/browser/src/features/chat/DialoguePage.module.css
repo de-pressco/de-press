@@ -246,7 +246,7 @@
   border-radius: 0.75rem;
   box-shadow: var(--shadow-elev-2);
   padding: 0.25rem;
-  z-index: 30;
+  z-index: var(--z-menu-chat);
 }
 
 .menuItem,
@@ -317,7 +317,7 @@
   align-items: center;
   justify-content: center;
   border-radius: inherit;
-  z-index: 2;
+  z-index: var(--z-raised);
   pointer-events: none;
 }
 

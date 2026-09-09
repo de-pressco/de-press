@@ -1,4 +1,7 @@
 /** Sidebar icons: outline default, currentColor, stroke 1.5 (regular text). */
+import { useId } from "react";
+
+import styles from "./NavIcons.module.css";
 
 interface IconProps {
   className?: string;
@@ -54,17 +57,34 @@ export function IconChat(props: IconProps) {
 }
 
 export function IconHelp(props: IconProps) {
+  // Настоящий вырез через SVG-маску: знак показывает реальный фон под иконкой,
+  // а не закрашивается токеном фона (ломалось бы на --bg-active и любых темах).
+  const maskId = `dp-help-cut-${useId().replace(/[^a-zA-Z0-9_-]/g, "")}`;
   return base(
     props.active ? (
       <>
-        <circle cx="12" cy="12" r="9" />
-        <path
-          d="M9.5 9.5a2.5 2.5 0 1 1 3.6 2.2c-.7.4-1.1.9-1.1 1.8"
-          fill="none"
-          stroke="var(--bg-sidebar)"
-          strokeWidth={1.5}
-        />
-        <circle cx="12" cy="17" r="0.9" fill="var(--bg-sidebar)" stroke="none" />
+        <defs>
+          <mask
+            id={maskId}
+            maskUnits="userSpaceOnUse"
+            x="0"
+            y="0"
+            width="24"
+            height="24"
+          >
+            <rect width="24" height="24" fill="#fff" />
+            <path
+              d="M9.5 9.5a2.5 2.5 0 1 1 3.6 2.2c-.7.4-1.1.9-1.1 1.8"
+              fill="none"
+              stroke="#000"
+              strokeWidth={1.5}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <circle cx="12" cy="17" r="0.9" fill="#000" />
+          </mask>
+        </defs>
+        <circle cx="12" cy="12" r="9" mask={`url(#${maskId})`} />
       </>
     ) : (
       <>
@@ -118,16 +138,8 @@ export type NavIconName =
   | "therapy"
   | "shield";
 
-export function NavIcon({
-  name,
-  active,
-  className,
-}: {
-  name: NavIconName;
-  active?: boolean;
-  className?: string;
-}) {
-  const props = { active, className };
+function renderIcon(name: NavIconName, active: boolean) {
+  const props = { active };
   switch (name) {
     case "feed":
       return <IconFeed {...props} />;
@@ -142,4 +154,30 @@ export function NavIcon({
     case "shield":
       return <IconShield {...props} />;
   }
+}
+
+/** Оба варианта иконки друг над другом: CSS cross-fade при смене таба. */
+export function NavIcon({
+  name,
+  active,
+  className,
+}: {
+  name: NavIconName;
+  active?: boolean;
+  className?: string;
+}) {
+  return (
+    <span
+      className={className ? `${styles.wrap} ${className}` : styles.wrap}
+      data-active={active || undefined}
+      aria-hidden
+    >
+      <span className={styles.variant} data-variant="off">
+        {renderIcon(name, false)}
+      </span>
+      <span className={styles.variant} data-variant="on">
+        {renderIcon(name, true)}
+      </span>
+    </span>
+  );
 }

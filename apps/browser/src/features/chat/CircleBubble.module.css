@@ -69,7 +69,7 @@
   position: absolute;
   top: 0.5rem;
   inset-inline-end: 0.5rem;
-  z-index: 2;
+  z-index: var(--z-raised);
   width: 30px;
   height: 30px;
   padding: 0;

@@ -96,6 +96,24 @@
   --fs-3xl: 1.25rem;
   --fs-4xl: 1.5rem;
   --fs-5xl: 1.75rem;
+  /* Z-index scale — единственный источник слоёв; сырые числа в компонентах запрещены.
+     Значения зафиксированы 1:1 за историческим ad-hoc распределением. */
+  --z-local: 1; /* внутренние слои блока (presence-облако, exit-кнопка AntiPanic) */
+  --z-raised: 2; /* плёнка поверх содержимого блока (перевод в пузыре, mute) */
+  --z-split: 5; /* ручка ResizableSplit */
+  --z-menu: 20; /* дропдаун-меню карточки истории */
+  --z-menu-chat: 30; /* дропдаун-меню диалога */
+  --z-tabbar: 50; /* нижняя таб-навигация */
+  --z-popover: 60; /* поповеры фич (ChatMenu, MessageMenu, CallModal, TherapyPane) */
+  --z-picker: 70; /* ForwardPicker над popover-слоем */
+  --z-toast: 80; /* тосты */
+  --z-toast-modal: 85; /* confirm-модалка тостов */
+  --z-skip: 100; /* skip-ссылка шелла */
+  --z-user-menu: 200; /* UserMenu */
+  --z-modal: 250; /* модалки (BlockedUsers, CircleRecorder) */
+  --z-crisis: 1000; /* AntiPanic — кризисный оверлей, всегда сверху */
+
+  /* Dense chat wallpaper (TG-like abstract mesh, our palette) */
 
   /* Dense chat wallpaper (TG-like abstract mesh, our palette) */
   --chat-pattern-a: rgba(126, 184, 162, 0.07);

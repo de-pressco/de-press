@@ -1,14 +1,11 @@
-/* de-press admin — внутренний инструмент: спокойный светлый интерфейс. */
+/* de-press admin — внутренний инструмент: спокойный светлый интерфейс.
+   Палитра и типографика — из @de-press/theme (токены подключены в main.tsx,
+   светлая тема зафиксирована через data-theme="light" в index.html).
+   Единственный admin-локальный токен — --accent-warn: severity-цветов
+   (warn/danger) в общей теме нет. */
 
 :root {
-  --bg: #f6f4ef;
-  --surface: #ffffff;
-  --ink: #2a2723;
-  --muted: #7a736a;
-  --line: #e4ded4;
-  --accent-hope: #4e7d64;
   --accent-warn: #b4552d;
-  --danger: #a63d2f;
 }
 
 * {
@@ -17,15 +14,10 @@
 
 body {
   margin: 0;
-  background: var(--bg);
-  color: var(--ink);
-  font-family:
-    "Inter",
-    -apple-system,
-    "Segoe UI",
-    Roboto,
-    sans-serif;
-  font-size: 15px;
+  background: var(--bg-main);
+  color: var(--text-primary);
+  font-family: var(--font-ui);
+  font-size: var(--fs-lg);
   line-height: 1.5;
 }
 
@@ -40,13 +32,13 @@ body {
   align-items: center;
   gap: 16px;
   flex-wrap: wrap;
-  border-bottom: 1px solid var(--line);
+  border-bottom: 1px solid var(--border-subtle);
   padding-bottom: 12px;
   margin-bottom: 16px;
 }
 
 .top h1 {
-  font-size: 17px;
+  font-size: var(--fs-xl);
   margin: 0 auto 0 0;
 }
 
@@ -56,19 +48,19 @@ body {
 }
 
 .tab {
-  border: 1px solid var(--line);
-  background: var(--surface);
-  color: var(--muted);
-  border-radius: 999px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-surface);
+  color: var(--text-muted);
+  border-radius: var(--radius-pill);
   padding: 6px 14px;
-  font-size: 13px;
+  font-size: var(--fs-xs);
   cursor: pointer;
 }
 
 .tab-on {
   background: var(--accent-hope);
   border-color: var(--accent-hope);
-  color: #fff;
+  color: var(--on-accent-hope);
 }
 
 .cards {
@@ -78,22 +70,22 @@ body {
 }
 
 .card {
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: 14px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
   padding: 14px 16px;
 }
 
 .card h2 {
-  font-size: 12px;
+  font-size: var(--fs-2xs);
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: var(--muted);
+  color: var(--text-muted);
   margin: 0 0 4px;
 }
 
 .num {
-  font-size: 26px;
+  font-size: var(--fs-4xl);
   font-weight: 600;
   margin: 0;
 }
@@ -103,13 +95,13 @@ body {
 }
 
 .sub {
-  font-size: 14px;
+  font-size: var(--fs-md);
   margin: 22px 0 8px;
 }
 
 .note {
-  color: var(--muted);
-  font-size: 12px;
+  color: var(--text-muted);
+  font-size: var(--fs-2xs);
 }
 
 .kv {
@@ -123,9 +115,9 @@ body {
 .kv li {
   display: flex;
   justify-content: space-between;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: 10px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
   padding: 6px 12px;
 }
 
@@ -149,8 +141,8 @@ body {
 }
 
 .meta {
-  color: var(--muted);
-  font-size: 13px;
+  color: var(--text-muted);
+  font-size: var(--fs-xs);
   margin: 0 0 6px;
 }
 
@@ -161,8 +153,8 @@ body {
 }
 
 .body {
-  color: var(--muted);
-  font-size: 13px;
+  color: var(--text-muted);
+  font-size: var(--fs-xs);
   margin: 0 0 6px;
 }
 
@@ -170,22 +162,22 @@ body {
   display: inline-block;
   background: color-mix(in srgb, var(--accent-hope) 14%, transparent);
   color: var(--accent-hope);
-  border-radius: 999px;
-  font-size: 12px;
+  border-radius: var(--radius-pill);
+  font-size: var(--fs-2xs);
   padding: 2px 10px;
   margin: 0 0 6px;
 }
 
 .err {
-  color: var(--danger);
-  font-size: 13px;
+  color: var(--accent-panic);
+  font-size: var(--fs-xs);
   margin: 6px 0;
 }
 
 .resolve-form {
   display: grid;
   gap: 8px;
-  border-top: 1px dashed var(--line);
+  border-top: 1px dashed var(--border-subtle);
   padding-top: 10px;
   margin-top: 8px;
 }
@@ -193,18 +185,18 @@ body {
 .resolve-form label {
   display: grid;
   gap: 4px;
-  font-size: 13px;
-  color: var(--muted);
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
 }
 
 .resolve-form select,
 .resolve-form textarea {
   font: inherit;
-  color: var(--ink);
-  border: 1px solid var(--line);
-  border-radius: 10px;
+  color: var(--text-primary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
   padding: 6px 10px;
-  background: var(--surface);
+  background: var(--bg-surface);
 }
 
 .row {
@@ -215,10 +207,10 @@ body {
 .btn {
   border: none;
   background: var(--accent-hope);
-  color: #fff;
-  border-radius: 10px;
+  color: var(--on-accent-hope);
+  border-radius: var(--radius-md);
   padding: 7px 16px;
-  font-size: 13px;
+  font-size: var(--fs-xs);
   cursor: pointer;
   text-decoration: none;
   display: inline-block;
@@ -230,17 +222,17 @@ body {
 }
 
 .btn.ghost {
-  background: var(--surface);
-  color: var(--muted);
-  border: 1px solid var(--line);
+  background: var(--bg-surface);
+  color: var(--text-muted);
+  border: 1px solid var(--border-subtle);
 }
 
 .log {
   width: 100%;
   border-collapse: collapse;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: 12px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
   overflow: hidden;
 }
 
@@ -248,26 +240,27 @@ body {
 .log td {
   text-align: left;
   padding: 8px 12px;
-  border-bottom: 1px solid var(--line);
-  font-size: 13px;
+  border-bottom: 1px solid var(--border-subtle);
+  font-size: var(--fs-xs);
   vertical-align: top;
 }
 
 .log th {
-  color: var(--muted);
+  color: var(--text-muted);
   font-weight: 500;
 }
 
 .denied {
   max-width: 420px;
   margin: 80px auto;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: 16px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
   padding: 28px;
   text-align: center;
 }
 
 .empty {
-  color: var(--muted);
+  color: var(--text-muted);
 }
+

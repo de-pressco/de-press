@@ -394,3 +394,9 @@ files: apps/browser/src/core/hooks/useFocusTrap.ts (new), apps/browser/src/core/
 
 
 
+
+## 2026-09-09  agent=cline  id=nonblocking-tail-closeout
+status: done
+branch: main (this commit)
+notes: Closed all four documented non-blocking items from the review batch. (1) IconHelp active cutout redrawn as a true SVG cutout — <mask> (userSpaceOnUse, useId-based id) punches the question mark + dot out of the filled circle in both apps' NavIcons, replacing the var(--bg-sidebar) overlay that produced a visible seam on --bg-active rail items and would break on any other surface/theme. (2) z-index scale tokenized: --z-local…--z-crisis (1/2/5/20/30/50/60/70/80/85/100/200/250/1000, 1:1 with the historical ad-hoc values — zero stacking-behavior change) added to packages/theme tokens.css; all 38 raw z-index declarations across browser/mini module CSS replaced with tokens, 0 raw left. (3) Nav icon cross-fade: NavIcon now renders outline+filled variants stacked in a grid (new NavIcons.module.css ×2 apps) and cross-fades opacity on data-active over var(--duration-fast) instead of instantly swapping the SVG. (4) Admin migrated to theme tokens: @de-press/theme file-dep + tokens.css import in main.tsx + data-theme="light" in index.html; admin.css colors/type/radii now reference theme tokens (paper palette ≈ light «рассвет»; --danger → --accent-panic; --accent-warn kept as the only admin-local token, documented). Verify: browser tsc -b + vite build ✓ + vitest 97/97, mini ✓ + 32/32, admin tsc -b + vite build ✓; eslint 0 errors (38/33 warning-class baseline) and admin lint clean.
+files: packages/theme/src/tokens.css, apps/{browser,mini-app}/src/components/layout/NavIcons.tsx + NavIcons.module.css (new), 36 module.css across browser/mini (z-index → --z-*), apps/admin/{package.json,package-lock.json,index.html,src/main.tsx,src/admin.css}, PROGRESS.md, TASK_STATE.json (local, gitignored)

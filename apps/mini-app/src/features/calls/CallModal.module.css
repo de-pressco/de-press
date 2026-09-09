@@ -3,7 +3,7 @@
 .overlay {
   position: fixed;
   inset: 0;
-  z-index: 60;
+  z-index: var(--z-popover);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -80,7 +80,7 @@
   top: 4.5rem;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 60;
+  z-index: var(--z-popover);
   padding: 0.5rem 1rem;
   border-radius: 999px;
   background: var(--bg-surface);

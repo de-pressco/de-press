@@ -135,7 +135,7 @@
   border-radius: 0.65rem;
   box-shadow: var(--shadow-elev-2);
   padding: 0.25rem;
-  z-index: 20;
+  z-index: var(--z-menu);
 }
 
 .menuItem {

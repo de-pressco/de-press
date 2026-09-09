@@ -1,6 +1,6 @@
 .menu {
   position: fixed;
-  z-index: 60;
+  z-index: var(--z-popover);
   min-width: 11.5rem;
   padding: 0.25rem;
   background: var(--bg-elevated);

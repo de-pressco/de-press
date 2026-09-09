@@ -1,0 +1,24 @@
+/* Nav-иконка: outline- и filled-варианты лежат друг над другом (grid-stack),
+   при смене таба прозрачность кроссфейдится вместо мгновенной подмены SVG. */
+.wrap {
+  display: grid;
+  place-items: center;
+}
+
+.variant {
+  grid-area: 1 / 1;
+  display: flex;
+  transition: opacity var(--duration-fast) ease;
+}
+
+.variant[data-variant="on"] {
+  opacity: 0;
+}
+
+.wrap[data-active] .variant[data-variant="on"] {
+  opacity: 1;
+}
+
+.wrap[data-active] .variant[data-variant="off"] {
+  opacity: 0;
+}

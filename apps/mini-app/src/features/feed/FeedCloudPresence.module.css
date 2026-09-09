@@ -13,7 +13,7 @@
   justify-content: center;
   transform: translateY(-50%);
   cursor: pointer;
-  z-index: 1;
+  z-index: var(--z-local);
 }
 
 .motion {

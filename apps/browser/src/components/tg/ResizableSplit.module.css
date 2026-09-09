@@ -28,7 +28,7 @@
   margin: 0 -1px;
   cursor: col-resize;
   position: relative;
-  z-index: 5;
+  z-index: var(--z-split);
   background: transparent;
   touch-action: none;
   transition-property: background-color;
