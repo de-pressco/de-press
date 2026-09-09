@@ -182,6 +182,12 @@ def login_or_register_telegram(
         account.telegram_username = user.username[:64]
         account.save(update_fields=["telegram_username"])
 
+    # Remember Telegram UI language (lowercased, short) for bot message locale.
+    tg_lang = (user.language_code or "").strip().lower()[:8]
+    if tg_lang and account.telegram_language_code != tg_lang:
+        account.telegram_language_code = tg_lang
+        account.save(update_fields=["telegram_language_code"])
+
     if not account.default_pseudonym:
         account.default_pseudonym = _default_pseudonym(user)
         account.save(update_fields=["default_pseudonym"])

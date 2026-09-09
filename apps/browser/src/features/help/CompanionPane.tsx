@@ -9,6 +9,7 @@ import {
   listCompanionMessages,
   wipeAllMemory,
 } from "@/core/memory/db";
+import { takeQueuedCompanionShare } from "@/core/memory/companionShare";
 import styles from "./CompanionPane.module.css";
 
 type Turn = { role: "user" | "assistant"; content: string; crisis?: boolean };
@@ -36,6 +37,9 @@ export function CompanionPane() {
   const [disclaimer, setDisclaimer] = useState("");
 
   useEffect(() => {
+    // Explicit share from Patterns: prefill the composer, the user still sends.
+    const prefill = takeQueuedCompanionShare();
+    if (prefill) setInput(prefill);
     let cancelled = false;
     listCompanionMessages()
       .then((rows) => {

@@ -207,6 +207,140 @@
   font-variant-numeric: tabular-nums;
 }
 
+.rowSide {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+
+.rowDelete {
+  width: 1.7rem;
+  height: 1.7rem;
+  border-radius: 0.45rem;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 1.05rem;
+  line-height: 1;
+  transition-property: background-color, color;
+  transition-duration: 0.15s;
+}
+
+.rowDelete:hover {
+  background: var(--bg-hover);
+  color: var(--accent-panic);
+}
+
+.rowDelete:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.subLabel {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.chipRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.chip,
+.chipActive {
+  min-height: 1.9rem;
+  padding: 0.2rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid var(--border-subtle);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  transition-property: background-color, border-color, color;
+  transition-duration: 0.15s;
+}
+
+.chip:hover {
+  background: var(--bg-hover);
+}
+
+.chipActive {
+  background: var(--accent-hope-soft);
+  border-color: var(--border-soft);
+  color: var(--accent-hope);
+}
+
+.customRow {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.customRow input {
+  flex: 1;
+  min-width: 0;
+  padding: 0.35rem 0.65rem;
+  border: 1px solid var(--border-subtle);
+  border-radius: 0.55rem;
+  background: var(--bg-input);
+  color: var(--text-primary);
+  font-size: 0.85rem;
+}
+
+.customRow input:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.editRow {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.noteInput {
+  flex: 1;
+  min-width: 0;
+  padding: 0.35rem 0.55rem;
+  border: 1px solid var(--border-subtle);
+  border-radius: 0.5rem;
+  background: var(--bg-input);
+  color: var(--text-primary);
+  font-size: 0.85rem;
+}
+
+.noteInput:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.iconBtn {
+  width: 1.7rem;
+  height: 1.7rem;
+  border-radius: 0.45rem;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  line-height: 1;
+  flex-shrink: 0;
+  transition-property: background-color, color;
+  transition-duration: 0.15s;
+}
+
+.iconBtn:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.iconBtn:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
 .muted {
   margin: 0;
   color: var(--text-muted);
@@ -222,4 +356,106 @@
 
 .actions {
   padding-bottom: 1rem;
+}
+
+.insightList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.insightList li {
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+
+.shareBox {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 0.75rem;
+  border: 1px dashed var(--border-soft);
+  border-radius: 0.75rem;
+}
+
+.sharePreview {
+  margin: 0;
+  padding: 0.65rem 0.75rem;
+  border-radius: 0.55rem;
+  background: var(--bg-input);
+  color: var(--text-muted);
+  font-family: inherit;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 16rem;
+  overflow-y: auto;
+}
+
+.shareActions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.reflectionInput {
+  padding: 0.65rem 0.75rem;
+  border: 1px solid var(--border-subtle);
+  border-radius: 0.65rem;
+  background: var(--bg-input);
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 0.9rem;
+  resize: vertical;
+  min-height: 4.5rem;
+}
+
+.reflectionInput:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.reflectionList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.reflectionItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding-top: 0.6rem;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.reflectionHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.reflectionWeek {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.reflectionText {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
 }

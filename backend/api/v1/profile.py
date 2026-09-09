@@ -187,18 +187,21 @@ def send_test_telegram_digest(request):
     # If user is on immediate, daily check returns skipped_freq — force body once.
     if status == "skipped_freq":
         from apps.notifications.telegram_notify import (
-            format_digest_text,
-            send_bot_message,
+            build_digest_message,
+            locale_for_account,
             unread_for_telegram_digest,
         )
+        from apps.notifications.tg_api import send_message
 
         rows = unread_for_telegram_digest(acc)
         if not rows:
             status = "skipped_empty"
         else:
-            ok = send_bot_message(
+            text, markup = build_digest_message(rows, locale_for_account(acc))
+            ok = send_message(
                 chat_id=int(acc.telegram_id),
-                text=format_digest_text(rows),
+                text=text,
+                reply_markup=markup,
             )
             status = "sent" if ok else "failed"
 

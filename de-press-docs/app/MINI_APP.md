@@ -11,8 +11,9 @@
 4. **Anti-Panic** — disables Mini App vertical swipe-to-close when active (if API exists).
 5. **Deep-link `startapp=`** — maps to in-app routes once per session (`core/host/startParam.ts`).
 6. **BackButton** — `TelegramBackButton` ↔ hierarchical React Router (`/feed/:id` → `/feed`, …).
-7. **Bot soft-notify** — opt-in + `immediate` pings or **`daily` digests** (Celery beat / `send_telegram_digests`).
+7. **Bot soft-notify** — opt-in + `immediate` pings or **`daily` digests** (Celery beat / `send_telegram_digests`), plus a **neutral check-in nudge** (throttled, `send_checkin_nudges`).
 8. **Browser host** — unchanged (no initData → no TG login); browser can still use `?startapp=` for local tests.
+9. **Bot lobby (webhook)** — `apps/bot/`: `/start`, `/open`, `/help`, `/panic` + quiet fallback in private chats; outbound messages are HTML with inline buttons (ru/en).
 
 ## Deep links (`startapp`)
 
@@ -56,6 +57,24 @@ URL: https://<your-tunnel>/
 
 Or menu button: `/setmenubutton` → same HTTPS URL.
 
+### Bot facade (description, commands, menu) — from code
+
+`python manage.py setup_telegram_bot` registers everything through the Bot API
+(idempotent): webhook, localized description/short description, private-chat
+commands (`/start /open /help /panic`) and the WebApp menu button. Needs:
+
+```bash
+export TELEGRAM_BOT_TOKEN="123456:ABC..."       # required
+export TELEGRAM_BOT_USERNAME="your_bot"         # deep links
+export TELEGRAM_BOT_WEBHOOK_SECRET="long-random" # webhook auth (secret_token)
+# optional: TELEGRAM_BOT_WEBHOOK_URL, else PUBLIC_BASE_URL + /api/v1/bot/webhook
+```
+
+The webhook endpoint is `POST /api/v1/bot/webhook` and authenticates the
+`X-Telegram-Bot-Api-Secret-Token` header (constant-time compare). With an empty
+secret the endpoint returns 401. Dev one-shot without a secret:
+`python manage.py setup_telegram_bot --allow-insecure`.
+
 ## Local dev with tunnel
 
 ```bash
@@ -89,7 +108,8 @@ Paste tunnel URL into BotFather Mini App settings. Open bot in Telegram → Laun
 cd backend && source .venv/bin/activate
 DEPRESS_USE_SQLITE=1 CHANNEL_LAYER=memory pytest \
   apps/identity/tests/test_telegram.py \
-  apps/notifications/tests/test_telegram_notify.py -q
+  apps/notifications/tests/test_telegram_notify.py \
+  apps/bot/tests -q
 ```
 
 ## BackButton
@@ -107,10 +127,20 @@ On nested routes Telegram shows the native Back control:
 1. Account must have `telegram_id` (Mini App login).
 2. User enables **"Quiet Telegram reminders"** in UserMenu (`notify_telegram_opt_in`).
 3. Frequency:
-   - **`immediate`** — on each `notify()`, Bot message + deep-link  
-     `https://t.me/<bot>?startapp=chat_<uuid>|story_…|notifications`
-   - **`daily`** — batch job; one digest of unread **newer than** `telegram_digest_last_at`  
-     link: `startapp=notifications`
+   - **`immediate`** — on each `notify()`, Bot message with an inline **Open** button
+     (`startapp=chat_<uuid>|story_…|notifications`)
+   - **`daily`** — batch job; one digest of unread **newer than** `telegram_digest_last_at`
+     (`startapp=notifications`)
+
+Message text is HTML and localized **ru/en** from `Account.telegram_language_code`
+(recorded at Mini App login from the Telegram `user.language_code`); unknown → en.
+
+### Living lobby (chat webhook)
+
+The bot also answers `/start`, `/open`, `/help`, `/panic` (`/meh`) in private
+chats — see `apps/bot/` — and replies to plain messages once per ~30 s with a
+quiet pointer into the app (never chats back, never stores anything).
+Buttons are `t.me/<bot>?startapp=…` deep links into the Mini App sections.
 
 ### Daily digest run
 
@@ -124,6 +154,16 @@ celery -A config beat -l info
 ```
 
 API test (logged-in TG account): `POST /api/v1/me/notify-settings/test-telegram`
+
+### Check-in nudge (ADR-0025)
+
+A separate periodic beat job (`send_checkin_nudges`, default 19:00 UTC) sends
+one **neutral** localized message ("how are you today?" + Open button to
+`startapp=mood` → /patterns) to opt-in Telegram accounts. It is **blind** to
+local check-ins (the server never learns about them — ZK), so it cannot be
+reactive: it is throttled to at most one per `TELEGRAM_NUDGE_INTERVAL_DAYS`
+(default 3) per account and is skipped for the rest of the day if a digest
+already went out. One-shot: `python manage.py send_checkin_nudges`.
 
 ## Not in this slice (next)
 

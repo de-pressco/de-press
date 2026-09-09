@@ -132,6 +132,9 @@ function CircleIcon() {
 export function DialoguePage() {
   const { id: dialogueId = "" } = useParams<{ id: string }>();
   const { locale, t } = useI18n();
+
+  const intentLabel = (v: string | null | undefined): string =>
+    v ? (t.intents[v] ?? v) : "";
   const [dialogue, setDialogue] = useState<Dialogue | null>(null);
   const [body, setBody] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -477,11 +480,11 @@ export function DialoguePage() {
           ←
         </Link>
         <span className={styles.headerAvatar} aria-hidden>
-          {(dialogue?.intent || "?").slice(0, 1).toUpperCase()}
+          {(intentLabel(dialogue?.intent) || "?").slice(0, 1).toUpperCase()}
         </span>
         <div className={styles.chatMeta}>
           <p className={styles.chatTitle}>
-            {dialogue ? dialogue.intent : "…"}
+            {dialogue ? intentLabel(dialogue.intent) : "…"}
           </p>
           <p className={styles.chatSub}>
             {dialogueStatus} · {statusLabel}

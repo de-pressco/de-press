@@ -34,39 +34,36 @@
   line-height: 1.5;
 }
 
+/* Breathing circle with the round exit button pinned at its center:
+   only the circle scales, the button stays a stable target. */
 .breath {
-  width: 8rem;
-  height: 8rem;
+  position: relative;
+  width: 13rem;
+  height: 13rem;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .circle {
-  width: 4rem;
-  height: 4rem;
+  position: absolute;
+  inset: 0;
   border-radius: 50%;
   background: var(--accent-hope-soft);
   border: 2px solid var(--accent-hope);
   animation: breathe 15s ease-in-out infinite;
 }
 
-.steps {
-  margin: 0;
-  padding-left: 1.25rem;
-  text-align: left;
-  color: var(--text-muted);
-  font-size: 0.9rem;
-  line-height: 1.6;
-}
-
 .exit {
-  min-height: 2.75rem;
-  padding: 0.65rem 1.25rem;
+  position: relative;
+  z-index: 1;
+  width: 5.75rem;
+  height: 5.75rem;
+  border-radius: 50%;
   border: 1px solid var(--border-subtle);
-  border-radius: 0.75rem;
   background: var(--bg-surface);
   color: var(--text-primary);
+  font-size: 0.95rem;
   transition-property: background-color, transform;
   transition-duration: 0.15s;
 }
@@ -77,6 +74,42 @@
 
 .exit:active {
   transform: scale(0.96);
+}
+
+.groundCaption {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.groundPrompt {
+  margin: 0;
+  max-width: 24rem;
+  min-height: 3.2em;
+  color: var(--text-muted);
+  font-size: 1rem;
+  line-height: 1.6;
+  animation: promptIn 600ms ease-out;
+}
+
+/* Phone: bigger share of the screen, brighter accent, soft glow. */
+:global(html[data-layout="phone"]) .breath {
+  width: 11rem;
+  height: 11rem;
+}
+
+:global(html[data-layout="phone"]) .circle {
+  border-width: 3px;
+  box-shadow: 0 0 44px var(--accent-hope-soft);
+}
+
+:global(html[data-layout="phone"]) .exit {
+  width: 5rem;
+  height: 5rem;
+  background: var(--accent-hope-soft);
+  font-weight: 600;
 }
 
 @keyframes breathe {
@@ -95,5 +128,26 @@
   100% {
     transform: scale(0.85);
     opacity: 0.7;
+  }
+}
+
+@keyframes promptIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .circle {
+    animation: none;
+  }
+
+  .groundPrompt {
+    animation: none;
   }
 }

@@ -649,7 +649,7 @@ export function StoryPage() {
                     {(intentsQuery.data ?? [{ value: "listen", label: "listen" }]).map(
                       (opt) => (
                         <option key={opt.value} value={opt.value}>
-                          {opt.label}
+                          {t.intents[opt.value] ?? opt.label}
                         </option>
                       ),
                     )}

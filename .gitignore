@@ -71,3 +71,7 @@ deploy/depress-celery.service
 deploy/depress-celery-beat.service
 deploy/depress-backup.service
 deploy/depress-backup.timer
+
+# Local agent state & server map (never publish to the repo)
+TASK_STATE.json
+SERVER_MAP.md

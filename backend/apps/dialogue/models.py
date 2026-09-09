@@ -77,19 +77,13 @@ class DialogueRequest(models.Model):
         constraints = [
             models.UniqueConstraint(
                 fields=["story", "from_account"],
-                condition=models.Q(
-                    from_account__isnull=False,
-                    status__in=["pending", "awaiting_helper"],
-                ),
-                name="unique_pending_request_account",
+                condition=models.Q(from_account__isnull=False),
+                name="unique_request_per_story_account",
             ),
             models.UniqueConstraint(
                 fields=["story", "from_session"],
-                condition=models.Q(
-                    from_session__isnull=False,
-                    status__in=["pending", "awaiting_helper"],
-                ),
-                name="unique_pending_request_session",
+                condition=models.Q(from_session__isnull=False),
+                name="unique_request_per_story_session",
             ),
         ]
 

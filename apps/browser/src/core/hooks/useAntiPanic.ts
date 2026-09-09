@@ -10,6 +10,10 @@ import {
 } from "react";
 import { readAntiPanic, writeAntiPanic } from "@/core/antiPanic";
 import { killAllSockets } from "@/core/ws/registry";
+import {
+  endOpenPanicEpisodes,
+  startPanicEpisode,
+} from "@/core/memory/db";
 
 interface AntiPanicValue {
   active: boolean;
@@ -42,11 +46,14 @@ export function AntiPanicProvider({ children }: { children: ReactNode }) {
     pauseMedia();
     writeAntiPanic(true);
     setActive(true);
+    // Local episode marker (ADR-0025): timestamps only, never uploaded.
+    void startPanicEpisode(new Date().toISOString()).catch(() => undefined);
   }, []);
 
   const exit = useCallback(() => {
     writeAntiPanic(false);
     setActive(false);
+    void endOpenPanicEpisodes(new Date().toISOString()).catch(() => undefined);
   }, []);
 
   const value = useMemo(

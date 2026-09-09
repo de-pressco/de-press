@@ -30,6 +30,9 @@ export function ChatList() {
   const { id: activeId } = useParams<{ id?: string }>();
   const navigate = useNavigate();
   const { t } = useI18n();
+
+  const intentLabel = (v: string | null | undefined): string =>
+    v ? (t.intents[v] ?? v) : "";
   const { active: panic } = useAntiPanic();
   const queryClient = useQueryClient();
   const scrollRef = useRef<HTMLDivElement | null>(null);
@@ -140,12 +143,12 @@ export function ChatList() {
       <ListRow
         key={d.id}
         to={`/chat/${d.id}`}
-        title={d.intent}
+        title={intentLabel(d.intent)}
         subtitle={
           d.status === "closed" ? t.chat.dialogueClosed : d.source || "…"
         }
         time={timeAgo(d.updated_at)}
-        avatarText={d.intent}
+        avatarText={intentLabel(d.intent)}
         active={activeId === d.id}
         style={style}
       />
@@ -233,7 +236,7 @@ export function ChatList() {
               asButton
               muted
               title={t.me.inboxTitle}
-              subtitle={`${r.intent}${r.note ? ` · ${r.note}` : ""}`}
+              subtitle={`${intentLabel(r.intent)}${r.note ? ` · ${r.note}` : ""}`}
               time={timeAgo(r.created_at)}
               avatarText="?"
             />

@@ -17,3 +17,16 @@ def send_telegram_daily_digests(limit_accounts: int = 500) -> dict:
     stats = run_telegram_daily_digests(limit_accounts=limit_accounts)
     logger.info("telegram daily digests: %s", stats)
     return stats
+
+
+@shared_task(name="apps.notifications.tasks.send_checkin_nudges")
+def send_checkin_nudges(limit_accounts: int = 500) -> dict:
+    """Periodic: neutral check-in nudges (opt-in Telegram, throttled).
+
+    Blind to local check-ins by design (ZK, ADR-0025) — never reactive.
+    """
+    from apps.notifications.telegram_notify import run_checkin_nudges
+
+    stats = run_checkin_nudges(limit_accounts=limit_accounts)
+    logger.info("telegram check-in nudges: %s", stats)
+    return stats

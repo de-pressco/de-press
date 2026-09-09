@@ -32,6 +32,17 @@
   gap: 0.75rem;
 }
 
+/* Phone: the long wipe label cannot share the row with back + title;
+   let it drop to its own row instead of clipping past the right edge. */
+:global(html[data-layout="phone"]) .headRow {
+  flex-wrap: wrap;
+}
+
+:global(html[data-layout="phone"]) .wipe {
+  flex-shrink: 1;
+  min-width: 0;
+}
+
 /* Small ghost button shared by the wipe and back actions. */
 .wipe,
 .back {

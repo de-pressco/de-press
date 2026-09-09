@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     "apps.therapy",
     "apps.ai",
     "apps.notifications",
+    "apps.bot",
 ]
 
 MIDDLEWARE = [
@@ -168,14 +169,26 @@ CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
 # Beat: daily Telegram digests (UTC). Override via TELEGRAM_DIGEST_HOUR/MINUTE.
+# Plus a neutral check-in nudge (opt-in, throttled to one per
+# TELEGRAM_NUDGE_INTERVAL_DAYS, default 3; skipped if a digest went out today).
+# Blind to local check-ins — ZK, ADR-0025.
 # Run: celery -A config worker -l info & celery -A config beat -l info
-# Or cron: python manage.py send_telegram_digests
+# Or cron: python manage.py send_telegram_digests / send_checkin_nudges
 _tg_digest_hour = int(os.environ.get("TELEGRAM_DIGEST_HOUR", "10") or "10")
 _tg_digest_minute = int(os.environ.get("TELEGRAM_DIGEST_MINUTE", "0") or "0")
+_tg_nudge_hour = int(os.environ.get("TELEGRAM_NUDGE_HOUR", "19") or "19")
+_tg_nudge_minute = int(os.environ.get("TELEGRAM_NUDGE_MINUTE", "0") or "0")
+TELEGRAM_NUDGE_INTERVAL_DAYS = int(
+    os.environ.get("TELEGRAM_NUDGE_INTERVAL_DAYS", "3") or "3"
+)
 CELERY_BEAT_SCHEDULE = {
     "telegram-daily-digests": {
         "task": "apps.notifications.tasks.send_telegram_daily_digests",
         "schedule": crontab(hour=_tg_digest_hour, minute=_tg_digest_minute),
+    },
+    "telegram-checkin-nudges": {
+        "task": "apps.notifications.tasks.send_checkin_nudges",
+        "schedule": crontab(hour=_tg_nudge_hour, minute=_tg_nudge_minute),
     },
 }
 
@@ -263,6 +276,12 @@ KIDS_PASSWORD = os.environ.get("KIDS_PASSWORD", "kid-local-not-secret")
 TELEGRAM_BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
 # Public bot username without @ — for t.me deep links in soft-notify.
 TELEGRAM_BOT_USERNAME = os.environ.get("TELEGRAM_BOT_USERNAME", "")
+# Bot lobby webhook (Option B "living lobby"). Secret must match the
+# secret_token passed to setWebhook. Empty = webhook endpoint is disabled (401).
+TELEGRAM_BOT_WEBHOOK_SECRET = os.environ.get("TELEGRAM_BOT_WEBHOOK_SECRET", "")
+# Full public webhook URL used by `manage.py setup_telegram_bot`. Empty =
+# derived from PUBLIC_BASE_URL ("/api/v1/bot/webhook").
+TELEGRAM_BOT_WEBHOOK_URL = os.environ.get("TELEGRAM_BOT_WEBHOOK_URL", "")
 
 CACHES = {
     "default": {

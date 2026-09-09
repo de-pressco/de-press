@@ -1,0 +1,71 @@
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.ranges {
+  display: flex;
+  gap: 0.3rem;
+}
+
+.range,
+.rangeActive {
+  min-height: 1.9rem;
+  padding: 0.2rem 0.65rem;
+  border-radius: 0.55rem;
+  border: 1px solid var(--border-subtle);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  transition-property: background-color, border-color, color;
+  transition-duration: 0.15s;
+}
+
+.range:hover {
+  background: var(--bg-hover);
+}
+
+.rangeActive {
+  background: var(--accent-hope-soft);
+  border-color: var(--border-soft);
+  color: var(--accent-hope);
+}
+
+.chart {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.grid {
+  stroke: var(--border-subtle);
+  stroke-width: 1;
+}
+
+.gridLabel {
+  fill: var(--text-muted);
+  font-size: 8px;
+}
+
+.line {
+  fill: none;
+  stroke: var(--accent-hope);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.empty {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}

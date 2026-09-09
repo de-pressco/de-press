@@ -1,0 +1,3 @@
+# Anti-Panic episodes stay on the device
+
+Opening Anti-Panic records a local episode marker (start/end timestamps only) in the same IndexedDB family as mood entries — it is never sent to Django, and the server has no endpoint that could accept it. Because the server stays blind to episodes (and to check-ins in general), any soft-notify nudge must be periodic and neutral, never reactive. Episodes surface only in the local Patterns pane and the local JSON export, are deletable per-row and by the full wipe, and carry no severity, symptoms, or context — just "a moment happened, and how long it lasted".

@@ -348,7 +348,7 @@ export function HelperQueue() {
             {reviewItems.map((req) => (
               <li key={req.id} className={styles.card}>
                 <p className={styles.meta}>
-                  {req.intent} · {waitLabel(req.created_at)}
+                  {t.intents[req.intent] ?? req.intent} · {waitLabel(req.created_at)}
                 </p>
                 {req.note ? <p className={styles.body}>{req.note}</p> : null}
                 <div className={styles.actions}>

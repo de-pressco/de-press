@@ -8,6 +8,7 @@ import { usePwaInstall } from "@/core/hooks/usePwaInstall";
 import { FundCard } from "@/features/fund/FundCard";
 import { TipWalletForm } from "@/features/fund/TipWalletForm";
 import { BugReport } from "@/features/more/BugReport";
+import { QuickCheckin } from "@/features/more/QuickCheckin";
 import styles from "./MorePane.module.css";
 
 export function MorePane() {
@@ -27,6 +28,7 @@ export function MorePane() {
         <h1 className={styles.title}>{t.nav.more}</h1>
       </header>
       <div className={styles.list}>
+        <QuickCheckin />
         <ListRow to="/patterns" title={t.nav.patterns} avatarText="P" />
         <ListRow to="/help" title={t.nav.help} avatarText="?" />
         <ListRow to="/therapy" title={t.nav.therapy} avatarText="T" />

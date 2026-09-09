@@ -1,0 +1,94 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin: -0.25rem 1.1rem 0.75rem;
+  padding: 0.9rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 16px;
+}
+
+.label {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+}
+
+.levels {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.level,
+.levelActive {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.65rem;
+  border: 1px solid var(--border-subtle);
+  background: transparent;
+  color: var(--text-primary);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  transition-property: background-color, border-color, transform;
+  transition-duration: 0.15s;
+}
+
+.level:hover {
+  background: var(--bg-hover);
+}
+
+.levelActive {
+  background: var(--accent-hope-soft);
+  border-color: var(--border-soft);
+  color: var(--accent-hope);
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.btn {
+  padding: 0.4rem 0.8rem;
+  border: 1px solid var(--border-subtle);
+  border-radius: 999px;
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.primary {
+  background: var(--accent-hope);
+  border-color: var(--accent-hope);
+  color: var(--bg-chat);
+}
+
+.ok {
+  margin: -0.25rem 1.1rem 0.75rem;
+  padding: 0.9rem;
+  font-size: 0.85rem;
+  color: var(--accent-hope);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 16px;
+}
+
+.error {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--accent-panic);
+}

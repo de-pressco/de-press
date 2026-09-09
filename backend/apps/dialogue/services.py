@@ -286,18 +286,14 @@ def create_request(
         raise DialogueError("Dialogue unavailable")
 
     note_s = (note or "").strip()[:280]
-    open_q = Q(
-        story=story,
-        status__in=(
-            DialogueRequestStatus.AWAITING_HELPER,
-            DialogueRequestStatus.PENDING,
-        ),
-    )
+    # One request per sender per story — no matter its outcome (pending,
+    # accepted, declined): a second request would only re-open the first one.
+    sent_q = Q(story=story)
     if actor.account is not None:
-        open_q &= Q(from_account=actor.account)
+        sent_q &= Q(from_account=actor.account)
     else:
-        open_q &= Q(from_session=actor.session)
-    if DialogueRequest.objects.filter(open_q).exists():
+        sent_q &= Q(from_session=actor.session)
+    if DialogueRequest.objects.filter(sent_q).exists():
         raise DialogueError("Request already sent")
 
     try:

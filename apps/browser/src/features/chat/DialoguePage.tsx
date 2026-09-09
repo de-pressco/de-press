@@ -156,6 +156,9 @@ function sourceLangOf(m: ChatMessage): string {
 export function DialoguePage() {
   const { id: dialogueId = "" } = useParams<{ id: string }>();
   const { locale, t } = useI18n();
+
+  const intentLabel = (v: string | null | undefined): string =>
+    v ? (t.intents[v] ?? v) : "";
   const { active: panic } = useAntiPanic();
   const toast = useToast();
   const navigate = useNavigate();
@@ -760,17 +763,17 @@ export function DialoguePage() {
           ←
         </Link>
         <span className={styles.headerAvatar} aria-hidden>
-          {(dialogue?.peer_label || dialogue?.intent || "?").slice(0, 1).toUpperCase()}
+          {(dialogue?.peer_label || intentLabel(dialogue?.intent) || "?").slice(0, 1).toUpperCase()}
         </span>
         <div className={styles.chatMeta}>
           <p className={styles.chatTitle}>
-            {dialogue ? dialogue.peer_label || dialogue.intent : "…"}
+            {dialogue ? dialogue.peer_label || intentLabel(dialogue.intent) : "…"}
           </p>
           <p className={styles.chatSub}>
             {peerTyping
               ? t.chat.typing
               : dialogue?.peer_label
-                ? dialogue.intent
+                ? intentLabel(dialogue.intent)
                 : dialogueStatus}
           </p>
         </div>

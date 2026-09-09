@@ -87,10 +87,15 @@ class Account(AbstractBaseUser, PermissionsMixin):
         db_index=True,
     )
     telegram_username = models.CharField(max_length=64, blank=True, default="")
+    # Telegram UI language ("ru", "en", "pt-br", …) — used to pick the locale
+    # of bot messages (soft-notify, digests). Not a full locale system.
+    telegram_language_code = models.CharField(max_length=8, blank=True, default="")
     # Soft-notify via Telegram Bot (Mini App host). Opt-in only; never default spam.
     notify_telegram_opt_in = models.BooleanField(default=False)
     # Last successful Telegram daily digest (for incremental unread window).
     telegram_digest_last_at = models.DateTimeField(null=True, blank=True)
+    # Last sent neutral check-in nudge (throttle; blind to local check-ins).
+    telegram_nudge_last_at = models.DateTimeField(null=True, blank=True)
     voice_retention = models.CharField(
         max_length=32,
         choices=VoiceRetention.choices,

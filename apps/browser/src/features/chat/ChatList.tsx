@@ -44,6 +44,9 @@ export function ChatList() {
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const actions = useDialogueActions();
 
+  const intentLabel = (v: string | null | undefined): string =>
+    v ? (t.intents[v] ?? v) : "";
+
   const meQuery = useQuery({
     queryKey: ["me"],
     queryFn: () => api.me(),
@@ -114,7 +117,7 @@ export function ChatList() {
     return all.filter((d) => {
       const hay = [
         d.peer_label,
-        d.intent,
+        intentLabel(d.intent),
         d.last_preview,
         d.source,
         d.status,
@@ -132,7 +135,7 @@ export function ChatList() {
           return false;
         }
         if (!needle) return true;
-        const hay = [r.intent, r.note, r.status].filter(Boolean).join(" ").toLowerCase();
+        const hay = [intentLabel(r.intent), r.note, r.status].filter(Boolean).join(" ").toLowerCase();
         return hay.includes(needle);
       }),
     [requestsQuery.data, needle],
@@ -192,14 +195,14 @@ export function ChatList() {
       <ListRow
         key={d.id}
         to={`/chat/${d.id}`}
-        title={d.peer_label || d.intent}
+        title={d.peer_label || intentLabel(d.intent)}
         subtitle={
           d.status === "closed"
             ? t.chat.dialogueClosed
             : d.last_preview || d.source || "…"
         }
         time={listTime(d.updated_at, locale)}
-        avatarText={d.peer_label || d.intent}
+        avatarText={d.peer_label || intentLabel(d.intent)}
         active={activeId === d.id}
         muted={Boolean(d.muted)}
         pinned={Boolean(d.pinned)}
@@ -298,7 +301,7 @@ export function ChatList() {
               asButton
               muted
               title={t.me.inboxTitle}
-              subtitle={`${r.intent}${r.note ? ` · ${r.note}` : ""}`}
+              subtitle={`${intentLabel(r.intent)}${r.note ? ` · ${r.note}` : ""}`}
               time={listTime(r.created_at, locale)}
               avatarText="?"
             />

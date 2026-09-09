@@ -28,9 +28,7 @@ class StoryPermissionError(StoryError):
     pass
 
 
-# Soft limits (v0.1b)
-PUBLISH_LIMIT = 5
-PUBLISH_WINDOW_SECONDS = 3600
+# Voice limits
 VOICE_MAX_BYTES = 5 * 1024 * 1024
 VOICE_MAX_DURATION_MS = 120_000
 VOICE_LIMIT = 20
@@ -85,19 +83,6 @@ def publish_story(
     topic_val = topic or StoryTopic.OTHER
     if topic_val not in StoryTopic.values:
         raise StoryError("Invalid topic")
-
-    try:
-        assert_under_limit(
-            actor=actor,
-            queryset=Story.objects.all(),
-            account_field="author_account",
-            session_field="author_session",
-            limit=PUBLISH_LIMIT,
-            window_seconds=PUBLISH_WINDOW_SECONDS,
-            time_field="created_at",
-        )
-    except RateLimitExceeded as exc:
-        raise StoryError(str(exc)) from exc
 
     name = (pseudonym or actor.display_pseudonym).strip()[:64] or "anonymous"
     now = timezone.now()
@@ -182,18 +167,6 @@ def publish_story_voice(
     if topic_val not in StoryTopic.values:
         raise StoryError("Invalid topic")
 
-    try:
-        assert_under_limit(
-            actor=actor,
-            queryset=Story.objects.all(),
-            account_field="author_account",
-            session_field="author_session",
-            limit=PUBLISH_LIMIT,
-            window_seconds=PUBLISH_WINDOW_SECONDS,
-            time_field="created_at",
-        )
-    except RateLimitExceeded as exc:
-        raise StoryError(str(exc)) from exc
     _voice_rate_limit(actor)
 
     name = (pseudonym or actor.display_pseudonym).strip()[:64] or "anonymous"
@@ -324,19 +297,6 @@ def add_comment(actor: Actor, post_id: UUID, body: str) -> Story:
     if len(text) > 20_000:
         raise StoryError("Story body is too long")
 
-    try:
-        assert_under_limit(
-            actor=actor,
-            queryset=Story.objects.all(),
-            account_field="author_account",
-            session_field="author_session",
-            limit=PUBLISH_LIMIT,
-            window_seconds=PUBLISH_WINDOW_SECONDS,
-            time_field="created_at",
-        )
-    except RateLimitExceeded as exc:
-        raise StoryError(str(exc)) from exc
-
     now = timezone.now()
     comment = Story(
         body=text,
@@ -380,18 +340,6 @@ def add_comment_voice(
     if len(text) > 20_000:
         raise StoryError("Story body is too long")
 
-    try:
-        assert_under_limit(
-            actor=actor,
-            queryset=Story.objects.all(),
-            account_field="author_account",
-            session_field="author_session",
-            limit=PUBLISH_LIMIT,
-            window_seconds=PUBLISH_WINDOW_SECONDS,
-            time_field="created_at",
-        )
-    except RateLimitExceeded as exc:
-        raise StoryError(str(exc)) from exc
     _voice_rate_limit(actor)
 
     now = timezone.now()

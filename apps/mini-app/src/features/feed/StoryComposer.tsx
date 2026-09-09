@@ -82,9 +82,9 @@ export function StoryComposer() {
           disabled={publish.isPending || topicsQuery.isLoading}
         >
           <option value="">{t.composer.topicNone}</option>
-          {(topicsQuery.data ?? []).map((t) => (
-            <option key={t.value} value={t.value}>
-              {t.label}
+          {(topicsQuery.data ?? []).map((item) => (
+            <option key={item.value} value={item.value}>
+              {t.topics[item.value] ?? item.label}
             </option>
           ))}
         </select>

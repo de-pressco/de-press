@@ -14,6 +14,7 @@ from apps.dialogue.services import (
     DialogueError,
     accept_request,
     create_request,
+    decline_request,
     list_messages,
     send_message,
     send_voice_message,
@@ -67,6 +68,44 @@ def test_dialogue_request_accept_message():
         ).count()
         == 0
     )
+
+
+@pytest.mark.django_db
+def test_dialogue_request_once_per_user_per_story():
+    author = Actor(
+        kind="account",
+        account=Account.objects.create_user(
+            email="once-a@ex.com", password="password123"
+        ),
+    )
+    story = publish_story(author, "Один разговор на историю.", topic="loneliness")
+
+    peer = Actor(
+        kind="account",
+        account=Account.objects.create_user(
+            email="once-p@ex.com", password="password123"
+        ),
+    )
+    req = create_request(peer, story.id, intent="listen")
+
+    # While pending…
+    with pytest.raises(DialogueError, match="Request already sent"):
+        create_request(peer, story.id, intent="share")
+
+    # …after the author accepted it…
+    accept_request(author, req.id)
+    with pytest.raises(DialogueError, match="Request already sent"):
+        create_request(peer, story.id, intent="share")
+
+    # …and after a decline: one request per user per thread, period.
+    other = Actor(
+        kind="anonymous",
+        session=AnonymousSession.objects.create(pseudonym="второй"),
+    )
+    req2 = create_request(other, story.id, intent="listen")
+    decline_request(author, req2.id)
+    with pytest.raises(DialogueError, match="Request already sent"):
+        create_request(other, story.id, intent="mutual")
 
 
 @pytest.mark.django_db

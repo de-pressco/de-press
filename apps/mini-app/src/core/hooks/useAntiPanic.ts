@@ -2,6 +2,10 @@ import { useCallback, useEffect, useState } from "react";
 import { ENTER_ANTI_PANIC_EVENT } from "@/core/host/startParam";
 import { setTelegramVerticalSwipes } from "@/core/host/telegram";
 import { killAllSockets } from "@/core/ws/registry";
+import {
+  endOpenPanicEpisodes,
+  startPanicEpisode,
+} from "@/core/memory/db";
 
 const STORAGE_KEY = "depress_anti_panic";
 
@@ -33,6 +37,8 @@ export function useAntiPanic() {
     } catch {
       /* ignore */
     }
+    // Local episode marker (ADR-0025): timestamps only, never uploaded.
+    void startPanicEpisode(new Date().toISOString()).catch(() => undefined);
   }, []);
 
   const exit = useCallback(() => {
@@ -42,6 +48,7 @@ export function useAntiPanic() {
     } catch {
       /* ignore */
     }
+    void endOpenPanicEpisodes(new Date().toISOString()).catch(() => undefined);
   }, []);
 
   useEffect(() => {
