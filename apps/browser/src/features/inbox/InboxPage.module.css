@@ -9,7 +9,7 @@
 
 .title {
   margin: 0;
-  font-size: 1.1rem;
+  font-size: var(--fs-2xl);
   font-weight: 600;
 }
 

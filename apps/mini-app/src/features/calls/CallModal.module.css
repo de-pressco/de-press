@@ -7,7 +7,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.55);
+  background: var(--backdrop);
 }
 
 .card {
@@ -20,7 +20,7 @@
   border-radius: 1rem;
   background: var(--bg-surface);
   color: var(--text-primary);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+  box-shadow: var(--shadow-elev-3);
 }
 
 .avatar {
@@ -30,13 +30,13 @@
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  font-size: 1.6rem;
+  font-size: var(--fs-4xl);
   background: var(--bg-hover);
 }
 
 .status {
   margin: 0;
-  font-size: 1rem;
+  font-size: var(--fs-xl);
   color: var(--text-primary);
   text-align: center;
 }
@@ -51,7 +51,7 @@
   padding: 0.55rem 1rem;
   border: none;
   border-radius: 999px;
-  font-size: 0.9rem;
+  font-size: var(--fs-md);
   cursor: pointer;
 }
 
@@ -85,6 +85,6 @@
   border-radius: 999px;
   background: var(--bg-surface);
   color: var(--text-primary);
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25);
-  font-size: 0.85rem;
+  box-shadow: var(--shadow-elev-2);
+  font-size: var(--fs-sm);
 }

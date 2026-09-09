@@ -19,7 +19,7 @@
 
 .title {
   margin: 0;
-  font-size: 1.25rem;
+  font-size: var(--fs-3xl);
   font-weight: 600;
   text-wrap: balance;
 }
@@ -37,7 +37,7 @@
 .wipe {
   flex-shrink: 1;
   min-width: 0;
-  margin-left: auto;
+  margin-inline-start: auto;
   min-height: 2.25rem;
   padding: 0.35rem 0.75rem;
   border: 1px solid var(--border-subtle);
@@ -45,7 +45,7 @@
   background: transparent;
   color: var(--text-muted);
   font: inherit;
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
   cursor: pointer;
   transition-property: background-color, color, transform;
   transition-duration: 0.15s;
@@ -68,7 +68,7 @@
   border: 1px solid var(--border-subtle);
   box-shadow: var(--shadow-elev-1);
   color: var(--text-muted);
-  font-size: 0.9rem;
+  font-size: var(--fs-md);
   line-height: 1.55;
   text-wrap: pretty;
 }
@@ -99,7 +99,7 @@
 .empty {
   margin: 0;
   color: var(--text-muted);
-  font-size: 0.92rem;
+  font-size: var(--fs-md);
   line-height: 1.55;
   text-wrap: pretty;
 }
@@ -116,7 +116,7 @@
   max-width: 85%;
   padding: 0.75rem 0.9rem;
   border-radius: var(--radius-lg);
-  font-size: 0.92rem;
+  font-size: var(--fs-md);
   line-height: 1.55;
   text-wrap: pretty;
 }
@@ -182,7 +182,7 @@
 
 .label {
   margin: 0;
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
   color: var(--text-muted);
 }
 
@@ -238,14 +238,14 @@
 
 .error {
   margin: 0;
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
   color: var(--accent-panic);
   line-height: 1.4;
 }
 
 .disclaimer {
   margin: 0;
-  font-size: 0.8rem;
+  font-size: var(--fs-xs);
   color: var(--text-muted);
   line-height: 1.45;
   text-wrap: pretty;

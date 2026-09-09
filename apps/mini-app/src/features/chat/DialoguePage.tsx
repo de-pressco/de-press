@@ -12,6 +12,8 @@ import {
   CircleRecorder,
   type CircleRecording,
 } from "./CircleRecorder";
+import { useToast } from "@/core/toast";
+import { friendlyError } from "@/core/api/errorCopy";
 import styles from "./DialoguePage.module.css";
 
 function mediaUrl(path: string | null | undefined): string | null {
@@ -81,7 +83,7 @@ function SendIcon() {
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth={2}
+      strokeWidth={1.5}
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden
@@ -132,6 +134,8 @@ function CircleIcon() {
 export function DialoguePage() {
   const { id: dialogueId = "" } = useParams<{ id: string }>();
   const { locale, t } = useI18n();
+  const toast = useToast();
+  const [wsEpoch, setWsEpoch] = useState(0);
 
   const intentLabel = (v: string | null | undefined): string =>
     v ? (t.intents[v] ?? v) : "";
@@ -175,6 +179,7 @@ export function DialoguePage() {
     dialogueId,
     Boolean(dialogueId) && !useHttpFallback,
     { onCall: call.onSignal },
+    wsEpoch,
   );
 
   sendCallRef.current = wsSendCall;
@@ -192,7 +197,7 @@ export function DialoguePage() {
       setDialogue(d);
       if (d) setDialogueStatus(d.status);
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : t.common.error);
+      setError(friendlyError(err, t.common.errorSoft));
     }
   }, [dialogueId, setDialogueStatus, t.common.error]);
 
@@ -281,7 +286,7 @@ export function DialoguePage() {
         setBody("");
       }
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : t.common.error);
+      setError(friendlyError(err, t.common.errorSoft));
     } finally {
       setSending(false);
     }
@@ -299,7 +304,7 @@ export function DialoguePage() {
       });
       upsertMessage(m);
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : t.common.error);
+      setError(friendlyError(err, t.common.errorSoft));
     } finally {
       setSending(false);
     }
@@ -324,7 +329,7 @@ export function DialoguePage() {
         setMsg(t.chat.circleNotReady);
         setCircleOpen(false);
       } else {
-        setError(err instanceof ApiError ? err.message : t.common.error);
+        setError(friendlyError(err, t.common.errorSoft));
       }
     } finally {
       setSending(false);
@@ -401,19 +406,25 @@ export function DialoguePage() {
         setDialogueStatus(d.status);
       }
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : t.common.error);
+      setError(friendlyError(err, t.common.errorSoft));
     }
   }
 
   async function blockPeer() {
     setMenuOpen(false);
-    if (!window.confirm(t.chat.hidePeerConfirm)) return;
+    const ok = await toast.confirm({
+      message: t.chat.hidePeerConfirm,
+      confirmLabel: t.chat.confirmBlock,
+      cancelLabel: t.common.cancel,
+      danger: true,
+    });
+    if (!ok) return;
     try {
       const res = await api.blockPeerInDialogue(dialogueId);
       setMsg(res.message);
       await close();
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : t.common.error);
+      setError(friendlyError(err, t.common.errorSoft));
     }
   }
 
@@ -422,7 +433,7 @@ export function DialoguePage() {
       const res = await api.reportMessage(messageId, "abuse");
       setMsg(res.message);
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : t.common.error);
+      setError(friendlyError(err, t.common.errorSoft));
     }
   }
 
@@ -436,7 +447,7 @@ export function DialoguePage() {
       upsertMessage(m);
       setShownLang((prev) => ({ ...prev, [messageId]: target }));
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : t.common.error);
+      setError(friendlyError(err, t.common.errorSoft));
     }
   }
 
@@ -512,10 +523,9 @@ export function DialoguePage() {
             ⋯
           </button>
           {menuOpen ? (
-            <div className={styles.menu} role="menu">
+            <div className={styles.menu}>
               <button
                 type="button"
-                role="menuitem"
                 className={styles.menuItem}
                 onClick={() => void close()}
               >
@@ -523,7 +533,6 @@ export function DialoguePage() {
               </button>
               <button
                 type="button"
-                role="menuitem"
                 className={styles.menuItemDanger}
                 onClick={() => void blockPeer()}
               >
@@ -650,6 +659,15 @@ export function DialoguePage() {
       ) : null}
 
       {open ? (
+        <>
+        {wsStatus === "error" ? (
+          <div className={styles.wsBanner} role="status">
+            <span>{wsError ?? t.chat.wsDead}</span>
+            <button type="button" onClick={() => setWsEpoch((e) => e + 1)}>
+              {t.common.retry}
+            </button>
+          </div>
+        ) : null}
         <div className={styles.composer}>
           <button
             type="button"
@@ -703,6 +721,7 @@ export function DialoguePage() {
             </button>
           ) : null}
         </div>
+        </>
       ) : (
         <p className={styles.meta}>{t.chat.dialogueClosed}</p>
       )}

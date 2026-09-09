@@ -18,13 +18,13 @@
 
 .title {
   margin: 0;
-  font-size: 1.15rem;
+  font-size: var(--fs-2xl);
 }
 
 .lead {
   margin: 0;
   color: var(--text-muted);
-  font-size: 0.9rem;
+  font-size: var(--fs-md);
   line-height: 1.45;
 }
 
@@ -49,13 +49,13 @@
 
 .meta {
   margin: 0;
-  font-size: 0.8rem;
+  font-size: var(--fs-xs);
   color: var(--text-muted);
 }
 
 .preview {
   margin: 0;
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
   color: var(--text-muted);
   font-style: italic;
 }
@@ -79,7 +79,7 @@
   border-radius: 0.55rem;
   border: 1px solid var(--border-subtle);
   background: transparent;
-  font-size: 0.9rem;
+  font-size: var(--fs-md);
   transition-property: background-color, transform;
   transition-duration: 0.15s;
 }
@@ -113,7 +113,7 @@
 .empty {
   margin: 0;
   color: var(--text-muted);
-  font-size: 0.95rem;
+  font-size: var(--fs-lg);
 }
 
 .tabs {
@@ -130,7 +130,7 @@
   border: 1px solid var(--border-subtle);
   background: transparent;
   color: var(--text-muted);
-  font-size: 0.9rem;
+  font-size: var(--fs-md);
 }
 
 .tabOn {
@@ -141,17 +141,17 @@
 
 .metrics {
   margin: 0;
-  padding-left: 1.1rem;
+  padding-inline-start: 1.1rem;
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
   color: var(--text-primary);
-  font-size: 0.92rem;
+  font-size: var(--fs-md);
 }
 
 .sub {
   margin: 0.5rem 0 0;
-  font-size: 1rem;
+  font-size: var(--fs-xl);
   font-weight: 600;
 }
 
@@ -173,14 +173,14 @@
 
 .dutyStatus {
   margin: 0;
-  font-size: 0.92rem;
+  font-size: var(--fs-md);
   font-weight: 600;
   color: var(--text-primary);
 }
 
 .dutyLead {
   margin: 0.25rem 0 0;
-  font-size: 0.82rem;
+  font-size: var(--fs-xs);
   line-height: 1.4;
   color: var(--text-muted);
 }
@@ -193,5 +193,5 @@
   border: 1px solid var(--border-subtle);
   background: var(--accent-hope-soft);
   color: var(--accent-hope);
-  font-size: 0.88rem;
+  font-size: var(--fs-sm);
 }

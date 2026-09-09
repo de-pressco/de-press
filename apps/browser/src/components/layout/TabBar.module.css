@@ -26,6 +26,13 @@
   color: var(--text-muted);
   text-decoration: none;
   touch-action: manipulation;
+  transition-property: color, transform;
+  transition-duration: var(--duration-fast);
+}
+
+.tab:active,
+.panic:active {
+  transform: scale(0.96);
 }
 
 .tabActive {
@@ -44,7 +51,7 @@
 .dot {
   position: absolute;
   top: -0.1rem;
-  right: -0.15rem;
+  inset-inline-end: -0.15rem;
   width: 8px;
   height: 8px;
   border-radius: 50%;
@@ -57,7 +64,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 0.65rem;
+  font-size: var(--fs-2xs);
   line-height: 1.2;
 }
 
@@ -74,6 +81,6 @@
   align-items: center;
   justify-content: center;
   font-weight: 800;
-  font-size: 0.8rem;
+  font-size: var(--fs-xs);
   line-height: 1;
 }

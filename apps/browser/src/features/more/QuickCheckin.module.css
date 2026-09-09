@@ -16,7 +16,7 @@
 
 .label {
   margin: 0;
-  font-size: 0.9rem;
+  font-size: var(--fs-md);
   color: var(--text-primary);
 }
 
@@ -62,7 +62,7 @@
   border-radius: 999px;
   background: var(--bg-elevated);
   color: var(--text-primary);
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
   cursor: pointer;
 }
 
@@ -80,7 +80,7 @@
 .ok {
   margin: -0.25rem 1.1rem 0.75rem;
   padding: 0.9rem;
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
   color: var(--accent-hope);
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
@@ -89,6 +89,6 @@
 
 .error {
   margin: 0;
-  font-size: 0.8rem;
+  font-size: var(--fs-xs);
   color: var(--accent-panic);
 }

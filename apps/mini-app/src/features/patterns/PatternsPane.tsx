@@ -10,6 +10,7 @@ import {
   type PanicEpisode,
 } from "@/core/memory/db";
 import { queueCompanionShare } from "@/core/memory/companionShare";
+import { useToast } from "@/core/toast";
 import { useI18n } from "@/core/i18n/context";
 import { MoodChart } from "./MoodChart";
 import { MoodHeatmap } from "./MoodHeatmap";
@@ -28,6 +29,7 @@ const PRESET_TAGS = [
 
 export function PatternsPane() {
   const { locale, t } = useI18n();
+  const toast = useToast();
   const navigate = useNavigate();
   const {
     ready,
@@ -257,8 +259,14 @@ export function PatternsPane() {
     return `≈ ${mins} ${t.patterns.episodesMinutes}`;
   }
 
-  function onDeleteEpisode(id: string) {
-    if (!window.confirm(t.patterns.deleteConfirm)) return;
+  async function onDeleteEpisode(id: string) {
+    const ok = await toast.confirm({
+      message: t.patterns.deleteConfirm,
+      confirmLabel: t.common.confirmDelete,
+      cancelLabel: t.common.cancel,
+      danger: true,
+    });
+    if (!ok) return;
     void removeEpisode(id).catch((err) => {
       setMsg(
         err instanceof Error
@@ -295,7 +303,12 @@ export function PatternsPane() {
 
   async function onImportFile(file: File) {
     setMsg(null);
-    if (!window.confirm(t.patterns.dataImportConfirm)) return;
+    const ok = await toast.confirm({
+      message: t.patterns.dataImportConfirm,
+      confirmLabel: t.patterns.confirmImport,
+      cancelLabel: t.common.cancel,
+    });
+    if (!ok) return;
     try {
       const result = await importZkSnapshot(JSON.parse(await file.text()));
       await refresh();
@@ -324,8 +337,14 @@ export function PatternsPane() {
     }
   }
 
-  function onDeleteReflection(id: string) {
-    if (!window.confirm(t.patterns.deleteConfirm)) return;
+  async function onDeleteReflection(id: string) {
+    const ok = await toast.confirm({
+      message: t.patterns.deleteConfirm,
+      confirmLabel: t.common.confirmDelete,
+      cancelLabel: t.common.cancel,
+      danger: true,
+    });
+    if (!ok) return;
     void removeReflection(id).catch((err) => {
       setMsg(
         err instanceof Error
@@ -698,9 +717,16 @@ export function PatternsPane() {
                         className={styles.rowDelete}
                         aria-label={t.patterns.deleteEntry}
                         onClick={() => {
-                          if (window.confirm(t.patterns.deleteConfirm)) {
-                            void remove(e.id);
-                          }
+                          void toast
+                            .confirm({
+                              message: t.patterns.deleteConfirm,
+                              confirmLabel: t.common.confirmDelete,
+                              cancelLabel: t.common.cancel,
+                              danger: true,
+                            })
+                            .then((ok) => {
+                              if (ok) void remove(e.id);
+                            });
                         }}
                       >
                         ×
@@ -747,9 +773,16 @@ export function PatternsPane() {
           type="button"
           className={styles.danger}
           onClick={() => {
-            if (window.confirm(t.patterns.wipeConfirm)) {
-              void wipe();
-            }
+            void toast
+              .confirm({
+                message: t.patterns.wipeConfirm,
+                confirmLabel: t.common.confirmWipe,
+                cancelLabel: t.common.cancel,
+                danger: true,
+              })
+              .then((ok) => {
+                if (ok) void wipe();
+              });
           }}
         >
           {t.patterns.wipe}

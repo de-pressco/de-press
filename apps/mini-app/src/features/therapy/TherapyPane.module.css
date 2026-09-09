@@ -19,12 +19,12 @@
 
 .title {
   margin: 0;
-  font-size: 1.3rem;
+  font-size: var(--fs-3xl);
 }
 
 .lead {
   margin: 0;
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
   color: var(--text-muted);
 }
 
@@ -39,7 +39,7 @@
 
 .sub {
   margin: 0;
-  font-size: 1rem;
+  font-size: var(--fs-xl);
 }
 
 .session {
@@ -54,18 +54,18 @@
 .sessionTitle {
   margin: 0;
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: var(--fs-lg);
 }
 
 .status {
   margin: 0;
-  font-size: 0.8rem;
+  font-size: var(--fs-xs);
   color: var(--text-muted);
 }
 
 .muted {
   margin: 0;
-  font-size: 0.8rem;
+  font-size: var(--fs-xs);
   color: var(--text-muted);
 }
 
@@ -82,7 +82,7 @@
   border-radius: 999px;
   background: var(--bg-hover);
   color: var(--text-primary);
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
   cursor: pointer;
   text-decoration: none;
   display: inline-flex;
@@ -107,7 +107,7 @@
   border-radius: 0.5rem;
   background: var(--bg-surface);
   color: var(--text-primary);
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
 }
 
 .overlay {
@@ -117,7 +117,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.55);
+  background: var(--backdrop);
   padding: 1rem;
 }
 
@@ -131,20 +131,20 @@
   border-radius: 1rem;
   background: var(--bg-surface);
   color: var(--text-primary);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+  box-shadow: var(--shadow-elev-3);
   text-align: center;
 }
 
 .cardTitle {
   margin: 0;
-  font-size: 1.05rem;
+  font-size: var(--fs-xl);
 }
 
 .qr {
   width: 220px;
   height: 220px;
   border-radius: 0.5rem;
-  background: #fff;
+  background: var(--surface-qr);
 }
 
 .qrFallback {
@@ -155,20 +155,20 @@
 }
 
 .addr {
-  font-size: 0.72rem;
+  font-size: var(--fs-2xs);
   word-break: break-all;
   color: var(--text-muted);
 }
 
 .claimed {
   margin: 0;
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
   color: var(--accent-hope);
 }
 
 .error {
   margin: 0;
-  font-size: 0.8rem;
+  font-size: var(--fs-xs);
   color: var(--accent-panic);
 }
 
@@ -176,6 +176,6 @@
   background: none;
   border: none;
   color: var(--text-muted);
-  font-size: 0.8rem;
+  font-size: var(--fs-xs);
   cursor: pointer;
 }

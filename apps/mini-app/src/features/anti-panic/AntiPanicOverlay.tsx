@@ -1,6 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useI18n } from "@/core/i18n/context";
 import { useAntiPanic } from "@/core/hooks/useAntiPanic";
+import {
+  useFocusTrap,
+  useInertBackground,
+} from "@/core/hooks/useFocusTrap";
 import styles from "./AntiPanicOverlay.module.css";
 
 /**
@@ -13,9 +17,15 @@ export function AntiPanicOverlay() {
   const { t } = useI18n();
   const prompts = t.antiPanic.groundSteps;
   const [promptIndex, setPromptIndex] = useState(0);
+  const overlayRef = useRef<HTMLDivElement | null>(null);
+  useFocusTrap(overlayRef, active);
+  useInertBackground(overlayRef, active);
 
   useEffect(() => {
     if (!active) return;
+    overlayRef.current
+      ?.querySelector<HTMLButtonElement>("button")
+      ?.focus();
     const id = window.setInterval(
       () => setPromptIndex((i) => (i + 1) % prompts.length),
       5000,
@@ -28,7 +38,7 @@ export function AntiPanicOverlay() {
   const prompt = prompts[promptIndex % prompts.length];
 
   return (
-    <div className={styles.overlay} role="dialog" aria-modal="true" aria-label={t.antiPanic.menuTitle}>
+    <div ref={overlayRef} className={styles.overlay} role="dialog" aria-modal="true" aria-label={t.antiPanic.menuTitle}>
       <div className={styles.panel}>
         <p className={styles.title}>{t.antiPanic.menuTitle}</p>
         <p className={styles.hint}>{t.antiPanic.breatheHint}</p>

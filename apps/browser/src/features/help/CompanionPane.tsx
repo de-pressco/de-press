@@ -136,8 +136,8 @@ export function CompanionPane() {
   async function onWipe() {
     const ok = await toast.confirm({
       message: t.companion.wipeConfirm,
-      confirmLabel: t.chat.confirmYes,
-      cancelLabel: t.chat.confirmNo,
+      confirmLabel: t.common.confirmWipe,
+      cancelLabel: t.common.cancel,
       danger: true,
     });
     if (!ok) return;

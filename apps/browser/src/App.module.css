@@ -26,14 +26,14 @@
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
   color: var(--accent-hope);
-  font-size: 1.75rem;
+  font-size: var(--fs-5xl);
   font-weight: 600;
   opacity: 0.9;
 }
 
 .emptyText {
   max-width: 16rem;
-  font-size: 0.95rem;
+  font-size: var(--fs-lg);
   line-height: 1.5;
   color: var(--text-muted);
 }

@@ -1,6 +1,11 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { api, ApiError } from "@/core/api/client";
+import { api } from "@/core/api/client";
+import { friendlyError } from "@/core/api/errorCopy";
+import {
+  useFocusTrap,
+  useInertBackground,
+} from "@/core/hooks/useFocusTrap";
 import { useI18n } from "@/core/i18n/context";
 import styles from "./BlockedUsersModal.module.css";
 
@@ -10,6 +15,9 @@ interface BlockedUsersModalProps {
 
 export function BlockedUsersModal({ onClose }: BlockedUsersModalProps) {
   const { t, locale } = useI18n();
+  const panelRef = useRef<HTMLDivElement | null>(null);
+  useFocusTrap(panelRef, true);
+  useInertBackground(panelRef, true);
   const queryClient = useQueryClient();
   const blocks = useQuery({
     queryKey: ["blocks"],
@@ -43,7 +51,7 @@ export function BlockedUsersModal({ onClose }: BlockedUsersModalProps) {
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className={styles.panel}>
+      <div ref={panelRef} className={styles.panel}>
         <div className={styles.head}>
           <h2 className={styles.title}>{t.chat.blockedTitle}</h2>
           <button
@@ -64,9 +72,7 @@ export function BlockedUsersModal({ onClose }: BlockedUsersModalProps) {
         ) : null}
         {unblock.isError ? (
           <p className={styles.note}>
-            {unblock.error instanceof ApiError
-              ? unblock.error.message
-              : t.common.error}
+            {friendlyError(unblock.error, t.common.errorSoft)}
           </p>
         ) : null}
 

@@ -7,6 +7,7 @@ import { useHost } from "@/core/host/HostContext";
 import { useI18n } from "@/core/i18n/context";
 import { UI_LANGS, langLabel } from "@/core/i18n/uiLangs";
 import { readVoiceRetention, writeVoiceRetention } from "@/core/mediaPrefs";
+import { useFocusTrap, useInertBackground } from "@/core/hooks/useFocusTrap";
 import { FundCard } from "@/features/fund/FundCard";
 import { TipWalletForm } from "@/features/fund/TipWalletForm";
 import { ThemeSwitch } from "./ThemeSwitch";
@@ -26,6 +27,8 @@ export function UserMenu({ open, onClose }: UserMenuProps) {
   const titleId = useId();
   const panelRef = useRef<HTMLDivElement | null>(null);
   const firstFieldRef = useRef<HTMLInputElement | null>(null);
+  useFocusTrap(panelRef, open);
+  useInertBackground(panelRef, open);
 
   const [mode, setMode] = useState<Mode>("menu");
   const [langQ, setLangQ] = useState("");
@@ -419,7 +422,7 @@ export function UserMenu({ open, onClose }: UserMenuProps) {
               </fieldset>
             ) : null}
 
-            {error ? <p className={styles.error}>{error}</p> : null}
+            {error ? <p className={styles.error} role="alert">{error}</p> : null}
 
             {isAccount && me?.is_helper ? (
               <button
@@ -538,7 +541,7 @@ export function UserMenu({ open, onClose }: UserMenuProps) {
               </label>
             ) : null}
 
-            {error ? <p className={styles.error}>{error}</p> : null}
+            {error ? <p className={styles.error} role="alert">{error}</p> : null}
 
             <button type="submit" className={styles.primaryBtn} disabled={busy}>
               {mode === "login" ? t.auth.submitLogin : t.auth.submitRegister}

@@ -34,7 +34,7 @@
 
 .title {
   margin: 0;
-  font-size: 1.05rem;
+  font-size: var(--fs-xl);
   font-weight: 600;
 }
 
@@ -45,7 +45,7 @@
   border-radius: 0.5rem;
   background: transparent;
   color: var(--text-muted);
-  font-size: 1.35rem;
+  font-size: var(--fs-3xl);
   line-height: 1;
 }
 
@@ -57,7 +57,7 @@
 .hint {
   margin: 0;
   width: 100%;
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
   color: var(--text-muted);
   line-height: 1.45;
   text-align: center;
@@ -91,7 +91,7 @@
   border-radius: 999px;
   background: color-mix(in srgb, var(--bg-main) 75%, transparent);
   color: var(--accent-panic);
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
   font-weight: 600;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
@@ -160,20 +160,20 @@
 .previewMeta {
   margin: 0;
   text-align: center;
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
   color: var(--text-muted);
   font-variant-numeric: tabular-nums;
 }
 
 .maxNote {
   margin: 0;
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
   color: var(--text-muted);
 }
 
 .error {
   margin: 0;
   color: var(--accent-panic);
-  font-size: 0.9rem;
+  font-size: var(--fs-md);
   text-align: center;
 }

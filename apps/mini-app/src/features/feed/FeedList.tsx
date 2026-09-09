@@ -294,7 +294,9 @@ export function FeedList() {
         ) : (!mine && query.isError) || (mine && mineQuery.isError) ? (
           <p className={styles.empty}>{t.feed.offline}</p>
         ) : stories.length === 0 ? (
-          <p className={styles.empty}>{t.feed.empty}</p>
+          <p className={styles.empty}>
+            {q.trim() ? t.feed.noResults : t.feed.empty}
+          </p>
         ) : useVirtual ? (
           <div
             className={styles.virtualInner}

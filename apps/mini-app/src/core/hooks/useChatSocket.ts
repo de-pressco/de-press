@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { ChatMessage } from "@/core/api/types";
+import { useI18n } from "@/core/i18n/context";
 import { killAllSockets, registerSocket } from "@/core/ws/registry";
 import { buildWsBase } from "@/core/ws/url";
 
@@ -49,7 +50,9 @@ export function useChatSocket(
   dialogueId: string,
   enabled = true,
   opts?: ChatSocketOptions,
+  epoch = 0,
 ) {
+  const { t } = useI18n();
   const [status, setStatus] = useState<WsStatus>("closed");
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [dialogueStatus, setDialogueStatus] = useState<string>("open");
@@ -215,7 +218,7 @@ export function useChatSocket(
         try {
           handleEnvelope(JSON.parse(ev.data as string) as ServerEnvelope);
         } catch {
-          setError("Bad WS payload");
+          setError(t.chat.wsBadPayload);
         }
       };
 
@@ -237,9 +240,7 @@ export function useChatSocket(
         const attempt = attemptRef.current;
         if (attempt >= RECONNECT_MAX_ATTEMPTS) {
           setStatus("error");
-          setError(
-            "WebSocket недоступен после нескольких попыток — HTTP fallback",
-          );
+          setError(t.chat.wsDead);
           return;
         }
 
@@ -276,7 +277,7 @@ export function useChatSocket(
       ws?.close();
       wsRef.current = null;
     };
-  }, [dialogueId, enabled, markPeerTyping, clearPeerIdle]);
+  }, [dialogueId, enabled, epoch, markPeerTyping, clearPeerIdle]);
 
   const send = useCallback(
     (body: string) => {

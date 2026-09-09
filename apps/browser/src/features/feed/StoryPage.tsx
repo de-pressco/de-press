@@ -13,7 +13,8 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { api, ApiError, API_URL } from "@/core/api/client";
+import { api, API_URL } from "@/core/api/client";
+import { friendlyError } from "@/core/api/errorCopy";
 import { useVoiceRecorder } from "@/core/hooks/useVoiceRecorder";
 import { useI18n } from "@/core/i18n/context";
 import { useToast } from "@/core/toast";
@@ -96,7 +97,7 @@ function SendIcon() {
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth={2}
+      strokeWidth={1.5}
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden
@@ -255,7 +256,7 @@ export function StoryPage() {
       setNote("");
     },
     onError: (err) => {
-      setStatusMsg(err instanceof ApiError ? err.message : t.common.error);
+      setStatusMsg(friendlyError(err, t.common.errorSoft));
     },
   });
 
@@ -275,7 +276,7 @@ export function StoryPage() {
       if (first) navigate(`/chat/${first.id}`);
     },
     onError: (err) => {
-      setStatusMsg(err instanceof ApiError ? err.message : t.common.error);
+      setStatusMsg(friendlyError(err, t.common.errorSoft));
     },
   });
 
@@ -302,7 +303,7 @@ export function StoryPage() {
       await refreshStoryQueries();
     },
     onError: (err) => {
-      setStatusMsg(err instanceof ApiError ? err.message : t.common.error);
+      setStatusMsg(friendlyError(err, t.common.errorSoft));
     },
   });
 
@@ -318,7 +319,7 @@ export function StoryPage() {
       await refreshStoryQueries();
     },
     onError: (err) => {
-      setStatusMsg(err instanceof ApiError ? err.message : t.common.error);
+      setStatusMsg(friendlyError(err, t.common.errorSoft));
     },
   });
 
@@ -341,7 +342,7 @@ export function StoryPage() {
       await refreshStoryQueries();
     },
     onError: (err) => {
-      setStatusMsg(err instanceof ApiError ? err.message : t.common.error);
+      setStatusMsg(friendlyError(err, t.common.errorSoft));
     },
   });
 
@@ -352,7 +353,7 @@ export function StoryPage() {
       setMenuOpen(false);
     },
     onError: (err) => {
-      setStatusMsg(err instanceof ApiError ? err.message : t.common.error);
+      setStatusMsg(friendlyError(err, t.common.errorSoft));
     },
   });
 
@@ -456,8 +457,8 @@ export function StoryPage() {
     setCtxMenu(null);
     const ok = await toast.confirm({
       message: t.feed.deleteConfirm,
-      confirmLabel: t.chat.confirmYes,
-      cancelLabel: t.chat.confirmNo,
+      confirmLabel: t.common.confirmDelete,
+      cancelLabel: t.common.cancel,
       danger: true,
     });
     if (!ok) return;
@@ -471,7 +472,7 @@ export function StoryPage() {
       await refreshStoryQueries();
       if (!s.parent_id) navigate("/feed", { replace: true });
     } catch (err) {
-      setStatusMsg(err instanceof ApiError ? err.message : t.common.error);
+      setStatusMsg(friendlyError(err, t.common.errorSoft));
     }
   }
 
@@ -496,7 +497,9 @@ export function StoryPage() {
     <div className={styles.page}>
       {!story && (query.isLoading || threadQuery.isLoading) ? (
         <p className={styles.empty}>{t.story.loading}</p>
-      ) : query.isError || !story ? (
+      ) : query.isError || threadQuery.isError ? (
+        <p className={styles.empty}>{t.story.offline}</p>
+      ) : !story ? (
         <p className={styles.empty}>{t.story.notFound}</p>
       ) : (
         <>
@@ -767,10 +770,9 @@ export function StoryPage() {
                   ⋯
                 </button>
                 {menuOpen ? (
-                  <div className={styles.menu} role="menu">
+                  <div className={styles.menu}>
                     <button
                       type="button"
-                      role="menuitem"
                       className={styles.menuItem}
                       onClick={() => report.mutate()}
                     >

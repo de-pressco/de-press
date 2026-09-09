@@ -63,7 +63,7 @@
   margin: 0;
   padding: 0.5rem 0.25rem;
   color: var(--text-muted);
-  font-size: 0.9rem;
+  font-size: var(--fs-md);
 }
 
 .requestBox {
@@ -79,7 +79,7 @@
 .requestLead {
   margin: 0;
   color: var(--text-muted);
-  font-size: 0.9rem;
+  font-size: var(--fs-md);
   line-height: 1.45;
 }
 
@@ -90,7 +90,7 @@
 }
 
 .label {
-  font-size: 0.8rem;
+  font-size: var(--fs-xs);
   color: var(--text-muted);
 }
 
@@ -127,7 +127,7 @@
 
 .menu {
   position: absolute;
-  right: 0;
+  inset-inline-end: 0;
   bottom: calc(100% + 4px);
   min-width: 10rem;
   background: var(--bg-elevated);
@@ -147,7 +147,7 @@
   padding: 0.55rem 0.7rem;
   border-radius: 0.45rem;
   color: var(--text-primary);
-  font-size: 0.9rem;
+  font-size: var(--fs-md);
 }
 
 .menuItem:hover {
@@ -172,5 +172,5 @@
   align-items: center;
   justify-content: space-between;
   gap: 0.5rem;
-  font-size: 0.9rem;
+  font-size: var(--fs-md);
 }

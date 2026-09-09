@@ -18,7 +18,7 @@
 
 .title {
   margin: 0;
-  font-size: 1.2rem;
+  font-size: var(--fs-2xl);
   font-weight: 600;
 }
 
@@ -29,7 +29,7 @@
   background: var(--accent-hope-soft);
   border: 1px solid var(--border-soft);
   color: var(--text-primary);
-  font-size: 0.9rem;
+  font-size: var(--fs-md);
   line-height: 1.5;
 }
 
@@ -46,7 +46,7 @@
 
 .stat {
   margin: 0;
-  font-size: 0.9rem;
+  font-size: var(--fs-md);
   color: var(--text-muted);
   line-height: 1.5;
 }
@@ -55,7 +55,7 @@
   display: flex;
   align-items: flex-start;
   gap: 0.55rem;
-  font-size: 0.9rem;
+  font-size: var(--fs-md);
   color: var(--text-primary);
   cursor: pointer;
 }
@@ -67,7 +67,7 @@
 
 .howFeel {
   margin: 0;
-  font-size: 0.95rem;
+  font-size: var(--fs-lg);
 }
 
 .levels {
@@ -109,7 +109,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.3rem;
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
   color: var(--text-muted);
 }
 
@@ -169,7 +169,7 @@
 
 .sectionTitle {
   margin: 0;
-  font-size: 1rem;
+  font-size: var(--fs-xl);
   font-weight: 600;
 }
 
@@ -188,7 +188,7 @@
   gap: 0.75rem;
   padding: 0.55rem 0;
   border-bottom: 1px solid var(--border-subtle);
-  font-size: 0.9rem;
+  font-size: var(--fs-md);
 }
 
 .row:last-child {
@@ -203,7 +203,7 @@
 .rowTime {
   flex-shrink: 0;
   color: var(--text-muted);
-  font-size: 0.8rem;
+  font-size: var(--fs-xs);
   font-variant-numeric: tabular-nums;
 }
 
@@ -221,7 +221,7 @@
   border: none;
   background: transparent;
   color: var(--text-muted);
-  font-size: 1.05rem;
+  font-size: var(--fs-xl);
   line-height: 1;
   transition-property: background-color, color;
   transition-duration: 0.15s;
@@ -239,7 +239,7 @@
 
 .subLabel {
   margin: 0;
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
   color: var(--text-muted);
 }
 
@@ -257,7 +257,7 @@
   border: 1px solid var(--border-subtle);
   background: transparent;
   color: var(--text-muted);
-  font-size: 0.8rem;
+  font-size: var(--fs-xs);
   transition-property: background-color, border-color, color;
   transition-duration: 0.15s;
 }
@@ -285,7 +285,7 @@
   border-radius: 0.55rem;
   background: var(--bg-input);
   color: var(--text-primary);
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
 }
 
 .customRow input:focus-visible {
@@ -309,7 +309,7 @@
   border-radius: 0.5rem;
   background: var(--bg-input);
   color: var(--text-primary);
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
 }
 
 .noteInput:focus-visible {
@@ -324,7 +324,7 @@
   border: none;
   background: transparent;
   color: var(--text-muted);
-  font-size: 0.95rem;
+  font-size: var(--fs-lg);
   line-height: 1;
   flex-shrink: 0;
   transition-property: background-color, color;
@@ -344,14 +344,14 @@
 .muted {
   margin: 0;
   color: var(--text-muted);
-  font-size: 0.9rem;
+  font-size: var(--fs-md);
   line-height: 1.5;
 }
 
 .error {
   margin: 0;
   color: var(--accent-panic);
-  font-size: 0.9rem;
+  font-size: var(--fs-md);
 }
 
 .actions {
@@ -368,7 +368,7 @@
 }
 
 .insightList li {
-  font-size: 0.9rem;
+  font-size: var(--fs-md);
   color: var(--text-primary);
   line-height: 1.5;
 }
@@ -389,7 +389,7 @@
   background: var(--bg-input);
   color: var(--text-muted);
   font-family: inherit;
-  font-size: 0.8rem;
+  font-size: var(--fs-xs);
   line-height: 1.5;
   white-space: pre-wrap;
   word-break: break-word;
@@ -411,7 +411,7 @@
   background: var(--bg-input);
   color: var(--text-primary);
   font: inherit;
-  font-size: 0.9rem;
+  font-size: var(--fs-md);
   resize: vertical;
   min-height: 4.5rem;
 }
@@ -447,14 +447,14 @@
 
 .reflectionWeek {
   color: var(--text-muted);
-  font-size: 0.8rem;
+  font-size: var(--fs-xs);
   font-variant-numeric: tabular-nums;
 }
 
 .reflectionText {
   margin: 0;
   color: var(--text-primary);
-  font-size: 0.9rem;
+  font-size: var(--fs-md);
   line-height: 1.5;
   white-space: pre-wrap;
   word-break: break-word;

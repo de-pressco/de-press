@@ -2,7 +2,7 @@
   position: fixed;
   inset: 0;
   z-index: 200;
-  background: rgba(0, 0, 0, 0.45);
+  background: var(--backdrop);
   display: flex;
   align-items: flex-start;
   justify-content: flex-start;
@@ -32,7 +32,7 @@
 
 .title {
   margin: 0;
-  font-size: 1.05rem;
+  font-size: var(--fs-xl);
   font-weight: 600;
 }
 
@@ -43,7 +43,7 @@
   border-radius: 0.5rem;
   background: transparent;
   color: var(--text-muted);
-  font-size: 1.35rem;
+  font-size: var(--fs-3xl);
   line-height: 1;
 }
 
@@ -81,7 +81,7 @@
 
 .meta {
   margin: 0.15rem 0 0;
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
   color: var(--text-muted);
 }
 
@@ -102,7 +102,7 @@
   border-radius: 0.55rem;
   background: transparent;
   color: var(--text-muted);
-  font-size: 0.8rem;
+  font-size: var(--fs-xs);
   font-weight: 600;
 }
 
@@ -124,7 +124,7 @@
 
 .voiceField legend {
   padding: 0 0.25rem;
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
   color: var(--text-muted);
 }
 
@@ -132,7 +132,7 @@
   display: flex;
   align-items: flex-start;
   gap: 0.5rem;
-  font-size: 0.9rem;
+  font-size: var(--fs-md);
   color: var(--text-primary);
   cursor: pointer;
 }
@@ -150,7 +150,7 @@
 
 .hint {
   margin: 0;
-  font-size: 0.8rem;
+  font-size: var(--fs-xs);
   color: var(--text-muted);
   line-height: 1.4;
 }
@@ -159,7 +159,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.3rem;
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
   color: var(--text-muted);
 }
 
@@ -233,7 +233,7 @@
 .error {
   margin: 0;
   color: var(--accent-panic);
-  font-size: 0.9rem;
+  font-size: var(--fs-md);
 }
 
 .langSearch {
@@ -289,11 +289,11 @@
 
 .langCode {
   color: var(--text-muted);
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
 }
 
 .langNote {
   margin: 0;
   color: var(--text-muted);
-  font-size: 0.9rem;
+  font-size: var(--fs-md);
 }

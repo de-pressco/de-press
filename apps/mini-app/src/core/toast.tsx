@@ -8,6 +8,11 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { useI18n } from "@/core/i18n/context";
+import {
+  useFocusTrap,
+  useInertBackground,
+} from "@/core/hooks/useFocusTrap";
 import styles from "./toast.module.css";
 
 export type ToastTone = "info" | "danger";
@@ -61,11 +66,15 @@ export function useToast(): ToastApi {
 }
 
 export function ToastProvider({ children }: { children: ReactNode }) {
+  const { t } = useI18n();
   const [items, setItems] = useState<ToastItem[]>([]);
   const [modal, setModal] = useState<ModalState | null>(null);
   const seq = useRef(1);
   const modalRef = useRef<ModalState | null>(null);
   modalRef.current = modal;
+  const cardRef = useRef<HTMLDivElement | null>(null);
+  useFocusTrap(cardRef, modal !== null);
+  useInertBackground(cardRef, modal !== null);
 
   const dismiss = useCallback((id: number) => {
     setItems((prev) => prev.filter((t) => t.id !== id));
@@ -137,22 +146,22 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     <ToastContext.Provider value={api}>
       {children}
       <div className={styles.host} aria-live="polite">
-        {items.map((t) => (
+        {items.map((item) => (
           <div
-            key={t.id}
+            key={item.id}
             className={
-              t.tone === "danger"
+              item.tone === "danger"
                 ? `${styles.toast} ${styles.danger}`
                 : styles.toast
             }
             role="status"
           >
-            <p className={styles.msg}>{t.message}</p>
+            <p className={styles.msg}>{item.message}</p>
             <button
               type="button"
               className={styles.x}
-              onClick={() => dismiss(t.id)}
-              aria-label="×"
+              onClick={() => dismiss(item.id)}
+              aria-label={t.common.close}
             >
               ×
             </button>

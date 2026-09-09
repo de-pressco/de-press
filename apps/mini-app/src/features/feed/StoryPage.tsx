@@ -96,7 +96,7 @@ function SendIcon() {
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth={2}
+      strokeWidth={1.5}
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden
@@ -496,7 +496,9 @@ export function StoryPage() {
     <div className={styles.page}>
       {!story && (query.isLoading || threadQuery.isLoading) ? (
         <p className={styles.empty}>{t.story.loading}</p>
-      ) : query.isError || !story ? (
+      ) : query.isError || threadQuery.isError ? (
+        <p className={styles.empty}>{t.story.offline}</p>
+      ) : !story ? (
         <p className={styles.empty}>{t.story.notFound}</p>
       ) : (
         <>
@@ -767,10 +769,9 @@ export function StoryPage() {
                   ⋯
                 </button>
                 {menuOpen ? (
-                  <div className={styles.menu} role="menu">
+                  <div className={styles.menu}>
                     <button
                       type="button"
-                      role="menuitem"
                       className={styles.menuItem}
                       onClick={() => report.mutate()}
                     >

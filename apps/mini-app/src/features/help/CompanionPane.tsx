@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { api, type AiStreamHandlers } from "@/core/api/client";
 import { useAntiPanic } from "@/core/hooks/useAntiPanic";
 import { useI18n } from "@/core/i18n/context";
+import { useToast } from "@/core/toast";
 import {
   addCompanionMessage,
   listCompanionMessages,
@@ -23,6 +24,7 @@ const HISTORY_SENT_LIMIT = 12;
  */
 export function CompanionPane() {
   const { t } = useI18n();
+  const toast = useToast();
   const { enter } = useAntiPanic();
   const [turns, setTurns] = useState<Turn[]>([]);
   const [loaded, setLoaded] = useState(false);
@@ -123,8 +125,14 @@ export function CompanionPane() {
     }
   }
 
-  function onWipe() {
-    if (!window.confirm(t.companion.wipeConfirm)) return;
+  async function onWipe() {
+    const ok = await toast.confirm({
+      message: t.companion.wipeConfirm,
+      confirmLabel: t.common.confirmWipe,
+      cancelLabel: t.common.cancel,
+      danger: true,
+    });
+    if (!ok) return;
     wipeAllMemory()
       .then(() => {
         setTurns([]);

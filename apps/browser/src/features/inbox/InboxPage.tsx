@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { api } from "@/core/api/client";
+import { api, ApiError } from "@/core/api/client";
 import { useI18n } from "@/core/i18n/context";
 import styles from "./InboxPage.module.css";
 
@@ -30,12 +30,16 @@ export function InboxPage() {
     // Magic tokens are single-use: fire exactly once, even under StrictMode.
     if (!token || fired.current) return;
     fired.current = true;
+    // Токен одноразовый: сразу убираем его из адресной строки (история, Referer).
+    window.history.replaceState(null, "", "/inbox");
     open.mutate();
     // eslint-disable-next-line react-hooks/exhaustive-deps -- run once per token
   }, [token]);
 
+  const isOffline = open.isError && !(open.error instanceof ApiError);
+
   let body;
-  if (!token || open.isError) {
+  if (!token || (open.isError && !isOffline)) {
     body = <p className={styles.note}>{t.inbox.invalid}</p>;
   } else if (open.isSuccess) {
     body = (
@@ -47,6 +51,22 @@ export function InboxPage() {
           onClick={() => navigate("/feed")}
         >
           {t.inbox.goFeed}
+        </button>
+      </>
+    );
+  } else if (isOffline) {
+    body = (
+      <>
+        <p className={styles.note}>{t.inbox.offline}</p>
+        <button
+          type="button"
+          className={styles.action}
+          onClick={() => {
+            open.reset();
+            open.mutate();
+          }}
+        >
+          {t.common.retry}
         </button>
       </>
     );

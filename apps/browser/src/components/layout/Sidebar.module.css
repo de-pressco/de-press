@@ -40,7 +40,7 @@
   color: var(--accent-hope);
   font-weight: 700;
   border: 1px solid var(--border-subtle);
-  font-size: 1rem;
+  font-size: var(--fs-xl);
 }
 
 .burger:hover .burgerAvatar {
@@ -86,7 +86,7 @@
 .dot {
   position: absolute;
   top: 8px;
-  right: 8px;
+  inset-inline-end: 8px;
   width: 8px;
   height: 8px;
   border-radius: 50%;
@@ -127,6 +127,6 @@
   align-items: center;
   justify-content: center;
   font-weight: 800;
-  font-size: 0.95rem;
+  font-size: var(--fs-lg);
   line-height: 1;
 }

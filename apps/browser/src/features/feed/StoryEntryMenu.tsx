@@ -61,12 +61,10 @@ export function StoryEntryMenu({
       ref={ref}
       className={styles.menu}
       style={{ left, top }}
-      role="menu"
     >
       {hasText ? (
         <button
           type="button"
-          role="menuitem"
           className={styles.item}
           onClick={() => onCopy(s)}
         >
@@ -76,7 +74,6 @@ export function StoryEntryMenu({
       {mine && hasText ? (
         <button
           type="button"
-          role="menuitem"
           className={styles.item}
           onClick={() => onEdit(s)}
         >
@@ -86,7 +83,6 @@ export function StoryEntryMenu({
       {mine ? (
         <button
           type="button"
-          role="menuitem"
           className={`${styles.item} ${styles.danger}`}
           onClick={() => onDelete(s)}
         >

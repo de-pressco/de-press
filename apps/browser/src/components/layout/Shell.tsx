@@ -64,6 +64,7 @@ function LiveNotifications() {
 }
 
 export function Shell() {
+  const { t } = useI18n();
   const [accountOpen, setAccountOpen] = useState(false);
   const keyboardInset = useVisualViewportInset();
   const account = useMemo(
@@ -78,7 +79,7 @@ export function Shell() {
         style={{ ["--keyboard-inset" as string]: `${keyboardInset}px` }}
       >
         <a href="#main" className={styles.skip}>
-          Skip
+          {t.nav.skipToContent}
         </a>
         <Sidebar
           accountOpen={accountOpen}

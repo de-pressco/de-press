@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate } from "react-router-dom";
-import { api, ApiError } from "@/core/api/client";
+import { api } from "@/core/api/client";
+import { friendlyError } from "@/core/api/errorCopy";
 import { useVoiceRecorder } from "@/core/hooks/useVoiceRecorder";
 import { useI18n } from "@/core/i18n/context";
 import { applyFeedEvent, type FeedInfinite } from "./applyFeedEvent";
@@ -35,10 +36,7 @@ export function StoryComposer() {
       navigate(`/feed/${story.id}`, { replace: true });
     },
     onError: (err) => {
-      const msg =
-        err instanceof ApiError
-          ? err.message
-          : t.composer.publishError;
+      const msg = friendlyError(err, t.composer.publishError);
       setError(msg);
     },
   });
@@ -60,9 +58,7 @@ export function StoryComposer() {
       navigate(`/feed/${story.id}`, { replace: true });
     },
     onError: (err) => {
-      setError(
-        err instanceof ApiError ? err.message : t.common.error,
-      );
+      setError(friendlyError(err, t.common.errorSoft));
     },
   });
 

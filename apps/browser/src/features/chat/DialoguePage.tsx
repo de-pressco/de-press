@@ -97,7 +97,7 @@ function SendIcon() {
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth={2}
+      strokeWidth={1.5}
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden
@@ -166,6 +166,7 @@ export function DialoguePage() {
   const [dialogue, setDialogue] = useState<Dialogue | null>(null);
   const [body, setBody] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [wsEpoch, setWsEpoch] = useState(0);
   const [msg, setMsg] = useState<string | null>(null);
   const [sending, setSending] = useState(false);
   const [useHttpFallback, setUseHttpFallback] = useState(false);
@@ -223,6 +224,7 @@ export function DialoguePage() {
     dialogueId,
     Boolean(dialogueId) && !useHttpFallback && !panic,
     { onCall: call.onSignal },
+    wsEpoch,
   );
 
   sendCallRef.current = wsSendCall;
@@ -815,7 +817,6 @@ export function DialoguePage() {
             open ? (
               <button
                 type="button"
-                role="menuitem"
                 className={styles.menuItem}
                 onClick={() => void close()}
               >
@@ -824,7 +825,6 @@ export function DialoguePage() {
             ) : dialogue?.can_reopen && !abandoned ? (
               <button
                 type="button"
-                role="menuitem"
                 className={styles.menuItem}
                 onClick={() => void reopen()}
               >
@@ -1017,6 +1017,15 @@ export function DialoguePage() {
       ) : null}
 
       {open ? (
+        <>
+        {wsStatus === "error" ? (
+          <div className={styles.wsBanner} role="status">
+            <span>{wsError ?? t.chat.wsDead}</span>
+            <button type="button" onClick={() => setWsEpoch((e) => e + 1)}>
+              {t.common.retry}
+            </button>
+          </div>
+        ) : null}
         <div className={styles.composer}>
           <div className={styles.composerInput}>
             <textarea
@@ -1077,6 +1086,7 @@ export function DialoguePage() {
             ) : null}
           </div>
         </div>
+        </>
       ) : (
         <p className={styles.meta}>{t.chat.dialogueClosed}</p>
       )}

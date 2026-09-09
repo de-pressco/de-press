@@ -13,7 +13,7 @@
 }
 
 :global(html[data-layout="phone"]) .list {
-  border-right: none;
+  border-inline-end: none;
 }
 
 .searchWrap {
@@ -48,7 +48,7 @@
   border-radius: var(--radius-pill);
   background: var(--bg-input);
   color: var(--text-muted);
-  font-size: 1.15rem;
+  font-size: var(--fs-2xl);
   cursor: pointer;
 }
 
@@ -58,7 +58,7 @@
 }
 
 .searchIcon {
-  font-size: 0.95rem;
+  font-size: var(--fs-lg);
   line-height: 1;
 }
 
@@ -70,7 +70,7 @@
   border: none;
   outline: none;
   color: var(--text-primary);
-  font-size: 0.9rem;
+  font-size: var(--fs-md);
 }
 
 .searchInput:focus,
@@ -108,7 +108,7 @@
   background: var(--accent-hope-soft);
   border: 1px solid var(--border-soft);
   color: var(--text-primary);
-  font-size: 0.78rem;
+  font-size: var(--fs-xs);
   line-height: 1.4;
 }
 
@@ -126,7 +126,7 @@
   border-radius: var(--radius-pill);
   border: 1px solid var(--border-subtle);
   background: transparent;
-  font-size: 0.8rem;
+  font-size: var(--fs-xs);
   transition-property: background-color, transform;
   transition-duration: var(--duration-fast);
 }
@@ -154,5 +154,5 @@
 .empty {
   padding: 1.25rem 1rem;
   color: var(--text-muted);
-  font-size: 0.9rem;
+  font-size: var(--fs-md);
 }

@@ -50,12 +50,11 @@ export function FeedMenu({
   const top = Math.min(state.y, window.innerHeight - 220);
 
   return (
-    <div ref={ref} className={styles.menu} style={{ left, top }} role="menu">
+    <div ref={ref} className={styles.menu} style={{ left, top }}>
       {!mine ? (
         <>
           <button
             type="button"
-            role="menuitem"
             className={styles.item}
             onClick={() => {
               onClose();
@@ -69,7 +68,6 @@ export function FeedMenu({
       {mine && s.status === "hidden" ? (
         <button
           type="button"
-          role="menuitem"
           className={styles.item}
           onClick={() => {
             onClose();
@@ -82,7 +80,6 @@ export function FeedMenu({
       {mine && s.status !== "hidden" ? (
         <button
           type="button"
-          role="menuitem"
           className={styles.item}
           onClick={() => {
             onClose();
@@ -95,7 +92,6 @@ export function FeedMenu({
       {mine ? (
         <button
           type="button"
-          role="menuitem"
           className={`${styles.item} ${styles.danger}`}
           onClick={() => {
             onClose();

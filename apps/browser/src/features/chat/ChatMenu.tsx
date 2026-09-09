@@ -51,13 +51,11 @@ export function ChatMenu({ state, actions, onClose, extra }: ChatMenuProps) {
       ref={ref}
       className={styles.menu}
       style={{ left, top }}
-      role="menu"
     >
       {extra}
       {extra ? <hr className={styles.sep} /> : null}
       <button
         type="button"
-        role="menuitem"
         className={styles.item}
         onClick={() => run(d.pinned ? actions.unpin : actions.pin)}
       >
@@ -65,7 +63,6 @@ export function ChatMenu({ state, actions, onClose, extra }: ChatMenuProps) {
       </button>
       <button
         type="button"
-        role="menuitem"
         className={styles.item}
         onClick={() => run(d.muted ? actions.unmute : actions.mute)}
       >
@@ -73,7 +70,6 @@ export function ChatMenu({ state, actions, onClose, extra }: ChatMenuProps) {
       </button>
       <button
         type="button"
-        role="menuitem"
         className={styles.item}
         onClick={() => run(unread ? actions.markRead : actions.markUnread)}
       >
@@ -81,7 +77,6 @@ export function ChatMenu({ state, actions, onClose, extra }: ChatMenuProps) {
       </button>
       <button
         type="button"
-        role="menuitem"
         className={`${styles.item} ${styles.danger}`}
         onClick={() => run(actions.clearHistory)}
       >
@@ -90,7 +85,6 @@ export function ChatMenu({ state, actions, onClose, extra }: ChatMenuProps) {
       {d.peer_hidden ? (
         <button
           type="button"
-          role="menuitem"
           className={styles.item}
           onClick={() => run(actions.unblock)}
         >
@@ -99,7 +93,6 @@ export function ChatMenu({ state, actions, onClose, extra }: ChatMenuProps) {
       ) : (
         <button
           type="button"
-          role="menuitem"
           className={`${styles.item} ${styles.danger}`}
           onClick={() => run(actions.block)}
         >
@@ -108,7 +101,6 @@ export function ChatMenu({ state, actions, onClose, extra }: ChatMenuProps) {
       )}
       <button
         type="button"
-        role="menuitem"
         className={`${styles.item} ${styles.danger}`}
         onClick={() => run(actions.remove)}
       >

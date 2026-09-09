@@ -153,8 +153,8 @@ export function PatternsPane() {
   async function onDeleteEntry(id: string) {
     const ok = await toast.confirm({
       message: t.patterns.deleteConfirm,
-      confirmLabel: t.chat.confirmYes,
-      cancelLabel: t.chat.confirmNo,
+      confirmLabel: t.common.confirmDelete,
+      cancelLabel: t.common.cancel,
       danger: true,
     });
     if (!ok) return;
@@ -281,8 +281,8 @@ export function PatternsPane() {
   async function onDeleteEpisode(id: string) {
     const ok = await toast.confirm({
       message: t.patterns.deleteConfirm,
-      confirmLabel: t.chat.confirmYes,
-      cancelLabel: t.chat.confirmNo,
+      confirmLabel: t.common.confirmDelete,
+      cancelLabel: t.common.cancel,
       danger: true,
     });
     if (!ok) return;
@@ -326,8 +326,8 @@ export function PatternsPane() {
     setMsg(null);
     const ok = await toast.confirm({
       message: t.patterns.dataImportConfirm,
-      confirmLabel: t.chat.confirmYes,
-      cancelLabel: t.chat.confirmNo,
+      confirmLabel: t.patterns.confirmImport,
+      cancelLabel: t.common.cancel,
     });
     if (!ok) return;
     try {
@@ -361,8 +361,8 @@ export function PatternsPane() {
   async function onDeleteReflection(id: string) {
     const ok = await toast.confirm({
       message: t.patterns.deleteConfirm,
-      confirmLabel: t.chat.confirmYes,
-      cancelLabel: t.chat.confirmNo,
+      confirmLabel: t.common.confirmDelete,
+      cancelLabel: t.common.cancel,
       danger: true,
     });
     if (!ok) return;
@@ -788,8 +788,8 @@ export function PatternsPane() {
             void (async () => {
               const ok = await toast.confirm({
                 message: t.patterns.wipeConfirm,
-                confirmLabel: t.chat.confirmYes,
-                cancelLabel: t.chat.confirmNo,
+                confirmLabel: t.common.confirmWipe,
+                cancelLabel: t.common.cancel,
                 danger: true,
               });
               if (ok) void wipe();

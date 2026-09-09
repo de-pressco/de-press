@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useFocusTrap, useInertBackground } from "@/core/hooks/useFocusTrap";
 import { useI18n } from "@/core/i18n/context";
 import type { CallController } from "./useCall";
 import styles from "./CallModal.module.css";
@@ -24,6 +25,15 @@ const END_LABELS = {
 export function CallModal({ call }: { call: CallController }) {
   const { t } = useI18n();
   const { state, muted } = call;
+  const overlayRef = useRef<HTMLDivElement | null>(null);
+  useFocusTrap(
+    overlayRef,
+    state.name !== "idle" && state.name !== "ended",
+  );
+  useInertBackground(
+    overlayRef,
+    state.name !== "idle" && state.name !== "ended",
+  );
   const [now, setNow] = useState(() => Date.now());
 
   useEffect(() => {
@@ -57,7 +67,7 @@ export function CallModal({ call }: { call: CallController }) {
           : `${t.calls.active} · ${duration}`;
 
   return (
-    <div className={styles.overlay} role="dialog" aria-modal="true">
+    <div ref={overlayRef} className={styles.overlay} role="dialog" aria-modal="true">
       <div className={styles.card}>
         <span className={styles.avatar} aria-hidden>
           📞

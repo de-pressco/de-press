@@ -30,7 +30,7 @@
 
 .title {
   margin: 0;
-  font-size: 1rem;
+  font-size: var(--fs-xl);
 }
 
 .x {
@@ -39,7 +39,7 @@
   border: none;
   background: none;
   color: var(--text-muted);
-  font-size: 1.2rem;
+  font-size: var(--fs-2xl);
 }
 
 .list {
@@ -65,7 +65,7 @@
 }
 
 .row span {
-  font-size: 0.8rem;
+  font-size: var(--fs-xs);
   color: var(--text-muted);
   max-width: 100%;
   overflow: hidden;

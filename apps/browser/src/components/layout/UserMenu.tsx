@@ -12,6 +12,7 @@ import {
 } from "@/core/mediaPrefs";
 import { UI_LANGS, langLabel } from "@/core/i18n/uiLangs";
 import { ThemeSwitch } from "./ThemeSwitch";
+import { useFocusTrap, useInertBackground } from "@/core/hooks/useFocusTrap";
 import styles from "./UserMenu.module.css";
 
 interface UserMenuProps {
@@ -27,6 +28,8 @@ export function UserMenu({ open, onClose }: UserMenuProps) {
   const titleId = useId();
   const panelRef = useRef<HTMLDivElement | null>(null);
   const firstFieldRef = useRef<HTMLInputElement | null>(null);
+  useFocusTrap(panelRef, open);
+  useInertBackground(panelRef, open);
 
   const [mode, setMode] = useState<Mode>("menu");
   const [langQ, setLangQ] = useState("");
@@ -324,7 +327,7 @@ export function UserMenu({ open, onClose }: UserMenuProps) {
               </label>
             </fieldset>
 
-            {error ? <p className={styles.error}>{error}</p> : null}
+            {error ? <p className={styles.error} role="alert">{error}</p> : null}
 
             {isAccount && me?.is_helper ? (
               <button
@@ -435,7 +438,7 @@ export function UserMenu({ open, onClose }: UserMenuProps) {
               </label>
             ) : null}
 
-            {error ? <p className={styles.error}>{error}</p> : null}
+            {error ? <p className={styles.error} role="alert">{error}</p> : null}
 
             <button type="submit" className={styles.primaryBtn} disabled={busy}>
               {mode === "login" ? t.auth.submitLogin : t.auth.submitRegister}

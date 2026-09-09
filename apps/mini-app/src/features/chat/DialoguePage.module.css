@@ -16,7 +16,7 @@
   padding: 0.65rem 1rem;
   background: var(--accent-hope-soft);
   border-bottom: 1px solid var(--border-soft);
-  font-size: 0.9rem;
+  font-size: var(--fs-md);
   color: var(--text-primary);
   flex-shrink: 0;
 }
@@ -35,7 +35,7 @@
 
 .backLink {
   color: var(--text-muted);
-  font-size: 1.15rem;
+  font-size: var(--fs-2xl);
   width: 40px;
   height: 40px;
   display: inline-flex;
@@ -82,9 +82,18 @@
   background: color-mix(in srgb, var(--bg-surface) 88%, transparent);
   border: 1px solid var(--border-subtle);
   color: var(--text-muted);
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
   font-variant-numeric: tabular-nums;
   backdrop-filter: blur(4px);
+}
+
+/* RTL: mirrored affordances */
+:global([dir="rtl"]) .backLink {
+  transform: scaleX(-1);
+}
+
+:global([dir="rtl"]) .sendBtn svg {
+  transform: scaleX(-1);
 }
 
 .backLink:hover {
@@ -100,7 +109,7 @@
 .chatTitle {
   margin: 0;
   font-weight: 600;
-  font-size: 1rem;
+  font-size: var(--fs-xl);
   line-height: 1.3;
   white-space: nowrap;
   overflow: hidden;
@@ -109,7 +118,7 @@
 
 .chatSub {
   margin: 0;
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
   color: var(--text-muted);
 }
 
@@ -127,7 +136,7 @@
   align-items: center;
   justify-content: center;
   border-radius: 0.5rem;
-  font-size: 1.25rem;
+  font-size: var(--fs-3xl);
 }
 
 .menuBtn:hover {
@@ -137,7 +146,7 @@
 
 .menu {
   position: absolute;
-  right: 0;
+  inset-inline-end: 0;
   top: calc(100% + 4px);
   min-width: 12rem;
   background: var(--bg-elevated);
@@ -157,7 +166,7 @@
   border: none;
   padding: 0.55rem 0.75rem;
   border-radius: 0.5rem;
-  font-size: 0.9rem;
+  font-size: var(--fs-md);
   color: var(--text-primary);
 }
 
@@ -188,13 +197,14 @@
   gap: 0.15rem;
   align-items: flex-start;
   box-shadow: var(--shadow-elev-1);
-  font-size: 0.95rem;
+  font-size: var(--fs-lg);
   line-height: 1.4;
 }
 
 .msgBody {
   white-space: pre-wrap;
   overflow-wrap: break-word;
+  text-wrap: pretty;
 }
 
 .msgMeta {
@@ -205,10 +215,9 @@
 }
 
 .msgTime {
-  font-size: 0.7rem;
-  opacity: 0.72;
+  font-size: var(--fs-2xs);
   font-variant-numeric: tabular-nums;
-  color: var(--text-bubble-muted);
+  color: var(--bubble-muted, var(--text-bubble-muted));
 }
 
 .msgActions {
@@ -223,7 +232,7 @@
   border: none;
   padding: 0;
   color: var(--text-muted);
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
   text-decoration: underline;
 }
 
@@ -245,6 +254,7 @@
 }
 
 .me {
+  --bubble-muted: var(--text-bubble-me-muted);
   align-self: flex-end;
   background: var(--bg-bubble-me);
   border-radius: var(--radius-bubble-me);
@@ -252,6 +262,7 @@
 }
 
 .them {
+  --bubble-muted: var(--text-bubble-them-muted);
   align-self: flex-start;
   background: var(--bg-bubble-them);
   border-radius: var(--radius-bubble-them);
@@ -295,11 +306,33 @@
   align-self: center;
   background: transparent;
   color: var(--text-muted);
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
   border: 1px dashed var(--border-subtle);
   max-width: 100%;
   box-shadow: none;
   border-radius: 0.75rem;
+}
+
+.wsBanner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin: 0 1rem 0.35rem;
+  padding: 0.45rem 0.7rem;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-md);
+  background: var(--accent-hope-soft);
+  color: var(--text-primary);
+  font-size: var(--fs-sm);
+}
+
+.wsBanner button {
+  border: none;
+  background: none;
+  color: var(--accent-hope);
+  font-weight: 600;
+  white-space: nowrap;
 }
 
 .composer {
@@ -340,7 +373,7 @@
   min-height: 1.5rem;
   max-height: 7rem;
   padding: 0.45rem 0;
-  font-size: 0.95rem;
+  font-size: var(--fs-lg);
 }
 
 .composerTextarea::placeholder {
@@ -394,14 +427,14 @@
   margin: 0;
   padding: 0.5rem 0.75rem;
   color: var(--accent-panic);
-  font-size: 0.9rem;
+  font-size: var(--fs-md);
   flex-shrink: 0;
 }
 
 .meta {
   margin: 0;
   color: var(--text-muted);
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
   padding: 0.5rem 0.75rem;
 }
 
@@ -415,7 +448,7 @@
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
   color: var(--text-muted);
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
 }
 
 .dots {
@@ -464,7 +497,7 @@
   align-items: center;
   justify-content: center;
   border-radius: 0.5rem;
-  font-size: 1.1rem;
+  font-size: var(--fs-2xl);
   cursor: pointer;
 }
 

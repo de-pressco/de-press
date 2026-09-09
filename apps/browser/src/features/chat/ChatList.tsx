@@ -2,7 +2,8 @@ import { useMemo, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { useNavigate, useParams } from "react-router-dom";
-import { api, ApiError } from "@/core/api/client";
+import { api } from "@/core/api/client";
+import { friendlyError } from "@/core/api/errorCopy";
 import type { Dialogue } from "@/core/api/types";
 import { useAntiPanic } from "@/core/hooks/useAntiPanic";
 import { useI18n } from "@/core/i18n/context";
@@ -162,17 +163,13 @@ export function ChatList() {
     dialoguesQuery.isLoading ||
     requestsQuery.isLoading ||
     (Boolean(meQuery.data?.is_helper) && helpQuery.isLoading);
+  const firstError =
+    dialoguesQuery.error ?? requestsQuery.error ?? helpQuery.error;
   const error =
     dialoguesQuery.isError ||
     requestsQuery.isError ||
     (Boolean(meQuery.data?.is_helper) && helpQuery.isError)
-      ? dialoguesQuery.error instanceof ApiError
-        ? dialoguesQuery.error.message
-        : requestsQuery.error instanceof ApiError
-          ? requestsQuery.error.message
-          : helpQuery.error instanceof ApiError
-            ? helpQuery.error.message
-            : t.common.error
+      ? friendlyError(firstError, t.common.errorSoft)
       : null;
 
   function prefetchDialogue(id: string) {
@@ -269,9 +266,7 @@ export function ChatList() {
             <p className={styles.safety}>{t.help.requestPlaque}</p>
             {acceptHelp.isError ? (
               <p className={styles.empty}>
-                {acceptHelp.error instanceof ApiError
-                  ? acceptHelp.error.message
-                  : t.common.error}
+                {friendlyError(acceptHelp.error, t.common.errorSoft)}
               </p>
             ) : null}
             <div className={styles.requestActions}>
@@ -308,9 +303,7 @@ export function ChatList() {
             <p className={styles.safety}>{t.shell.safetyBanner}</p>
             {accept.isError ? (
               <p className={styles.empty}>
-                {accept.error instanceof ApiError
-                  ? accept.error.message
-                  : t.common.error}
+                {friendlyError(accept.error, t.common.errorSoft)}
               </p>
             ) : null}
             <div className={styles.requestActions}>

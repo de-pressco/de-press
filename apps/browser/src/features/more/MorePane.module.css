@@ -15,7 +15,7 @@
 
 .title {
   margin: 0;
-  font-size: 1.25rem;
+  font-size: var(--fs-3xl);
   font-weight: 600;
   text-wrap: balance;
 }

@@ -95,6 +95,7 @@ export type Messages = {
     published: string;
     loading: string;
     empty: string;
+    noResults: string;
     monologuesLabel: string;
     offline: string;
     loadMore: string;
@@ -114,6 +115,7 @@ export type Messages = {
     back: string;
     loading: string;
     notFound: string;
+    offline: string;
     edit: string;
     save: string;
     addNext: string;
@@ -437,6 +439,7 @@ export type Messages = {
     dataExport: string;
     dataImport: string;
     dataImportConfirm: string;
+    confirmImport: string;
     dataImportedAdded: string;
     dataImportedSkipped: string;
     dataImportError: string;
@@ -505,6 +508,9 @@ export type Messages = {
     closedDone: string;
     confirmYes: string;
     confirmNo: string;
+    confirmBlock: string;
+    wsDead: string;
+    wsBadPayload: string;
     translate: string;
     translating: string;
     typing: string;
@@ -623,6 +629,7 @@ export type Messages = {
     opening: string;
     welcome: string;
     invalid: string;
+    offline: string;
     goMe: string;
     goFeed: string;
   };
@@ -633,6 +640,10 @@ export type Messages = {
     cancel: string;
     back: string;
     close: string;
+    retry: string;
+    errorSoft: string;
+    confirmDelete: string;
+    confirmWipe: string;
   };
   therapy: {
     title: string;

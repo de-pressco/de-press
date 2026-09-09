@@ -29,7 +29,7 @@
   border-style: solid;
   border-width: 7px 0 7px 12px;
   border-color: transparent transparent transparent currentColor;
-  margin-left: 2px;
+  margin-inline-start: 2px;
 }
 
 .pauseMark {
@@ -54,9 +54,9 @@
 }
 
 .time {
-  font-size: 0.7rem;
+  font-size: var(--fs-2xs);
   font-variant-numeric: tabular-nums;
-  color: var(--text-bubble-muted);
+  color: var(--bubble-muted, var(--text-bubble-muted));
   min-width: 3.4rem;
   text-align: end;
   white-space: nowrap;
@@ -98,7 +98,7 @@
   border: none;
   border-radius: 50%;
   background: transparent;
-  color: var(--text-bubble-muted);
+  color: var(--bubble-muted, var(--text-bubble-muted));
   display: inline-flex;
   align-items: center;
   justify-content: center;

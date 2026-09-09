@@ -19,7 +19,7 @@
 
 .title {
   margin: 0;
-  font-size: 1.25rem;
+  font-size: var(--fs-3xl);
   font-weight: 600;
   text-wrap: balance;
 }
@@ -27,7 +27,7 @@
 .intro {
   margin: 0;
   color: var(--text-muted);
-  font-size: 0.95rem;
+  font-size: var(--fs-lg);
   line-height: 1.55;
   text-wrap: pretty;
 }
@@ -45,20 +45,20 @@
 
 .sectionTitle {
   margin: 0;
-  font-size: 1.05rem;
+  font-size: var(--fs-xl);
   font-weight: 600;
 }
 
 .subTitle {
   margin: 0.35rem 0 0;
-  font-size: 0.95rem;
+  font-size: var(--fs-lg);
   font-weight: 600;
   color: var(--text-primary);
 }
 
 .body {
   margin: 0;
-  font-size: 0.92rem;
+  font-size: var(--fs-md);
   line-height: 1.6;
   color: var(--text-primary);
   text-wrap: pretty;
@@ -66,11 +66,11 @@
 
 .list {
   margin: 0;
-  padding-left: 1.2rem;
+  padding-inline-start: 1.2rem;
   display: flex;
   flex-direction: column;
   gap: 0.4rem;
-  font-size: 0.92rem;
+  font-size: var(--fs-md);
   line-height: 1.5;
   color: var(--text-primary);
 }
@@ -100,7 +100,7 @@
 
 .footerLinks {
   margin: 0 0 1.5rem;
-  font-size: 0.9rem;
+  font-size: var(--fs-md);
   color: var(--text-muted);
 }
 
@@ -126,7 +126,7 @@
 
 .noteLabel {
   margin: 0;
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
   color: var(--text-muted);
 }
 

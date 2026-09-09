@@ -4,11 +4,11 @@
   border: none;
   border-radius: 1.2rem;
   background:
-    radial-gradient(120% 90% at 28% 16%, rgba(255, 255, 255, 0.16), transparent 46%),
+    radial-gradient(120% 90% at 28% 16%, var(--glass-hi), transparent 46%),
     linear-gradient(180deg, var(--accent-hope-mid), var(--accent-hope-soft));
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.16),
-    0 8px 18px rgba(0, 0, 0, 0.22);
+    inset 0 1px 0 var(--glass-hi),
+    var(--shadow-elev-2);
   display: inline-flex;
   flex-direction: column;
   align-items: center;
@@ -54,7 +54,7 @@
 }
 
 .stickerCompact .caption {
-  font-size: 0.62rem;
+  font-size: var(--fs-2xs);
 }
 
 .sticker.stickerMini {
@@ -62,7 +62,7 @@
   height: 2.1rem;
   padding: 0.12rem;
   border-radius: 0.55rem;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
+  box-shadow: inset 0 1px 0 var(--glass-hi);
 }
 
 .stickerMini .stage {
@@ -94,7 +94,7 @@
 }
 
 .shine {
-  fill: rgba(255, 255, 255, 0.55);
+  fill: var(--glass-hi-strong);
 }
 
 .ground {
@@ -103,7 +103,7 @@
 }
 
 .caption {
-  font-size: 0.72rem;
+  font-size: var(--fs-2xs);
   line-height: 1.2;
   color: var(--text-primary);
   font-weight: 600;

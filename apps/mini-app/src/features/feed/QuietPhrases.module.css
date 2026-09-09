@@ -10,14 +10,14 @@
 
 .title {
   margin: 0;
-  font-size: 0.95rem;
+  font-size: var(--fs-lg);
   font-weight: 600;
   color: var(--text-primary);
 }
 
 .lead {
   margin: 0;
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
   color: var(--text-muted);
   line-height: 1.5;
 }
@@ -33,6 +33,6 @@
 
 .hint {
   margin: 0;
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
   color: var(--text-muted);
 }

@@ -1,6 +1,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate, useParams } from "react-router-dom";
-import { api, ApiError } from "@/core/api/client";
+import { api } from "@/core/api/client";
+import { friendlyError } from "@/core/api/errorCopy";
 import type { Dialogue } from "@/core/api/types";
 import { useI18n } from "@/core/i18n/context";
 import { useToast } from "@/core/toast";
@@ -23,7 +24,7 @@ export function useDialogueActions(opts: DialogueActionOpts = {}) {
   }
 
   function fail(err: unknown) {
-    toast.show(err instanceof ApiError ? err.message : t.common.error, "danger");
+    toast.show(friendlyError(err, t.common.errorSoft), "danger");
   }
 
   async function apply(fn: () => Promise<Dialogue>) {
@@ -66,8 +67,8 @@ export function useDialogueActions(opts: DialogueActionOpts = {}) {
     async block(d: Dialogue) {
       const ok = await toast.confirm({
         message: t.chat.hidePeerConfirm,
-        confirmLabel: t.chat.confirmYes,
-        cancelLabel: t.chat.confirmNo,
+        confirmLabel: t.chat.confirmBlock,
+        cancelLabel: t.common.cancel,
         danger: true,
       });
       if (!ok) return;

@@ -1,6 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { useI18n } from "@/core/i18n/context";
 import { useAntiPanic } from "@/core/hooks/useAntiPanic";
+import {
+  useFocusTrap,
+  useInertBackground,
+} from "@/core/hooks/useFocusTrap";
 import styles from "./AntiPanicOverlay.module.css";
 
 /**
@@ -12,6 +16,9 @@ export function AntiPanicOverlay() {
   const { active, exit } = useAntiPanic();
   const { t } = useI18n();
   const exitRef = useRef<HTMLButtonElement | null>(null);
+  const overlayRef = useRef<HTMLDivElement | null>(null);
+  useFocusTrap(overlayRef, active, exitRef);
+  useInertBackground(overlayRef, active);
   const prompts = t.antiPanic.groundSteps;
   const [promptIndex, setPromptIndex] = useState(0);
 
@@ -35,6 +42,7 @@ export function AntiPanicOverlay() {
 
   return (
     <div
+      ref={overlayRef}
       className={styles.overlay}
       role="dialog"
       aria-modal="true"

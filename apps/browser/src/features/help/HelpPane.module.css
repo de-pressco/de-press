@@ -28,7 +28,7 @@
   background: transparent;
   color: var(--text-muted);
   font: inherit;
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
   cursor: pointer;
   transition-property: background-color, color, transform;
   transition-duration: 0.15s;
@@ -45,7 +45,7 @@
 
 .title {
   margin: 0;
-  font-size: 1.25rem;
+  font-size: var(--fs-3xl);
   font-weight: 600;
   text-wrap: balance;
 }
@@ -53,7 +53,7 @@
 .intro {
   margin: 0;
   color: var(--text-muted);
-  font-size: 0.95rem;
+  font-size: var(--fs-lg);
   line-height: 1.55;
   text-wrap: pretty;
 }
@@ -96,7 +96,7 @@
   border-radius: 999px;
   background: var(--bg-hover);
   color: var(--text-muted);
-  font-size: 0.72rem;
+  font-size: var(--fs-2xs);
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -109,7 +109,7 @@
 
 .halfTitle {
   margin: 0;
-  font-size: 1.2rem;
+  font-size: var(--fs-2xl);
   font-weight: 650;
   text-wrap: balance;
 }
@@ -117,7 +117,7 @@
 .halfLead {
   margin: 0;
   color: var(--text-muted);
-  font-size: 0.95rem;
+  font-size: var(--fs-lg);
   line-height: 1.6;
   text-wrap: pretty;
 }
@@ -158,7 +158,7 @@
 
 .noteLabel {
   margin: 0;
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
   color: var(--text-muted);
 }
 
@@ -201,7 +201,7 @@
   }
 
   .halfTitle {
-    font-size: 1.45rem;
+    font-size: var(--fs-4xl);
   }
 
   .halfCta {
@@ -247,20 +247,20 @@
 
 .sectionTitle {
   margin: 0;
-  font-size: 1.05rem;
+  font-size: var(--fs-xl);
   font-weight: 600;
 }
 
 .subTitle {
   margin: 0.35rem 0 0;
-  font-size: 0.95rem;
+  font-size: var(--fs-lg);
   font-weight: 600;
   color: var(--text-primary);
 }
 
 .body {
   margin: 0;
-  font-size: 0.92rem;
+  font-size: var(--fs-md);
   line-height: 1.6;
   color: var(--text-primary);
   text-wrap: pretty;
@@ -268,11 +268,11 @@
 
 .list {
   margin: 0;
-  padding-left: 1.2rem;
+  padding-inline-start: 1.2rem;
   display: flex;
   flex-direction: column;
   gap: 0.4rem;
-  font-size: 0.92rem;
+  font-size: var(--fs-md);
   line-height: 1.5;
   color: var(--text-primary);
 }
@@ -303,7 +303,7 @@
 
 .footerLinks {
   margin: 0 0 1.5rem;
-  font-size: 0.9rem;
+  font-size: var(--fs-md);
   color: var(--text-muted);
 }
 

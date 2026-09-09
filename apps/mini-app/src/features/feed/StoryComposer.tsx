@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import { api, ApiError } from "@/core/api/client";
+import { api } from "@/core/api/client";
+import { friendlyError } from "@/core/api/errorCopy";
 import { useI18n } from "@/core/i18n/context";
 import styles from "./StoryComposer.module.css";
 
@@ -30,10 +31,7 @@ export function StoryComposer() {
       navigate(`/feed/${story.id}`, { replace: true });
     },
     onError: (err) => {
-      const msg =
-        err instanceof ApiError
-          ? err.message
-          : t.composer.publishError;
+      const msg = friendlyError(err, t.composer.publishError);
       setError(msg);
     },
   });

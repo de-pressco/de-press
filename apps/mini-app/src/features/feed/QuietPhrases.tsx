@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { api, ApiError } from "@/core/api/client";
+import { friendlyError } from "@/core/api/errorCopy";
 import { useI18n } from "@/core/i18n/context";
 import { isHandwrittenLocale } from "@/core/i18n";
 import { EmotionSticker, isGestureKey, type GestureKey } from "./EmotionSticker";
@@ -40,7 +41,7 @@ export function QuietPhrases({ storyId, sentKey, onSent }: QuietPhrasesProps) {
       );
     },
     onError: (err) => {
-      const msg = err instanceof ApiError ? err.message : t.common.error;
+      const msg = friendlyError(err, t.common.errorSoft);
       setStatus(msg);
       // Duplicate-cloud is the only 400 this call can produce with a valid key;
       // never match on the localized message text.

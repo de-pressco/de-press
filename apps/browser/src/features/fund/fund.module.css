@@ -11,25 +11,25 @@
 
 .cardTitle {
   margin: 0;
-  font-size: 1rem;
+  font-size: var(--fs-xl);
   font-weight: 600;
 }
 
 .lead {
   margin: 0;
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
   color: var(--text-muted);
 }
 
 .addr {
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
   word-break: break-all;
   color: var(--text-primary);
 }
 
 .current {
   margin: 0;
-  font-size: 0.8rem;
+  font-size: var(--fs-xs);
   word-break: break-all;
   color: var(--text-muted);
 }
@@ -47,13 +47,13 @@
   border-radius: 999px;
   background: var(--bg-elevated);
   color: var(--text-primary);
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
   cursor: pointer;
   text-decoration: none;
 }
 
 .btnLink {
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
   color: var(--accent-hope);
 }
 
@@ -63,18 +63,18 @@
   border-radius: 10px;
   background: var(--bg-elevated);
   color: var(--text-primary);
-  font-size: 0.9rem;
+  font-size: var(--fs-md);
 }
 
 .warn {
   margin: 0;
-  font-size: 0.78rem;
+  font-size: var(--fs-xs);
   color: var(--text-muted);
 }
 
 .error {
   margin: 0;
-  font-size: 0.8rem;
+  font-size: var(--fs-xs);
   color: var(--accent-panic);
 }
 
@@ -92,7 +92,7 @@
 .bannerTitle {
   margin: 0;
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: var(--fs-md);
 }
 
 .badge {
@@ -100,6 +100,6 @@
   border: 1px solid var(--accent-hope);
   border-radius: 999px;
   color: var(--accent-hope);
-  font-size: 0.72rem;
+  font-size: var(--fs-2xs);
   white-space: nowrap;
 }

@@ -62,13 +62,13 @@
   border-width: 14px 0 14px 24px;
   border-color: transparent transparent transparent
     color-mix(in srgb, var(--text-bubble) 82%, transparent);
-  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.45));
+  filter: drop-shadow(var(--drop-shadow-bubble));
 }
 
 .muteBtn {
   position: absolute;
   top: 0.5rem;
-  right: 0.5rem;
+  inset-inline-end: 0.5rem;
   z-index: 2;
   width: 30px;
   height: 30px;
@@ -95,7 +95,7 @@
   display: flex;
   align-items: center;
   gap: 0.45rem;
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
   color: var(--text-muted);
 }
 

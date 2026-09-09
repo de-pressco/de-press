@@ -25,6 +25,8 @@
   --text-muted: #8b929e;
   --text-bubble: #eef2f6;
   --text-bubble-muted: rgba(238, 242, 246, 0.62);
+  --text-bubble-me-muted: rgba(238, 242, 246, 0.72);
+  --text-bubble-them-muted: rgba(238, 242, 246, 0.62);
 
   /* Accents */
   --accent-hope: #7eb8a2;
@@ -42,6 +44,14 @@
   --shadow-elev-1: 0 1px 2px rgba(0, 0, 0, 0.24);
   --shadow-elev-2: 0 8px 24px rgba(0, 0, 0, 0.3);
   --shadow-cloud: 0 10px 28px rgba(0, 0, 0, 0.28);
+  --shadow-elev-3: 0 12px 40px rgba(0, 0, 0, 0.35);
+  --drop-shadow-bubble: 0 1px 3px rgba(0, 0, 0, 0.45);
+
+  /* Overlays & special surfaces */
+  --backdrop: rgba(0, 0, 0, 0.55);
+  --surface-qr: #ffffff;
+  --glass-hi: rgba(255, 255, 255, 0.16);
+  --glass-hi-strong: rgba(255, 255, 255, 0.55);
 
   /* Focus */
   --focus-ring: 0 0 0 2px var(--bg-main), 0 0 0 4px var(--accent-hope-mid);
@@ -74,6 +84,18 @@
     Ubuntu, Cantarell, sans-serif;
   --duration-fast: 120ms;
   --duration-ui: 150ms;
+
+  /* Type scale — единственный источник размеров текста */
+  --fs-2xs: 0.7rem;
+  --fs-xs: 0.8rem;
+  --fs-sm: 0.85rem;
+  --fs-md: 0.9rem;
+  --fs-lg: 0.95rem;
+  --fs-xl: 1rem;
+  --fs-2xl: 1.15rem;
+  --fs-3xl: 1.25rem;
+  --fs-4xl: 1.5rem;
+  --fs-5xl: 1.75rem;
 
   /* Dense chat wallpaper (TG-like abstract mesh, our palette) */
   --chat-pattern-a: rgba(126, 184, 162, 0.07);
@@ -111,26 +133,36 @@
 
   /* Text */
   --text-primary: #23282f;
-  --text-muted: #6b7280;
+  --text-muted: #5d6570;
   --text-bubble: #f3f7f4;
   --text-bubble-muted: rgba(243, 247, 244, 0.7);
+  --text-bubble-me-muted: rgba(243, 247, 244, 0.78);
+  --text-bubble-them-muted: rgba(35, 40, 47, 0.72);
 
   /* Accents */
-  --accent-hope: #2f7d63;
-  --accent-hope-soft: rgba(47, 125, 99, 0.12);
-  --accent-hope-mid: rgba(47, 125, 99, 0.24);
+  --accent-hope: #256248;
+  --accent-hope-soft: rgba(37, 98, 72, 0.12);
+  --accent-hope-mid: rgba(37, 98, 72, 0.24);
   --accent-panic: #b35858;
   --on-accent-hope: #ffffff;
   --on-accent-panic: #ffffff;
 
   /* Borders */
   --border-subtle: rgba(0, 0, 0, 0.08);
-  --border-soft: rgba(47, 125, 99, 0.2);
+  --border-soft: rgba(37, 98, 72, 0.2);
 
   /* Elevation */
   --shadow-elev-1: 0 1px 2px rgba(0, 0, 0, 0.08);
   --shadow-elev-2: 0 8px 24px rgba(0, 0, 0, 0.1);
   --shadow-cloud: 0 10px 28px rgba(0, 0, 0, 0.12);
+  --shadow-elev-3: 0 12px 40px rgba(0, 0, 0, 0.18);
+  --drop-shadow-bubble: 0 1px 3px rgba(0, 0, 0, 0.25);
+
+  /* Overlays & special surfaces */
+  --backdrop: rgba(0, 0, 0, 0.4);
+  --surface-qr: #ffffff;
+  --glass-hi: rgba(255, 255, 255, 0.35);
+  --glass-hi-strong: rgba(255, 255, 255, 0.6);
 
   --focus-ring: 0 0 0 2px var(--bg-main), 0 0 0 4px var(--accent-hope-mid);
 
@@ -172,6 +204,8 @@
   --text-muted: #9aa3d0;
   --text-bubble: #ffffff;
   --text-bubble-muted: rgba(255, 255, 255, 0.62);
+  --text-bubble-me-muted: rgba(255, 255, 255, 0.72);
+  --text-bubble-them-muted: rgba(255, 255, 255, 0.62);
 
   /* Accents */
   --accent-hope: #5fc4aa;
@@ -189,6 +223,14 @@
   --shadow-elev-1: 0 1px 2px rgba(0, 0, 0, 0.28);
   --shadow-elev-2: 0 8px 24px rgba(0, 0, 0, 0.38);
   --shadow-cloud: 0 10px 28px rgba(0, 0, 0, 0.34);
+  --shadow-elev-3: 0 12px 40px rgba(0, 0, 0, 0.4);
+  --drop-shadow-bubble: 0 1px 3px rgba(0, 0, 0, 0.45);
+
+  /* Overlays & special surfaces */
+  --backdrop: rgba(0, 0, 0, 0.55);
+  --surface-qr: #ffffff;
+  --glass-hi: rgba(255, 255, 255, 0.16);
+  --glass-hi-strong: rgba(255, 255, 255, 0.55);
 
   /* Focus */
   --focus-ring: 0 0 0 2px var(--bg-main), 0 0 0 4px var(--accent-hope-mid);
@@ -208,4 +250,10 @@
     var(--bg-chat);
   --chat-wallpaper-size: 14px 14px, 22px 22px, 9px 9px, auto;
   --chat-wallpaper-pos: 0 0, 7px 11px, 4px 2px, 0 0;
+}
+
+/* RTL: mirrored bubble tails (physical corner order flips with direction) */
+:root:root[dir="rtl"] {
+  --radius-bubble-me: 1.15rem 1.15rem 1.15rem 0.4rem;
+  --radius-bubble-them: 1.15rem 1.15rem 0.4rem 1.15rem;
 }

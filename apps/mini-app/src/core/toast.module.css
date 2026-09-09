@@ -1,7 +1,7 @@
 .host {
   position: fixed;
-  right: 1rem;
-  bottom: 1rem;
+  inset-inline-end: 1rem;
+  bottom: calc(1rem + env(safe-area-inset-bottom));
   z-index: 80;
   display: flex;
   flex-direction: column;
@@ -22,6 +22,7 @@
   border: 1px solid var(--border-subtle);
   border-radius: 0.85rem;
   box-shadow: var(--shadow-elev-2);
+  animation: toastIn var(--duration-ui) ease-out;
 }
 
 .danger {
@@ -30,8 +31,8 @@
 
 .msg {
   margin: 0;
-  padding-right: 1.4rem;
-  font-size: 0.9rem;
+  padding-inline-end: 1.4rem;
+  font-size: var(--fs-md);
   line-height: 1.4;
 }
 
@@ -47,7 +48,7 @@
   color: var(--text-primary);
   border-radius: 0.55rem;
   padding: 0.35rem 0.7rem;
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
 }
 
 .btn:hover {
@@ -62,20 +63,27 @@
 .x {
   position: absolute;
   top: 0.35rem;
-  right: 0.35rem;
+  inset-inline-end: 0.35rem;
   width: 28px;
   height: 28px;
   border: none;
   background: transparent;
   color: var(--text-muted);
-  font-size: 1.1rem;
+  font-size: var(--fs-2xl);
+}
+
+/* 44px hit area without changing the visual glyph box */
+.x::after {
+  content: "";
+  position: absolute;
+  inset: -8px;
 }
 
 .backdrop {
   position: fixed;
   inset: 0;
   z-index: 85;
-  background: color-mix(in srgb, var(--bg-main) 55%, transparent);
+  background: var(--backdrop);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -90,11 +98,12 @@
   border: 1px solid var(--border-subtle);
   border-radius: 0.9rem;
   box-shadow: var(--shadow-elev-2);
+  animation: toastIn var(--duration-ui) ease-out;
 }
 
 .modalMsg {
   margin: 0 0 0.75rem;
-  font-size: 0.92rem;
+  font-size: var(--fs-md);
   line-height: 1.4;
 }
 
@@ -111,7 +120,7 @@
   color: var(--text-primary);
   border-radius: 0.55rem;
   padding: 0.45rem 0.7rem;
-  font-size: 0.88rem;
+  font-size: var(--fs-sm);
 }
 
 .btnBlock:hover {
@@ -124,5 +133,16 @@
   background: transparent;
   color: var(--text-muted);
   padding: 0.35rem 0.5rem;
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
+}
+
+@keyframes toastIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }

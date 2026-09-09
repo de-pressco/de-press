@@ -7,6 +7,7 @@ import { AntiPanicProvider } from "@/core/hooks/useAntiPanic";
 import { ThemeProvider } from "@/core/theme";
 import { LocaleProvider } from "@/core/i18n/context";
 import { ToastProvider } from "@/core/toast";
+import { ApiError } from "@de-press/api-client";
 import "@de-press/theme/tokens.css";
 import "./styles/base.css";
 
@@ -14,7 +15,11 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 30_000,
-      retry: 1,
+      // 4xx не ретраим: повтор для 401/403/404 бессмыслен и шумит в логах.
+      retry: (failureCount, error) =>
+        !(error instanceof ApiError &&
+          error.status >= 400 &&
+          error.status < 500) && failureCount < 1,
       refetchOnWindowFocus: false,
     },
   },

@@ -23,7 +23,7 @@
 
 .backLink {
   color: var(--text-muted);
-  font-size: 1.15rem;
+  font-size: var(--fs-2xl);
   width: 40px;
   height: 40px;
   display: inline-flex;
@@ -38,16 +38,20 @@
   background: var(--bg-hover);
 }
 
+:global([dir="rtl"]) .backLink {
+  transform: scaleX(-1);
+}
+
 .title {
   margin: 0;
-  font-size: 1.15rem;
+  font-size: var(--fs-2xl);
   color: var(--text-primary);
 }
 
 .hint {
   margin: 0;
   color: var(--text-muted);
-  font-size: 0.9rem;
+  font-size: var(--fs-md);
   line-height: 1.5;
 }
 
@@ -58,7 +62,7 @@
 }
 
 .label {
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
   color: var(--text-muted);
 }
 
@@ -137,5 +141,5 @@
 .error {
   margin: 0;
   color: var(--accent-panic);
-  font-size: 0.9rem;
+  font-size: var(--fs-md);
 }

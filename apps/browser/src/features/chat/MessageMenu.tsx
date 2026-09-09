@@ -70,25 +70,23 @@ export function MessageMenu({
       ref={ref}
       className={styles.menu}
       style={{ left, top }}
-      role="menu"
     >
       {canWrite ? (
-        <button type="button" role="menuitem" className={styles.item} onClick={() => onReply(m)}>
+        <button type="button" className={styles.item} onClick={() => onReply(m)}>
           {t.chat.menuReply}
         </button>
       ) : null}
-      <button type="button" role="menuitem" className={styles.item} onClick={() => onCopy(m)}>
+      <button type="button" className={styles.item} onClick={() => onCopy(m)}>
         {t.chat.menuCopy}
       </button>
       {canWrite ? (
-        <button type="button" role="menuitem" className={styles.item} onClick={() => onForward(m)}>
+        <button type="button" className={styles.item} onClick={() => onForward(m)}>
           {t.chat.menuForward}
         </button>
       ) : null}
       {canWrite ? (
         <button
           type="button"
-          role="menuitem"
           className={styles.item}
           onClick={() => (pinned ? onUnpin() : onPin(m))}
         >
@@ -96,24 +94,23 @@ export function MessageMenu({
         </button>
       ) : null}
       {own && canWrite && m.kind === "text" ? (
-        <button type="button" role="menuitem" className={styles.item} onClick={() => onEdit(m)}>
+        <button type="button" className={styles.item} onClick={() => onEdit(m)}>
           {t.chat.menuEdit}
         </button>
       ) : null}
       {!m.is_system && m.kind === "text" ? (
-        <button type="button" role="menuitem" className={styles.item} onClick={() => onTranslate(m)}>
+        <button type="button" className={styles.item} onClick={() => onTranslate(m)}>
           {t.chat.translate}
         </button>
       ) : null}
       {!own && !m.is_system ? (
-        <button type="button" role="menuitem" className={styles.item} onClick={() => onReport(m)}>
+        <button type="button" className={styles.item} onClick={() => onReport(m)}>
           {t.report.report}
         </button>
       ) : null}
       {!m.is_system ? (
         <button
           type="button"
-          role="menuitem"
           className={`${styles.item} ${styles.danger}`}
           onClick={() => onDelete(m)}
         >
