@@ -63,6 +63,8 @@ export function PatternsPane() {
   const [reflectionLoaded, setReflectionLoaded] = useState(false);
   const [reflectionMsg, setReflectionMsg] = useState<string | null>(null);
   const [savingReflection, setSavingReflection] = useState(false);
+  // All hooks must stay above the `if (!ready)` early return (React error #310).
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const chartDays = useMemo(
     () => dailyAverages(entries, range),
     [entries, range],
@@ -245,8 +247,6 @@ export function PatternsPane() {
     queueCompanionShare(shareText);
     navigate("/help/ai");
   }
-
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   function episodeDuration(ep: PanicEpisode): string {
     if (!ep.endedAt) return t.patterns.episodesOngoing;
