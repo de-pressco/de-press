@@ -1,0 +1,21 @@
+import tseslint from "typescript-eslint";
+import reactHooks from "eslint-plugin-react-hooks";
+
+export default tseslint.config(
+  { ignores: ["dist", "coverage"] },
+  ...tseslint.configs.recommended,
+  reactHooks.configs.flat.recommended,
+  {
+    rules: {
+      // react-hooks v7 compiler-era strictness — keep visible as warnings, not
+      // blocking CI. rules-of-hooks (hook order) stays an "error" from the
+      // flat recommended preset above.
+      "react-hooks/set-state-in-effect": "warn",
+      "react-hooks/refs": "warn",
+      "react-hooks/purity": "warn",
+      "react-hooks/immutability": "warn",
+      "react-hooks/incompatible-library": "warn",
+      "react-hooks/exhaustive-deps": "warn",
+    },
+  },
+);
