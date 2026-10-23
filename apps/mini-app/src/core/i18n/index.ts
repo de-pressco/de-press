@@ -32,9 +32,9 @@ export function isLocale(value: string | null | undefined): value is Locale {
   return isUiLang(value) || isUiLang(value.split("-")[0] ?? "");
 }
 
+/** Handwritten catalogs only; machine locales start from `en` + a pack. */
 export function getMessages(locale: Locale): Messages {
-  if (locale === "en") return catalogs.en;
-  return catalogs.ru;
+  return locale === "ru" ? catalogs.ru : catalogs.en;
 }
 
 export function resolveUiLang(raw: string | null | undefined): Locale | null {

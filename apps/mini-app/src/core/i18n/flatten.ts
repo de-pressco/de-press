@@ -34,11 +34,25 @@ export function applyFlat(
   base: Messages,
   flat: Record<string, string>,
 ): Messages {
-  const copy = structuredClone(base) as unknown as Record<string, unknown>;
+  const copy = cloneTree(base) as unknown as Record<string, unknown>;
   for (const [path, value] of Object.entries(flat)) {
     setPath(copy, path.split("."), value);
   }
   return copy as unknown as Messages;
+}
+
+/** structuredClone() throws on the function leaves this catalog carries
+ *  (chat.statusReconnect); copy trees by hand and keep callables by reference. */
+function cloneTree<T>(value: T): T {
+  if (Array.isArray(value)) return value.map(cloneTree) as unknown as T;
+  if (value && typeof value === "object") {
+    const out: Record<string, unknown> = {};
+    for (const [key, inner] of Object.entries(value as Record<string, unknown>)) {
+      out[key] = cloneTree(inner);
+    }
+    return out as T;
+  }
+  return value;
 }
 
 function setPath(obj: Record<string, unknown>, parts: string[], value: string): void {

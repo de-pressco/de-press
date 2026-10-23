@@ -8,9 +8,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { api } from "@/core/api/client";
-import { getCachedCatalog, setCachedCatalog } from "./catalogCache";
-import { applyFlat, catalogHash, flattenMessages } from "./flatten";
+import { applyFlat } from "./flatten";
 import {
   DEFAULT_LOCALE,
   getMessages,
@@ -20,6 +18,7 @@ import {
   type Messages,
 } from "./index";
 import { en } from "./messages/en";
+import { loadPack } from "./packs";
 import { isHandwritten } from "./uiLangs";
 
 interface I18nContextValue {
@@ -50,32 +49,19 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
       persistLocale(next);
       return;
     }
-    const flatEn = flattenMessages(en);
-    const hash = catalogHash(flatEn);
-    const cached = await getCachedCatalog(next, hash);
-    if (cached) {
-      if (token !== seq.current) return;
-      const hydrated = applyFlat(en, cached);
-      setMessages(hydrated);
-      setLocaleState(next);
-      setCatalogUnavailable(false);
-      persistLocale(next);
-      document.title = hydrated.meta.title;
-      return;
-    }
     setLoading(true);
     try {
-      const pack = await api.translateUiCatalog(next, flatEn, "en");
-      await setCachedCatalog(next, hash, pack.strings);
+      const flat = await loadPack(next);
+      if (!flat) throw new Error("no pack");
       if (token !== seq.current) return;
-      const hydrated = applyFlat(en, pack.strings);
+      const hydrated = applyFlat(en, flat);
       setMessages(hydrated);
       setLocaleState(next);
       setCatalogUnavailable(false);
       persistLocale(next);
       document.title = hydrated.meta.title;
     } catch {
-      /* translation unavailable — keep previous pack, mark honestly */
+      /* pack chunk failed to load — keep previous pack, mark honestly */
       if (token === seq.current) setCatalogUnavailable(true);
     } finally {
       if (token === seq.current) setLoading(false);

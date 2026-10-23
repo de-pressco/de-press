@@ -2,7 +2,7 @@ export const HANDWRITTEN = new Set(["ru", "en"]);
 
 export const RTL_LANGS = new Set(["ar", "he", "fa", "ur"]);
 
-/** Picker codes — en, es, ru lead, then the rest. Translator fills gaps. */
+/** Picker codes — en, es, ru lead, then the rest. Every code ships a pack. */
 export const UI_LANGS: string[] = [
   "en",
   "es",
@@ -17,7 +17,6 @@ export const UI_LANGS: string[] = [
   "tg",
   "de",
   "fr",
-  "es",
   "pt",
   "it",
   "nl",
