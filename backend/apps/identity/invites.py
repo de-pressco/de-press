@@ -66,6 +66,20 @@ def get_helper_invite(token: str) -> HelperInvite:
         raise InviteError("Invite not found") from exc
 
 
+def revoke_helper_invite(actor: Actor, token: str) -> None:
+    """Delete an unused invite (its author or any staff member)."""
+    if not _can_invite(actor):
+        raise InviteError("Only a Helper or staff can revoke invites")
+    invite = get_helper_invite(token)
+    account = actor.account
+    is_owner = invite.created_by_id == (account.id if account else None)
+    if not is_owner and not (account.is_staff or account.is_superuser):
+        raise InviteError("Only the author or staff can revoke this invite")
+    if invite.used_at is not None:
+        raise InviteError("Invite already used")
+    invite.delete()
+
+
 def accept_helper_invite(actor: Actor, token: str, *, pledge: bool) -> Account:
     if actor.account is None:
         raise InviteError("An account is required to become a Helper")

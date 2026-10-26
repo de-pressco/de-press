@@ -10,7 +10,7 @@ from dataclasses import dataclass
 
 from django.utils import timezone
 
-from apps.moderation.models import Report, ReportReason
+from apps.moderation.models import Report, ReportReason, ReportStatus
 from apps.support.models import SupportCloud, SupportCloudStatus
 
 
@@ -44,9 +44,13 @@ def build_dashboard() -> DashboardView:
     since = timezone.now() - timezone.timedelta(days=7)
     reports_last_7d = Report.objects.filter(created_at__gte=since).count()
 
-    recent_rows = Report.objects.order_by("-created_at").select_related(
-        "story", "message"
-    )[:10]
+    recent_rows = (
+        Report.objects.filter(
+            status__in=(ReportStatus.OPEN, ReportStatus.REVIEWING)
+        )
+        .order_by("-created_at")
+        .select_related("story", "message")[:10]
+    )
     recent = []
     for r in recent_rows:
         if r.story_id and r.story is not None:
@@ -95,13 +99,20 @@ class AdminOverview:
     reports_reviewing: int
     reports_7d: int
     reports_by_reason: dict[str, int]
+    help_queue: int
+    helpers_on_duty: int
 
 
 def build_admin_overview() -> AdminOverview:
     """Light count queries for /admin/overview (no content)."""
-    from apps.dialogue.models import Dialogue, DialogueStatus
+    from apps.dialogue.models import (
+        Dialogue,
+        DialogueStatus,
+        HelpRequest,
+        HelpRequestStatus,
+    )
     from apps.empathy.models import SilentEmpathy
-    from apps.identity.models import AnonymousSession
+    from apps.identity.models import Account, AnonymousSession
     from apps.stories.models import Story, StoryStatus
     from apps.therapy.models import TherapySession, TherapySessionStatus
 
@@ -135,4 +146,8 @@ def build_admin_overview() -> AdminOverview:
             reason: open_reports.filter(reason=reason).count()
             for reason in ReportReason.values
         },
+        help_queue=HelpRequest.objects.filter(
+            status=HelpRequestStatus.PENDING
+        ).count(),
+        helpers_on_duty=Account.objects.on_duty_helpers().count(),
     )

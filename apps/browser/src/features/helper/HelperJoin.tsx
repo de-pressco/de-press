@@ -9,13 +9,14 @@ export function HelperInviteCreate() {
   const { t } = useI18n();
   const meQuery = useQuery({ queryKey: ["me"], queryFn: () => api.me() });
   const [org, setOrg] = useState("");
+  const [ttl, setTtl] = useState(168);
   const [link, setLink] = useState("");
   const allowed = Boolean(
     meQuery.data?.is_helper || meQuery.data?.is_staff,
   );
 
   const create = useMutation({
-    mutationFn: () => api.createHelperInvite(org.trim()),
+    mutationFn: () => api.createHelperInvite(org.trim(), ttl),
     onSuccess: (inv) => {
       const url = `${window.location.origin}/helper/join?token=${encodeURIComponent(inv.token)}`;
       setLink(url);
@@ -45,6 +46,18 @@ export function HelperInviteCreate() {
               value={org}
               onChange={(e) => setOrg(e.target.value)}
             />
+          </label>
+          <label className={styles.label}>
+            {'TTL'}
+            <select
+              className={styles.input}
+              value={ttl}
+              onChange={(e) => setTtl(Number(e.target.value))}
+            >
+              <option value={24}>24 h</option>
+              <option value={168}>7 d</option>
+              <option value={720}>30 d</option>
+            </select>
           </label>
           <button
             type="submit"

@@ -436,21 +436,6 @@ export const api = {
       method: "POST",
     }),
 
-  reviewDialogueRequests: () =>
-    request<DialogueRequest[]>("/api/v1/moderation/dialogue-requests"),
-
-  approveDialogueRequestReview: (requestId: string) =>
-    request<DialogueRequest>(
-      `/api/v1/moderation/dialogue-requests/${requestId}/approve`,
-      { method: "POST" },
-    ),
-
-  rejectDialogueRequestReview: (requestId: string) =>
-    request<DialogueRequest>(
-      `/api/v1/moderation/dialogue-requests/${requestId}/reject`,
-      { method: "POST" },
-    ),
-
   createHelpRequest: (note = "") =>
     request<HelpRequest>("/api/v1/help/requests", {
       method: "POST",
@@ -489,6 +474,11 @@ export const api = {
 
   getHelperInvite: (token: string) =>
     request<HelperInvite>(`/api/v1/helper-invites/${token}`),
+
+  revokeHelperInvite: (token: string) =>
+    request<{ ok: boolean }>(`/api/v1/helper-invites/${token}`, {
+      method: "DELETE",
+    }),
 
   acceptHelperInvite: (token: string, pledge: boolean) =>
     request<{ ok: boolean; is_helper: boolean; helper_org: string; message: string }>(

@@ -13,6 +13,8 @@ export interface AdminOverview {
   reports_reviewing: number;
   reports_7d: number;
   reports_by_reason: Record<string, number>;
+  help_queue: number;
+  helpers_on_duty: number;
 }
 
 export interface AdminReport {
@@ -47,5 +49,35 @@ export interface ModerationActionLog {
   report_id: string | null;
   story_id: string | null;
   message_id: string | null;
+  cloud_id: string | null;
   created_at: string;
+}
+
+export interface QueueCloud {
+  id: string;
+  body: string;
+  kind: string;
+  status: string;
+  pseudonym: string;
+  helper_badge: string;
+  is_priority: boolean;
+  created_at: string;
+  story_id: string;
+  story_preview: string;
+}
+
+export interface ModerationResult {
+  ok: boolean;
+  status: string;
+  message: string;
+  cloud_id: string;
+}
+
+export interface AdminHelper {
+  id: string;
+  email: string;
+  helper_org: string;
+  is_on_duty: boolean;
+  is_active: boolean;
+  last_seen_at: string | null;
 }

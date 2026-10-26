@@ -10,8 +10,9 @@ from apps.identity.invites import (
     InviteError,
     accept_helper_invite,
     create_helper_invite,
+    revoke_helper_invite,
 )
-from apps.identity.models import Account, AnonymousSession
+from apps.identity.models import Account, AnonymousSession, HelperInvite
 from apps.identity.services import Actor
 
 
@@ -120,3 +121,65 @@ def test_http_create_and_accept():
     assert me["is_helper"] is True
     assert me["is_staff"] is False
     assert me["is_on_duty"] is False
+
+
+@pytest.mark.django_db
+def test_revoke_unused_invite():
+    helper = Account.objects.create_user(
+        email="rev-h@ex.com", password="password123", is_helper=True
+    )
+    actor = Actor(kind="account", account=helper)
+    invite = create_helper_invite(actor, org="ngo")
+
+    revoke_helper_invite(actor, invite.token)
+    assert not HelperInvite.objects.filter(token=invite.token).exists()
+
+    with pytest.raises(InviteError, match="not found"):
+        revoke_helper_invite(actor, invite.token)
+
+
+@pytest.mark.django_db
+def test_revoke_permissions_and_used_invite():
+    owner = Account.objects.create_user(
+        email="rev-o@ex.com", password="password123", is_helper=True
+    )
+    other_helper = Account.objects.create_user(
+        email="rev-x@ex.com", password="password123", is_helper=True
+    )
+    invite = create_helper_invite(Actor(kind="account", account=owner))
+
+    with pytest.raises(InviteError, match="author or staff"):
+        revoke_helper_invite(
+            Actor(kind="account", account=other_helper), invite.token
+        )
+
+    # Staff may revoke any invite.
+    staff = Account.objects.create_user(
+        email="rev-s@ex.com", password="password123", is_staff=True
+    )
+    revoke_helper_invite(Actor(kind="account", account=staff), invite.token)
+    assert not HelperInvite.objects.filter(token=invite.token).exists()
+
+    used = create_helper_invite(Actor(kind="account", account=owner))
+    used.used_at = timezone.now()
+    used.save(update_fields=["used_at"])
+    with pytest.raises(InviteError, match="already used"):
+        revoke_helper_invite(Actor(kind="account", account=owner), used.token)
+
+
+@pytest.mark.django_db
+def test_revoke_http_delete():
+    helper = Account.objects.create_user(
+        email="rev-http@ex.com", password="password123", is_helper=True
+    )
+    client = Client()
+    client.force_login(helper)
+    token = client.post(
+        "/api/v1/helper-invites", {"org": "ngo"}, content_type="application/json"
+    ).json()["token"]
+
+    assert client.delete(f"/api/v1/helper-invites/{token}").status_code == 200
+    listed = client.get("/api/v1/helper-invites").json()
+    assert all(row["token"] != token for row in listed)
+    assert client.delete(f"/api/v1/helper-invites/{token}").status_code == 404
+

@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
 
 import { api } from "../core/api/client";
 import { useI18n } from "../core/i18n/context";
@@ -19,8 +20,11 @@ export function Overview({ onError }: { onError: (e: unknown) => void }) {
     retry: false,
   });
 
+  useEffect(() => {
+    if (query.isError) onError(query.error);
+  }, [query.isError, query.error, onError]);
+
   if (query.isError) {
-    onError(query.error);
     return (
       <p className="empty">
         {t.common.error} — {String(query.error)}{" "}
@@ -86,6 +90,14 @@ export function Overview({ onError }: { onError: (e: unknown) => void }) {
         <div className="card">
           <h2>{t.overview.reports7}</h2>
           <p className="num">{d.reports_7d}</p>
+        </div>
+        <div className="card warn">
+          <h2>{t.overview.helpQueue}</h2>
+          <p className="num">{d.help_queue}</p>
+        </div>
+        <div className="card">
+          <h2>{t.overview.helpersOnDuty}</h2>
+          <p className="num">{d.helpers_on_duty}</p>
         </div>
       </div>
       <p className="note">{t.overview.visitorsNote}</p>

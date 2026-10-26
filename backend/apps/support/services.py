@@ -12,6 +12,7 @@ from django.utils import timezone
 from apps.common.rate_limit import RateLimitExceeded, assert_under_limit
 from apps.identity.services import Actor
 from apps.moderation.blocks import is_blocked_between
+from apps.moderation.models import ModerationAction, ModerationActionKind
 from apps.notifications.models import Notification, NotificationKind
 from apps.notifications.services import notify
 from apps.stories.models import Story
@@ -593,6 +594,20 @@ def list_pending_queue(actor: Actor) -> list[QueueCloudView]:
     return out
 
 
+def _record_cloud_action(
+    *, actor: Actor, cloud: SupportCloud, action: str
+) -> None:
+    """Audit every cloud decision (Q12): who, what, on which cloud."""
+    ModerationAction.objects.create(
+        cloud=cloud,
+        story=cloud.story,
+        actor=actor.account,
+        action=action,
+        reason="",
+        note="",
+    )
+
+
 @transaction.atomic
 def approve_cloud(actor: Actor, cloud_id: UUID) -> SupportCloud:
     if not _is_moderator(actor):
@@ -608,6 +623,9 @@ def approve_cloud(actor: Actor, cloud_id: UUID) -> SupportCloud:
     cloud.moderated_by = actor.account
     cloud.save(
         update_fields=["status", "moderated_at", "moderated_by"]
+    )
+    _record_cloud_action(
+        actor=actor, cloud=cloud, action=ModerationActionKind.CLOUD_APPROVED
     )
     notify(
         _author_actor(cloud.story),
@@ -632,5 +650,8 @@ def reject_cloud(actor: Actor, cloud_id: UUID) -> SupportCloud:
     cloud.moderated_by = actor.account
     cloud.save(
         update_fields=["status", "moderated_at", "moderated_by"]
+    )
+    _record_cloud_action(
+        actor=actor, cloud=cloud, action=ModerationActionKind.CLOUD_REJECTED
     )
     return cloud

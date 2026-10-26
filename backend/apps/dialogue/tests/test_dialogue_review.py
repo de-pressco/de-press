@@ -8,7 +8,6 @@ from apps.dialogue.services import (
     accept_request,
     create_request,
     list_inbox,
-    list_review_inbox,
 )
 from apps.identity.models import Account, AnonymousSession
 from apps.identity.services import Actor
@@ -32,7 +31,6 @@ def test_create_request_goes_to_author():
     req = create_request(peer, story.id, intent="listen", note="я рядом")
     assert req.status == DialogueRequestStatus.PENDING
     assert list_inbox(author)[0].id == req.id
-    assert list_review_inbox(helper) == []
     assert Notification.objects.filter(
         kind=NotificationKind.DIALOGUE_REQUEST,
         recipient_account=author_acc,

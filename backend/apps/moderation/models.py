@@ -207,6 +207,9 @@ class ModerationActionKind(models.TextChoices):
     HIDDEN = "hidden", "Content hidden"
     REMOVED = "removed", "Content removed"
     DISMISSED = "dismissed", "Report dismissed"
+    # Support Cloud moderation has no report row: the cloud itself is the subject.
+    CLOUD_APPROVED = "cloud_approved", "Cloud approved"
+    CLOUD_REJECTED = "cloud_rejected", "Cloud rejected"
 
 
 class ModerationAction(models.Model):
@@ -233,6 +236,13 @@ class ModerationAction(models.Model):
     )
     message = models.ForeignKey(
         "dialogue.Message",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="moderation_actions",
+    )
+    cloud = models.ForeignKey(
+        "support.SupportCloud",
         null=True,
         blank=True,
         on_delete=models.SET_NULL,

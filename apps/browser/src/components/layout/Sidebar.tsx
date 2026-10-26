@@ -54,7 +54,7 @@ export function Sidebar({
     refetchInterval: 20_000,
   });
 
-  const isHelper = Boolean(meQuery.data?.is_helper);
+  const canHelper = Boolean(meQuery.data?.is_helper || meQuery.data?.is_staff);
   const pendingRequests = (requestsQuery.data ?? []).filter(
     (r) => r.status === "pending" || r.status === "approved" || !r.status,
   ).length;
@@ -75,8 +75,8 @@ export function Sidebar({
   );
 
   const visibleKeys = useMemo(
-    () => DEFAULT_NAV_ORDER.filter((key) => !(key === "helper" && !isHelper)),
-    [isHelper],
+    () => DEFAULT_NAV_ORDER.filter((key) => !(key === "helper" && !canHelper)),
+    [canHelper],
   );
 
   function softFor(key: NavKey): number | undefined {

@@ -1,5 +1,5 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 
 import { ApiError, api } from "../core/api/client";
 import type { AdminReport, ResolveBody } from "../core/api/types";
@@ -21,23 +21,31 @@ export function Reports({ onError }: { onError: (e: unknown) => void }) {
   const [filter, setFilter] = useState("open");
   const [resolvingId, setResolvingId] = useState<string | null>(null);
 
-  const query = useQuery({
+  const query = useInfiniteQuery({
     queryKey: ["admin-reports", filter],
-    queryFn: () => api.reports(filter),
+    queryFn: ({ pageParam }) => api.reports(filter, pageParam),
+    initialPageParam: 0,
+    getNextPageParam: (last, all) =>
+      last.length === 50 ? all.length * 50 : undefined,
     retry: false,
   });
 
   const resolve = useMutation({
     mutationFn: ({ id, body }: { id: string; body: ResolveBody }) =>
       api.resolveReport(id, body),
-    onSuccess: () => {
+    onSuccess: async () => {
       setResolvingId(null);
-      void queryClient.invalidateQueries({ queryKey: ["admin-reports"] });
+      await queryClient.invalidateQueries({ queryKey: ["admin-reports"] });
+      await queryClient.invalidateQueries({ queryKey: ["admin-overview"] });
+      await queryClient.invalidateQueries({ queryKey: ["admin-log"] });
     },
   });
 
+  useEffect(() => {
+    if (query.isError) onError(query.error);
+  }, [query.isError, query.error, onError]);
+
   if (query.isError) {
-    onError(query.error);
     return (
       <p className="empty">
         {t.common.error} —{" "}
@@ -46,7 +54,7 @@ export function Reports({ onError }: { onError: (e: unknown) => void }) {
     );
   }
 
-  const rows = query.data ?? [];
+  const rows = query.data?.pages.flat() ?? [];
 
   return (
     <section>
@@ -65,6 +73,8 @@ export function Reports({ onError }: { onError: (e: unknown) => void }) {
           </button>
         ))}
       </div>
+
+      {resolve.isSuccess ? <p className="badge">{t.reports.saved}</p> : null}
 
       {query.isLoading ? (
         <p className="empty">{t.common.loading}</p>
@@ -86,6 +96,17 @@ export function Reports({ onError }: { onError: (e: unknown) => void }) {
           ))}
         </ul>
       )}
+
+      {query.hasNextPage ? (
+        <button
+          type="button"
+          className="btn ghost"
+          disabled={query.isFetchingNextPage}
+          onClick={() => void query.fetchNextPage()}
+        >
+          {query.isFetchingNextPage ? t.common.loading : t.common.loadMore}
+        </button>
+      ) : null}
     </section>
   );
 }

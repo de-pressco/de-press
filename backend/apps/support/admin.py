@@ -1,7 +1,8 @@
 from django.contrib import admin, messages
-from django.utils import timezone
 
+from apps.identity.services import Actor
 from apps.support.models import QuietPhrase, SupportCloud, SupportCloudStatus
+from apps.support.services import SupportError, approve_cloud, reject_cloud
 
 
 @admin.register(QuietPhrase)
@@ -12,28 +13,42 @@ class QuietPhraseAdmin(admin.ModelAdmin):
     ordering = ("sort_order", "key")
 
 
+def _moderator_actor(request) -> Actor:
+    user = request.user
+    account = user if getattr(user, "is_authenticated", False) else None
+    return Actor(kind="account", account=account)
+
+
 @admin.action(description="Approve selected Moderated Clouds")
 def approve_clouds(modeladmin, request, queryset):
-    n = 0
+    actor = _moderator_actor(request)
+    done = failed = 0
     for cloud in queryset.filter(status=SupportCloudStatus.PENDING):
-        cloud.status = SupportCloudStatus.DELIVERED
-        cloud.moderated_at = timezone.now()
-        cloud.moderated_by = request.user if request.user.is_authenticated else None
-        cloud.save(update_fields=["status", "moderated_at", "moderated_by"])
-        n += 1
-    modeladmin.message_user(request, f"Approved {n} cloud(s).", messages.SUCCESS)
+        try:
+            approve_cloud(actor, cloud.id)
+        except SupportError:
+            failed += 1
+        else:
+            done += 1
+    modeladmin.message_user(
+        request, f"Approved {done} cloud(s), skipped {failed}.", messages.SUCCESS
+    )
 
 
 @admin.action(description="Reject selected Moderated Clouds")
 def reject_clouds(modeladmin, request, queryset):
-    n = 0
+    actor = _moderator_actor(request)
+    done = failed = 0
     for cloud in queryset.filter(status=SupportCloudStatus.PENDING):
-        cloud.status = SupportCloudStatus.REJECTED
-        cloud.moderated_at = timezone.now()
-        cloud.moderated_by = request.user if request.user.is_authenticated else None
-        cloud.save(update_fields=["status", "moderated_at", "moderated_by"])
-        n += 1
-    modeladmin.message_user(request, f"Rejected {n} cloud(s).", messages.WARNING)
+        try:
+            reject_cloud(actor, cloud.id)
+        except SupportError:
+            failed += 1
+        else:
+            done += 1
+    modeladmin.message_user(
+        request, f"Rejected {done} cloud(s), skipped {failed}.", messages.WARNING
+    )
 
 
 @admin.register(SupportCloud)

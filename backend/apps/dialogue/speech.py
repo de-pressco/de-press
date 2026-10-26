@@ -93,8 +93,9 @@ def _mt_prompt(text: str, *, target: str) -> str:
 
 
 def is_stub_translation(text: str) -> bool:
-    t = (text or "").lstrip()
-    return t.startswith("[offline")
+    t = (text or "").lstrip().lower()
+    # ASCII sentinel plus the legacy localized marker some old rows still carry.
+    return t.startswith(("[offline", "[офлайн"))
 
 
 class OfflineTranslator:

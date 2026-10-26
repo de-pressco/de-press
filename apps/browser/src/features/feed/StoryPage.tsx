@@ -140,6 +140,9 @@ export function StoryPage() {
   const [intent, setIntent] = useState("listen");
   const [note, setNote] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
+  const [reportReason, setReportReason] = useState("");
+  const [reportDetails, setReportDetails] = useState("");
   const [nextBody, setNextBody] = useState("");
   const [editing, setEditing] = useState<Story | null>(null);
   const [ctxMenu, setCtxMenu] = useState<StoryEntryMenuState | null>(null);
@@ -347,10 +350,13 @@ export function StoryPage() {
   });
 
   const report = useMutation({
-    mutationFn: () => api.reportStory(id ?? "", "other"),
+    mutationFn: () => api.reportStory(id ?? "", reportReason, reportDetails.trim()),
     onSuccess: (res) => {
       setStatusMsg(res.message);
       setMenuOpen(false);
+      setReportOpen(false);
+      setReportReason("");
+      setReportDetails("");
     },
     onError: (err) => {
       setStatusMsg(friendlyError(err, t.common.errorSoft));
@@ -774,7 +780,10 @@ export function StoryPage() {
                     <button
                       type="button"
                       className={styles.menuItem}
-                      onClick={() => report.mutate()}
+                      onClick={() => {
+                        setMenuOpen(false);
+                        setReportOpen(true);
+                      }}
                     >
                       {t.report.report}
                     </button>
@@ -783,6 +792,63 @@ export function StoryPage() {
               </div>
             </footer>
           )}
+
+          {reportOpen ? (
+            <div className={styles.reportPanel} role="group" aria-label={t.report.why}>
+              <p className={styles.reportTitle}>{t.report.why}</p>
+              <div className={styles.reportReasons}>
+                {(
+                  [
+                    ["abuse", t.report.reasonsAbuse],
+                    ["spam", t.report.reasonsSpam],
+                    ["self_harm", t.report.reasonsSelfHarm],
+                    ["other", t.report.reasonsOther],
+                  ] as const
+                ).map(([key, label]) => (
+                  <button
+                    key={key}
+                    type="button"
+                    className={
+                      reportReason === key ? styles.reasonOn : styles.reason
+                    }
+                    aria-pressed={reportReason === key}
+                    onClick={() => setReportReason(key)}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+              <textarea
+                className={styles.reportInput}
+                rows={2}
+                maxLength={2000}
+                placeholder={t.report.details}
+                value={reportDetails}
+                onChange={(e) => setReportDetails(e.target.value)}
+              />
+              <div className={styles.reportActions}>
+                <button
+                  type="button"
+                  className={styles.action}
+                  disabled={!reportReason || report.isPending}
+                  onClick={() => report.mutate()}
+                >
+                  {t.report.send}
+                </button>
+                <button
+                  type="button"
+                  className={styles.action}
+                  onClick={() => {
+                    setReportOpen(false);
+                    setReportReason("");
+                    setReportDetails("");
+                  }}
+                >
+                  {t.report.cancel}
+                </button>
+              </div>
+            </div>
+          ) : null}
 
           {ctxMenu ? (
             <StoryEntryMenu

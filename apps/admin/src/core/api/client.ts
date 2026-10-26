@@ -4,14 +4,23 @@
  */
 
 import type {
+  AdminHelper,
   AdminOverview,
   ModerationActionLog,
+  ModerationResult,
+  QueueCloud,
   ResolveBody,
   ResolveResponse,
   AdminReport,
 } from "./types";
 
-export type { AdminOverview, AdminReport, ModerationActionLog };
+export type {
+  AdminHelper,
+  AdminOverview,
+  AdminReport,
+  ModerationActionLog,
+  QueueCloud,
+};
 
 export class ApiError extends Error {
   readonly status: number;
@@ -49,13 +58,26 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 
 export const api = {
   overview: () => request<AdminOverview>("/admin/overview"),
-  reports: (status: string) =>
-    request<AdminReport[]>(`/admin/reports?status=${encodeURIComponent(status)}`),
+  reports: (status: string, offset = 0) =>
+    request<AdminReport[]>(
+      `/admin/reports?status=${encodeURIComponent(status)}&limit=50&offset=${offset}`,
+    ),
   resolveReport: (id: string, body: ResolveBody) =>
     request<ResolveResponse>(`/admin/reports/${id}/resolve`, {
       method: "POST",
       body: JSON.stringify(body),
     }),
-  moderationLog: () =>
-    request<ModerationActionLog[]>("/admin/moderation-log?limit=100"),
+  moderationLog: (offset = 0) =>
+    request<ModerationActionLog[]>(`/admin/moderation-log?limit=100&offset=${offset}`),
+  clouds: () => request<QueueCloud[]>("/moderation/clouds"),
+  approveCloud: (id: string) =>
+    request<ModerationResult>(`/moderation/clouds/${id}/approve`, { method: "POST" }),
+  rejectCloud: (id: string) =>
+    request<ModerationResult>(`/moderation/clouds/${id}/reject`, { method: "POST" }),
+  helpers: () => request<AdminHelper[]>("/admin/helpers"),
+  setHelperDuty: (id: string, on: boolean) =>
+    request<AdminHelper>(`/admin/helpers/${id}/duty`, {
+      method: "POST",
+      body: JSON.stringify({ on }),
+    }),
 };

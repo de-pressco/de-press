@@ -7,12 +7,16 @@ export interface Messages {
     error: string;
     retry: string;
     cancel: string;
+    loadMore: string;
   };
   app: {
     title: string;
     tabOverview: string;
     tabReports: string;
+    tabClouds: string;
+    tabHelpers: string;
     tabLog: string;
+    loginCta: string;
     accessDenied: string;
     accessDeniedHint: string;
     openMainApp: string;
@@ -33,6 +37,8 @@ export interface Messages {
     reportsReviewing: string;
     reports7: string;
     reportsByReason: string;
+    helpQueue: string;
+    helpersOnDuty: string;
   };
   reasons: {
     abuse: string;
@@ -51,6 +57,8 @@ export interface Messages {
     hidden: string;
     removed: string;
     dismissed: string;
+    cloud_approved: string;
+    cloud_rejected: string;
   };
   reports: {
     queue: string;
@@ -71,6 +79,30 @@ export interface Messages {
     note: string;
     resolvedNote: string;
     reasonRequired: string;
+    saved: string;
+  };
+  clouds: {
+    title: string;
+    lead: string;
+    empty: string;
+    approve: string;
+    reject: string;
+    from: string;
+    toStory: string;
+    saved: string;
+  };
+  helpers: {
+    title: string;
+    lead: string;
+    empty: string;
+    org: string;
+    onDuty: string;
+    offDuty: string;
+    lastSeen: string;
+    never: string;
+    dutyOn: string;
+    dutyOff: string;
+    saved: string;
   };
   log: {
     empty: string;

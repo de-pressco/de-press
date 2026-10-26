@@ -8,7 +8,7 @@ import { useHelperHeartbeat } from "./useHelperHeartbeat";
 import { useHelperQueue } from "./useHelperQueue";
 import styles from "./HelperQueue.module.css";
 
-type Tab = "queue" | "clouds" | "requests" | "summary";
+type Tab = "queue" | "clouds" | "summary";
 
 export function HelperQueue() {
   const { t } = useI18n();
@@ -54,12 +54,6 @@ export function HelperQueue() {
     enabled: canHelper && tab === "clouds",
   });
 
-  const reviewQuery = useQuery({
-    queryKey: ["dialogue-review"],
-    queryFn: () => api.reviewDialogueRequests(),
-    enabled: canHelper && tab === "requests",
-  });
-
   const dashQuery = useQuery({
     queryKey: ["moderation-dashboard"],
     queryFn: () => api.moderationDashboard(),
@@ -70,6 +64,13 @@ export function HelperQueue() {
     queryKey: ["helper-invites"],
     queryFn: () => api.listHelperInvites(),
     enabled: canHelper && tab === "summary",
+  });
+
+  const revoke = useMutation({
+    mutationFn: (token: string) => api.revokeHelperInvite(token),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["helper-invites"] });
+    },
   });
 
   const helpDashQuery = useQuery({
@@ -101,20 +102,6 @@ export function HelperQueue() {
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["moderation-queue"] });
       await queryClient.invalidateQueries({ queryKey: ["moderation-dashboard"] });
-    },
-  });
-
-  const approveReq = useMutation({
-    mutationFn: (id: string) => api.approveDialogueRequestReview(id),
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ["dialogue-review"] });
-    },
-  });
-
-  const rejectReq = useMutation({
-    mutationFn: (id: string) => api.rejectDialogueRequestReview(id),
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ["dialogue-review"] });
     },
   });
 
@@ -159,7 +146,6 @@ export function HelperQueue() {
   const items = queueQuery.data ?? [];
   const dash = dashQuery.data;
   const invites = invitesQuery.data ?? [];
-  const reviewItems = reviewQuery.data ?? [];
 
   return (
     <div className={styles.pane}>
@@ -189,9 +175,7 @@ export function HelperQueue() {
             ? t.helper.queueLead
             : tab === "clouds"
               ? t.helper.lead
-              : tab === "requests"
-                ? t.helper.reviewPlaque
-                : t.helper.dashboardLead}
+              : t.helper.dashboardLead}
         </p>
         <div className={styles.tabs} role="tablist">
           <button
@@ -211,15 +195,6 @@ export function HelperQueue() {
             onClick={() => setTab("clouds")}
           >
             {t.helper.tabClouds}
-          </button>
-          <button
-            type="button"
-            role="tab"
-            aria-selected={tab === "requests"}
-            className={tab === "requests" ? styles.tabOn : styles.tab}
-            onClick={() => setTab("requests")}
-          >
-            {t.helper.tabRequests}
           </button>
           <button
             type="button"
@@ -330,49 +305,6 @@ export function HelperQueue() {
             ))}
           </ul>
         )
-      ) : tab === "requests" ? (
-        !onDuty ? (
-          <p className={styles.empty}>{t.helper.queueOffDuty}</p>
-        ) : reviewQuery.isLoading ? (
-          <p className={styles.empty}>{t.helper.loading}</p>
-        ) : reviewQuery.isError ? (
-          <p className={styles.empty}>
-            {reviewQuery.error instanceof ApiError
-              ? reviewQuery.error.message
-              : t.common.error}
-          </p>
-        ) : reviewItems.length === 0 ? (
-          <p className={styles.empty}>{t.helper.empty}</p>
-        ) : (
-          <ul className={styles.list}>
-            {reviewItems.map((req) => (
-              <li key={req.id} className={styles.card}>
-                <p className={styles.meta}>
-                  {t.intents[req.intent] ?? req.intent} · {waitLabel(req.created_at)}
-                </p>
-                {req.note ? <p className={styles.body}>{req.note}</p> : null}
-                <div className={styles.actions}>
-                  <button
-                    type="button"
-                    className={styles.approve}
-                    disabled={approveReq.isPending || rejectReq.isPending}
-                    onClick={() => approveReq.mutate(req.id)}
-                  >
-                    {t.helper.reviewApprove}
-                  </button>
-                  <button
-                    type="button"
-                    className={styles.reject}
-                    disabled={approveReq.isPending || rejectReq.isPending}
-                    onClick={() => rejectReq.mutate(req.id)}
-                  >
-                    {t.helper.reviewReject}
-                  </button>
-                </div>
-              </li>
-            ))}
-          </ul>
-        )
       ) : dashQuery.isLoading ? (
         <p className={styles.empty}>{t.helper.loading}</p>
       ) : dashQuery.isError ? (
@@ -404,9 +336,7 @@ export function HelperQueue() {
             <ul className={styles.list}>
               {dash.recent_reports.map((row) => (
                 <li key={row.id} className={styles.card}>
-                  <p className={styles.meta}>
-                    {reasonLabel(row.reason)} · {row.status}
-                  </p>
+                  <p className={styles.meta}>{reasonLabel(row.reason)}</p>
                   {row.story_preview ? (
                     <p className={styles.preview}>{row.story_preview}</p>
                   ) : null}
@@ -429,6 +359,18 @@ export function HelperQueue() {
                   <p className={styles.body}>
                     /helper/join?token={inv.token}
                   </p>
+                  {inv.used ? null : (
+                    <div className={styles.actions}>
+                      <button
+                        type="button"
+                        className={styles.reject}
+                        disabled={revoke.isPending}
+                        onClick={() => revoke.mutate(inv.token)}
+                      >
+                        {t.common.confirmDelete}
+                      </button>
+                    </div>
+                  )}
                 </li>
               ))}
             </ul>

@@ -9,7 +9,12 @@ from apps.dialogue.models import Dialogue, DialogueSource, Message
 from apps.empathy.models import SilentEmpathy
 from apps.identity.models import Account, AnonymousSession
 from apps.identity.services import Actor
-from apps.moderation.models import ModerationAction, ReportReason, ReportStatus
+from apps.moderation.models import (
+    ModerationAction,
+    Report,
+    ReportReason,
+    ReportStatus,
+)
 from apps.moderation.services import submit_report
 from apps.notifications.models import Notification, NotificationKind
 from apps.stories.models import StoryStatus
@@ -107,6 +112,8 @@ def test_admin_overview_is_counts_only(staff, user, story):
         "reports_reviewing",
         "reports_7d",
         "reports_by_reason",
+        "help_queue",
+        "helpers_on_duty",
     }
     # Только счётчики: содержимого историй/личностей в ответе нет (Q12).
     assert "История для модерации" not in str(data)
@@ -309,3 +316,83 @@ def test_resolve_unknown_report_returns_404(staff):
         content_type="application/json",
     )
     assert response.status_code == 404
+
+
+# --- Pagination & helpers roster ---------------------------------------------------
+
+
+@pytest.mark.django_db
+def test_admin_reports_pagination_offset(staff, user):
+    story = publish_story(Actor(kind="account", account=user), "Жалоба.")
+    for reason in (ReportReason.ABUSE, ReportReason.SPAM, ReportReason.OTHER):
+        submit_report(Actor(kind="account", account=user), story.id, reason=reason)
+    # One open report per account+story is enforced: only the first lands.
+    client = _client(staff)
+    first = client.get("/api/v1/admin/reports?status=all&limit=1&offset=0").json()
+    second = client.get("/api/v1/admin/reports?status=all&limit=1&offset=1").json()
+    assert len(first) == 1
+    assert len(second) <= 1
+    if second:
+        assert first[0]["id"] != second[0]["id"]
+
+
+@pytest.mark.django_db
+def test_admin_moderation_log_pagination(staff, user, story):
+    submit_report(
+        Actor(kind="account", account=user), story.id, reason=ReportReason.SPAM
+    )
+    report = Report.objects.filter(story=story).first()
+    client = _client(staff)
+    client.post(
+        f"/api/v1/admin/reports/{report.id}/resolve",
+        {"decision": "dismiss", "reason": "other"},
+        content_type="application/json",
+    )
+    page = client.get("/api/v1/admin/moderation-log?limit=1&offset=0").json()
+    assert len(page) == 1
+    assert client.get("/api/v1/admin/moderation-log?limit=1&offset=99").json() == []
+
+
+@pytest.mark.django_db
+def test_admin_helpers_roster_and_duty_toggle(staff, helper):
+    client = _client(staff)
+    roster = client.get("/api/v1/admin/helpers")
+    assert roster.status_code == 200
+    rows = roster.json()
+    assert [row["email"] for row in rows] == [helper.email]
+    assert rows[0]["is_on_duty"] is False
+
+    on = client.post(
+        f"/api/v1/admin/helpers/{helper.id}/duty",
+        {"on": True},
+        content_type="application/json",
+    )
+    assert on.status_code == 200
+    assert on.json()["is_on_duty"] is True
+    helper.refresh_from_db()
+    assert helper.is_on_duty is True
+
+    # A non-helper account cannot be toggled via this endpoint.
+    plain = Account.objects.create_user(email="plain@ex.com", password="password123")
+    assert (
+        client.post(
+            f"/api/v1/admin/helpers/{plain.id}/duty",
+            {"on": True},
+            content_type="application/json",
+        ).status_code
+        == 404
+    )
+
+
+@pytest.mark.django_db
+def test_admin_endpoints_reject_non_staff(helper, user):
+    client = _client(user)
+    assert client.get("/api/v1/admin/helpers").status_code == 403
+    assert (
+        client.post(
+            f"/api/v1/admin/helpers/{helper.id}/duty",
+            {"on": True},
+            content_type="application/json",
+        ).status_code
+        == 403
+    )

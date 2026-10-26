@@ -7,6 +7,7 @@ import pytest
 from apps.identity.models import Account, AnonymousSession
 from apps.identity.services import Actor
 from apps.moderation.blocks import block_actor
+from apps.moderation.models import ModerationAction, ModerationActionKind
 from apps.stories.services import publish_story
 from apps.support.models import QuietPhrase, SupportCloud
 from apps.support.models import SupportCloudStatus
@@ -170,7 +171,7 @@ def test_non_author_cannot_list_clouds(phrase):
     other = Actor(
         kind="anonymous", session=AnonymousSession.objects.create(pseudonym="другой")
     )
-    with pytest.raises(SupportError, match="Author only"):
+    with pytest.raises(SupportError, match="Only the author can see clouds"):
         list_clouds_for_author(other, story.id)
 
 
@@ -505,3 +506,38 @@ def test_mark_read_http_and_feed_privacy(phrase):
 
     forbidden = vis.post(f"/api/v1/stories/{post.id}/clouds/mark-read")
     assert forbidden.status_code == 403
+
+
+@pytest.mark.django_db
+def test_cloud_decisions_are_audited():
+    """Approve/reject must leave a ModerationAction row (B3 fix)."""
+    author = Actor(
+        kind="account",
+        account=Account.objects.create_user(email="aud-a@ex.com", password="password123"),
+    )
+    story = publish_story(author, "История для аудита.")
+    visitor = Actor(
+        kind="anonymous", session=AnonymousSession.objects.create(pseudonym="aud")
+    )
+    helper = Actor(
+        kind="account",
+        account=Account.objects.create_user(
+            email="aud-h@ex.com", password="password123", is_helper=True
+        ),
+    )
+
+    first = submit_moderated_cloud(visitor, story.id, "Первое облако.")
+    approve_cloud(helper, first.cloud.id)
+
+    other_story = publish_story(author, "Вторая история.")
+    second = submit_moderated_cloud(visitor, other_story.id, "Второе облако.")
+    reject_cloud(helper, second.cloud.id)
+
+    rows = ModerationAction.objects.filter(cloud__in=[first.cloud.id, second.cloud.id])
+    assert rows.count() == 2
+    assert set(rows.values_list("action", flat=True)) == {
+        ModerationActionKind.CLOUD_APPROVED,
+        ModerationActionKind.CLOUD_REJECTED,
+    }
+    assert all(row.actor_id == helper.account.id for row in rows)
+

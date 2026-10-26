@@ -146,9 +146,11 @@ def create_help_request(actor: Actor, *, note: str = "") -> HelpRequest:
             helper = None
         else:
             mark_matched(helper)
+            # The helper is told a request landed on them; HELP_ACCEPTED belongs
+            # to the requester (sent inside accept_help_request).
             notify(
                 Actor(kind="account", account=helper),
-                NotificationKind.HELP_ACCEPTED,
+                NotificationKind.HELP_REQUESTED,
                 {"request_id": str(req.id), "dialogue_id": str(dialogue.id)},
             )
             req.refresh_from_db()

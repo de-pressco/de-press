@@ -6,13 +6,6 @@ from uuid import UUID
 from ninja import Router, Schema
 from ninja.errors import HttpError
 
-from api.v1.dialogue import RequestOut, _req_out
-from apps.dialogue.services import (
-    DialogueError,
-    approve_dialogue_request,
-    list_review_inbox,
-    reject_dialogue_request,
-)
 from apps.identity.services import require_actor
 from apps.moderation.blocks import (
     BlockError,
@@ -185,43 +178,6 @@ def create_block(request, payload: BlockIn):
     )
 
 
-def _require_helper(actor) -> None:
-    acc = actor.account
-    if acc is None or not (acc.is_helper or acc.is_staff or acc.is_superuser):
-        raise HttpError(403, "Helper or staff role required")
-
-
-@router.get("/moderation/dialogue-requests", response=list[RequestOut])
-def helper_dialogue_review_inbox(request):
-    actor = require_actor(request)
-    _require_helper(actor)
-    return [_req_out(r) for r in list_review_inbox(actor)]
-
-
-@router.post("/moderation/dialogue-requests/{request_id}/approve", response=RequestOut)
-def helper_approve_dialogue_request(request, request_id: UUID):
-    actor = require_actor(request)
-    try:
-        req = approve_dialogue_request(actor, request_id)
-    except DialogueError as exc:
-        msg = str(exc)
-        code = 403 if "Helper" in msg else 400
-        raise HttpError(code, msg) from exc
-    return _req_out(req)
-
-
-@router.post("/moderation/dialogue-requests/{request_id}/reject", response=RequestOut)
-def helper_reject_dialogue_request(request, request_id: UUID):
-    actor = require_actor(request)
-    try:
-        req = reject_dialogue_request(actor, request_id)
-    except DialogueError as exc:
-        msg = str(exc)
-        code = 403 if "Helper" in msg else 400
-        raise HttpError(code, msg) from exc
-    return _req_out(req)
-
-
 @router.post("/dialogues/{dialogue_id}/block-peer", response=BlockOut)
 def block_dialogue_peer(request, dialogue_id: UUID):
     actor = require_actor(request)
@@ -309,6 +265,8 @@ class AdminOverviewOut(Schema):
     reports_reviewing: int
     reports_7d: int
     reports_by_reason: dict[str, int]
+    help_queue: int
+    helpers_on_duty: int
 
 
 class AdminReportOut(Schema):
@@ -343,7 +301,21 @@ class AdminActionOut(Schema):
     report_id: str | None
     story_id: str | None
     message_id: str | None
+    cloud_id: str | None
     created_at: str
+
+
+class AdminHelperOut(Schema):
+    id: str
+    email: str
+    helper_org: str
+    is_on_duty: bool
+    is_active: bool
+    last_seen_at: str | None = None
+
+
+class AdminHelperDutyIn(Schema):
+    on: bool
 
 
 def _require_staff_only(actor) -> None:
@@ -401,11 +373,13 @@ def admin_overview(request):
         reports_reviewing=view.reports_reviewing,
         reports_7d=view.reports_7d,
         reports_by_reason=dict(view.reports_by_reason),
+        help_queue=view.help_queue,
+        helpers_on_duty=view.helpers_on_duty,
     )
 
 
 @router.get("/admin/reports", response=list[AdminReportOut])
-def admin_reports(request, status: str = "open", limit: int = 50):
+def admin_reports(request, status: str = "open", limit: int = 50, offset: int = 0):
     """Staff report queue: status filter, no reporter identities."""
     actor = require_actor(request)
     _require_staff_only(actor)
@@ -415,10 +389,11 @@ def admin_reports(request, status: str = "open", limit: int = 50):
             f"Invalid status. Allowed: all, {', '.join(ReportStatus.values)}",
         )
     limit = max(1, min(limit, 100))
+    offset = max(0, offset)
     qs = Report.objects.order_by("-created_at").select_related("story", "message")
     if status != "all":
         qs = qs.filter(status=status)
-    return [_admin_report_out(r) for r in qs[:limit]]
+    return [_admin_report_out(r) for r in qs[offset : offset + limit]]
 
 
 @router.post("/admin/reports/{report_id}/resolve", response=AdminResolveOut)
@@ -442,12 +417,13 @@ def admin_resolve_report(request, report_id: UUID, payload: AdminResolveIn):
 
 
 @router.get("/admin/moderation-log", response=list[AdminActionOut])
-def admin_moderation_log(request, limit: int = 100):
+def admin_moderation_log(request, limit: int = 100, offset: int = 0):
     """Moderation action log: who, what, why."""
     actor = require_actor(request)
     _require_staff_only(actor)
     limit = max(1, min(limit, 200))
-    rows = ModerationAction.objects.select_related("actor")[:limit]
+    offset = max(0, offset)
+    rows = ModerationAction.objects.select_related("actor")[offset : offset + limit]
     return [
         AdminActionOut(
             id=str(a.id),
@@ -458,7 +434,47 @@ def admin_moderation_log(request, limit: int = 100):
             report_id=str(a.report_id) if a.report_id else None,
             story_id=str(a.story_id) if a.story_id else None,
             message_id=str(a.message_id) if a.message_id else None,
+            cloud_id=str(a.cloud_id) if a.cloud_id else None,
             created_at=a.created_at.isoformat(),
         )
         for a in rows
     ]
+
+
+def _admin_helper_out(acc) -> AdminHelperOut:
+    return AdminHelperOut(
+        id=str(acc.id),
+        email=acc.email,
+        helper_org=acc.helper_org or "",
+        is_on_duty=acc.is_on_duty,
+        is_active=acc.is_active,
+        last_seen_at=acc.helper_seen_at.isoformat() if acc.helper_seen_at else None,
+    )
+
+
+@router.get("/admin/helpers", response=list[AdminHelperOut])
+def admin_helpers(request, limit: int = 100):
+    """Helper roster (staff only): who can take human-help requests."""
+    actor = require_actor(request)
+    _require_staff_only(actor)
+    from apps.identity.models import Account
+
+    limit = max(1, min(limit, 200))
+    rows = Account.objects.filter(is_helper=True).order_by("-is_on_duty", "email")[:limit]
+    return [_admin_helper_out(acc) for acc in rows]
+
+
+@router.post("/admin/helpers/{account_id}/duty", response=AdminHelperOut)
+def admin_helper_duty(request, account_id: UUID, payload: AdminHelperDutyIn):
+    """Staff can put a Helper on/off duty without touching Django admin."""
+    actor = require_actor(request)
+    _require_staff_only(actor)
+    from apps.identity.models import Account
+
+    try:
+        acc = Account.objects.get(pk=account_id, is_helper=True)
+    except Account.DoesNotExist as exc:
+        raise HttpError(404, "Helper not found") from exc
+    acc.is_on_duty = bool(payload.on)
+    acc.save(update_fields=["is_on_duty"])
+    return _admin_helper_out(acc)

@@ -159,4 +159,4 @@ def test_decline_from_awaiting():
 def test_client_label_pseudonymous():
     profile = make_profile()
     st = create_session(anon_actor(), str(profile.id))
-    assert client_label(st) == "client"  # client label stays pseudonymous
+    assert client_label(st) == "клиент"  # the visitor pseudonym, never an email

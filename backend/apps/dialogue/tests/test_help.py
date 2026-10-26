@@ -253,3 +253,35 @@ def test_off_duty_helper_is_not_notified_and_has_empty_inbox():
     ).exists()
     assert list_help_inbox(Actor(kind="account", account=off)) == []
     assert list_help_inbox(Actor(kind="account", account=on))[0].id == req.id
+
+
+
+@pytest.mark.django_db
+def test_instant_match_notifies_helper_as_requested():
+    """B14: the matched helper gets HELP_REQUESTED; HELP_ACCEPTED is for the asker."""
+    from django.utils import timezone
+
+    helper = Account.objects.create_user(
+        email="instant@ex.com",
+        password="password123",
+        is_helper=True,
+        is_on_duty=True,
+        helper_seen_at=timezone.now(),
+    )
+    sess = AnonymousSession.objects.create()
+    requester = Actor(kind="anonymous", session=sess)
+
+    req = create_help_request(requester)
+    req.refresh_from_db()
+
+    assert req.status == "accepted"
+    assert req.dialogue_id is not None
+    assert Notification.objects.filter(
+        kind=NotificationKind.HELP_REQUESTED, recipient_account=helper
+    ).exists()
+    assert not Notification.objects.filter(
+        kind=NotificationKind.HELP_ACCEPTED, recipient_account=helper
+    ).exists()
+    assert Notification.objects.filter(
+        kind=NotificationKind.HELP_ACCEPTED, recipient_session=sess
+    ).exists()

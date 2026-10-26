@@ -312,50 +312,6 @@ def create_request(
     return req
 
 
-def _is_helper(actor: Actor) -> bool:
-    if actor.account is None:
-        return False
-    return bool(
-        actor.account.is_helper
-        or actor.account.is_staff
-        or actor.account.is_superuser
-    )
-
-
-def list_review_inbox(actor: Actor) -> list[DialogueRequest]:
-    """Legacy Helper review inbox. New requests skip this gate."""
-    acc = actor.account
-    if not (
-        acc is not None and acc.is_helper and acc.is_on_duty and acc.is_active
-    ):
-        return []
-    return list(
-        DialogueRequest.objects.filter(status=DialogueRequestStatus.AWAITING_HELPER)
-        .select_related("story", "from_account", "from_session")
-        .order_by("-created_at")
-    )
-
-
-@transaction.atomic
-def approve_dialogue_request(actor: Actor, request_id: UUID) -> DialogueRequest:
-    if not _is_helper(actor):
-        raise DialogueError("Only a Helper can review dialogue requests")
-    try:
-        req = (
-            DialogueRequest.objects.select_for_update(of=("self",))
-            .select_related("story", "from_account", "from_session")
-            .get(pk=request_id)
-        )
-    except DialogueRequest.DoesNotExist as exc:
-        raise DialogueError("Request not found") from exc
-    if req.status != DialogueRequestStatus.AWAITING_HELPER:
-        raise DialogueError("Request is not awaiting review")
-    req.status = DialogueRequestStatus.PENDING
-    req.save(update_fields=["status", "updated_at"])
-    _notify_author_dialogue_request(req)
-    return req
-
-
 def _notify_author_dialogue_request(req: DialogueRequest) -> None:
     story = req.story
     author = Actor(
@@ -372,23 +328,6 @@ def _notify_author_dialogue_request(req: DialogueRequest) -> None:
             "intent": req.intent,
         },
     )
-
-
-@transaction.atomic
-def reject_dialogue_request(actor: Actor, request_id: UUID) -> DialogueRequest:
-    if not _is_helper(actor):
-        raise DialogueError("Only a Helper can review dialogue requests")
-    try:
-        req = DialogueRequest.objects.select_for_update(of=("self",)).get(
-            pk=request_id
-        )
-    except DialogueRequest.DoesNotExist as exc:
-        raise DialogueError("Request not found") from exc
-    if req.status != DialogueRequestStatus.AWAITING_HELPER:
-        raise DialogueError("Request is not awaiting review")
-    req.status = DialogueRequestStatus.DECLINED
-    req.save(update_fields=["status", "updated_at"])
-    return req
 
 
 def list_inbox(actor: Actor) -> list[DialogueRequest]:

@@ -61,7 +61,7 @@ def test_profiles_public_and_session_http_flow():
     listed = inbox.get("/api/v1/me/therapy/inbox")
     assert listed.status_code == 200
     assert [s["id"] for s in listed.json()] == [sid]
-    assert listed.json()[0]["client_label"] == "client"
+    assert listed.json()[0]["client_label"] == "клиент"
 
     confirmed = inbox.post(f"/api/v1/therapy/sessions/{sid}/confirm")
     assert confirmed.status_code == 200

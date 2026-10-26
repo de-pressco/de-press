@@ -3,14 +3,15 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api, ApiError } from "@/core/api/client";
 import { useI18n } from "@/core/i18n/context";
 import { useHelperHeartbeat } from "./useHelperHeartbeat";
+import { useHelperQueue } from "./useHelperQueue";
 import styles from "./HelperQueue.module.css";
 
-type Tab = "clouds" | "summary";
+type Tab = "queue" | "clouds" | "summary";
 
 export function HelperQueue() {
   const { t } = useI18n();
   const queryClient = useQueryClient();
-  const [tab, setTab] = useState<Tab>("clouds");
+  const [tab, setTab] = useState<Tab>("queue");
 
   const meQuery = useQuery({
     queryKey: ["me"],
@@ -28,6 +29,19 @@ export function HelperQueue() {
       queryClient.setQueryData(["me"], me);
       await queryClient.invalidateQueries({ queryKey: ["me"] });
       await queryClient.invalidateQueries({ queryKey: ["help-requests"] });
+    },
+  });
+
+  const { queue: helpQueue, refresh: refreshQueue } = useHelperQueue(
+    isHelper && tab === "queue",
+  );
+
+  const acceptHelp = useMutation({
+    mutationFn: (requestId: string) => api.acceptHelpRequest(requestId),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["dialogues"] });
+      await queryClient.invalidateQueries({ queryKey: ["help-requests"] });
+      refreshQueue();
     },
   });
 
@@ -113,9 +127,22 @@ export function HelperQueue() {
           </div>
         ) : null}
         <p className={styles.lead}>
-          {tab === "clouds" ? t.helper.lead : t.helper.dashboardLead}
+          {tab === "queue"
+          ? t.help.humanLead
+          : tab === "clouds"
+            ? t.helper.lead
+            : t.helper.dashboardLead}
         </p>
         <div className={styles.tabs} role="tablist">
+          <button
+            type="button"
+            role="tab"
+            aria-selected={tab === "queue"}
+            className={tab === "queue" ? styles.tabOn : styles.tab}
+            onClick={() => setTab("queue")}
+          >
+            {t.help.humanTitle}
+          </button>
           <button
             type="button"
             role="tab"
@@ -137,7 +164,34 @@ export function HelperQueue() {
         </div>
       </header>
 
-      {tab === "clouds" ? (
+      {tab === "queue" ? (
+        !onDuty ? (
+          <p className={styles.empty}>{t.helper.dutyLead}</p>
+        ) : helpQueue.length === 0 ? (
+          <p className={styles.empty}>{t.helper.empty}</p>
+        ) : (
+          <ul className={styles.list}>
+            {helpQueue.map((row) => (
+              <li key={row.id} className={styles.card}>
+                <p className={styles.meta}>
+                  {new Date(row.created_at).toLocaleString()}
+                </p>
+                {row.note ? <p className={styles.body}>{row.note}</p> : null}
+                <div className={styles.actions}>
+                  <button
+                    type="button"
+                    className={styles.approve}
+                    disabled={acceptHelp.isPending}
+                    onClick={() => acceptHelp.mutate(row.id)}
+                  >
+                    {t.help.waitOpenChat}
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )
+      ) : tab === "clouds" ? (
         queueQuery.isLoading ? (
           <p className={styles.empty}>{t.helper.loading}</p>
         ) : queueQuery.isError ? (

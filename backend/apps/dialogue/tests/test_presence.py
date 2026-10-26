@@ -77,13 +77,17 @@ def test_instant_match_assigns_one_helper_skips_queue():
     assert req.dialogue.source == DialogueSource.HELP
     assert list_help_inbox(Actor(kind="account", account=chosen)) == []
     assert list_help_inbox(Actor(kind="account", account=other)) == []
+    # Only the matched helper is pinged, and as a fresh request (B14).
     assert not Notification.objects.filter(
-        kind=NotificationKind.HELP_REQUESTED
+        kind=NotificationKind.HELP_REQUESTED, recipient_account=other
+    ).exists()
+    assert Notification.objects.filter(
+        kind=NotificationKind.HELP_REQUESTED, recipient_account=chosen
     ).exists()
     assert Notification.objects.filter(
         kind=NotificationKind.HELP_ACCEPTED, recipient_session=visitor.session
     ).exists()
-    assert Notification.objects.filter(
+    assert not Notification.objects.filter(
         kind=NotificationKind.HELP_ACCEPTED, recipient_account=chosen
     ).exists()
     chosen.refresh_from_db()

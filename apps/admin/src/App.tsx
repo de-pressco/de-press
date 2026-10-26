@@ -1,22 +1,24 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { ApiError } from "./core/api/client";
 import { useI18n } from "./core/i18n/context";
+import { Clouds } from "./features/Clouds";
+import { Helpers } from "./features/Helpers";
 import { ModerationLog } from "./features/ModerationLog";
 import { Overview } from "./features/Overview";
 import { Reports } from "./features/Reports";
 
-type Tab = "overview" | "reports" | "log";
+type Tab = "overview" | "reports" | "clouds" | "helpers" | "log";
 
 export function App() {
   const { t, lang, setLang } = useI18n();
   const [tab, setTab] = useState<Tab>("overview");
   const [denied, setDenied] = useState(false);
 
-  function onApiError(error: unknown) {
+  const onApiError = useCallback((error: unknown) => {
     if (error instanceof ApiError && (error.status === 401 || error.status === 403)) {
       setDenied(true);
     }
-  }
+  }, []);
 
   if (denied) {
     return (
@@ -24,7 +26,10 @@ export function App() {
         <main className="denied">
           <h1>{t.app.accessDenied}</h1>
           <p>{t.app.accessDeniedHint}</p>
-          <a href="https://app.depress.co" className="btn">
+          <a href="/admin/login/?next=/console/" className="btn">
+            {t.app.loginCta}
+          </a>
+          <a href="https://app.depress.co" className="btn ghost">
             {t.app.openMainApp}
           </a>
         </main>
@@ -41,6 +46,8 @@ export function App() {
             [
               ["overview", t.app.tabOverview],
               ["reports", t.app.tabReports],
+              ["clouds", t.app.tabClouds],
+              ["helpers", t.app.tabHelpers],
               ["log", t.app.tabLog],
             ] as const
           ).map(([key, label]) => (
@@ -65,6 +72,8 @@ export function App() {
       <main>
         {tab === "overview" && <Overview onError={onApiError} />}
         {tab === "reports" && <Reports onError={onApiError} />}
+        {tab === "clouds" && <Clouds onError={onApiError} />}
+        {tab === "helpers" && <Helpers onError={onApiError} />}
         {tab === "log" && <ModerationLog onError={onApiError} />}
       </main>
     </div>

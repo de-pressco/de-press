@@ -1,24 +1,36 @@
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
 
-import { api } from "../core/api/client";
+import { ApiError, api } from "../core/api/client";
 import { useI18n } from "../core/i18n/context";
 
 export function ModerationLog({ onError }: { onError: (e: unknown) => void }) {
   const { t } = useI18n();
-  const query = useQuery({
+  const query = useInfiniteQuery({
     queryKey: ["admin-log"],
-    queryFn: () => api.moderationLog(),
+    queryFn: ({ pageParam }) => api.moderationLog(pageParam),
+    initialPageParam: 0,
+    getNextPageParam: (last, all) =>
+      last.length === 100 ? all.length * 100 : undefined,
     retry: false,
   });
 
+  useEffect(() => {
+    if (query.isError) onError(query.error);
+  }, [query.isError, query.error, onError]);
+
   if (query.isError) {
-    onError(query.error);
-    return <p className="empty">{t.common.error} — {String(query.error)}</p>;
+    return (
+      <p className="empty">
+        {t.common.error} —{" "}
+        {query.error instanceof ApiError ? query.error.message : String(query.error)}
+      </p>
+    );
   }
   if (query.isLoading) {
     return <p className="empty">{t.common.loading}</p>;
   }
-  const rows = query.data ?? [];
+  const rows = query.data?.pages.flat() ?? [];
   if (rows.length === 0) {
     return <p className="empty">{t.log.empty}</p>;
   }
@@ -47,6 +59,16 @@ export function ModerationLog({ onError }: { onError: (e: unknown) => void }) {
           ))}
         </tbody>
       </table>
+      {query.hasNextPage ? (
+        <button
+          type="button"
+          className="btn ghost"
+          disabled={query.isFetchingNextPage}
+          onClick={() => void query.fetchNextPage()}
+        >
+          {query.isFetchingNextPage ? t.common.loading : t.common.loadMore}
+        </button>
+      ) : null}
     </section>
   );
 }

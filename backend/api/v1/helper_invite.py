@@ -9,6 +9,7 @@ from apps.identity.invites import (
     create_helper_invite,
     get_helper_invite,
     list_my_invites,
+    revoke_helper_invite,
 )
 from apps.identity.services import require_actor
 
@@ -36,6 +37,10 @@ class AcceptOut(Schema):
     is_helper: bool
     helper_org: str
     message: str
+
+
+class RevokeOut(Schema):
+    ok: bool
 
 
 def _invite_out(inv) -> InviteOut:
@@ -78,6 +83,18 @@ def get_invite(request, token: str):
     except InviteError as exc:
         raise HttpError(404, str(exc)) from exc
     return _invite_out(inv)
+
+
+@router.delete("/helper-invites/{token}", response=RevokeOut)
+def delete_invite(request, token: str):
+    actor = require_actor(request)
+    try:
+        revoke_helper_invite(actor, token)
+    except InviteError as exc:
+        msg = str(exc)
+        code = 404 if "not found" in msg.lower() else (403 if "Only" in msg else 400)
+        raise HttpError(code, msg) from exc
+    return RevokeOut(ok=True)
 
 
 @router.post("/helper-invites/{token}/accept", response=AcceptOut)
