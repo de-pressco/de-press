@@ -147,6 +147,9 @@ export function DialoguePage() {
   const [useHttpFallback, setUseHttpFallback] = useState(false);
   const [shownLang, setShownLang] = useState<Record<string, string>>({});
   const [menuOpen, setMenuOpen] = useState(false);
+  const [reportTarget, setReportTarget] = useState<string | null>(null);
+  const [reportReason, setReportReason] = useState("");
+  const [reportDetails, setReportDetails] = useState("");
   const [recording, setRecording] = useState(false);
   const [circleOpen, setCircleOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
@@ -428,10 +431,18 @@ export function DialoguePage() {
     }
   }
 
-  async function reportMsg(messageId: string) {
+  async function reportMsg() {
+    if (!reportTarget || !reportReason) return;
     try {
-      const res = await api.reportMessage(messageId, "abuse");
+      const res = await api.reportMessage(
+        reportTarget,
+        reportReason,
+        reportDetails.trim(),
+      );
       setMsg(res.message);
+      setReportTarget(null);
+      setReportReason("");
+      setReportDetails("");
     } catch (err) {
       setError(friendlyError(err, t.common.errorSoft));
     }
@@ -628,7 +639,11 @@ export function DialoguePage() {
                       <button
                         type="button"
                         className={styles.msgAction}
-                        onClick={() => void reportMsg(m.id)}
+                        onClick={() => {
+                          setReportReason("");
+                          setReportDetails("");
+                          setReportTarget(m.id);
+                        }}
                       >
                         {t.report.report.toLowerCase()}
                       </button>
@@ -656,6 +671,65 @@ export function DialoguePage() {
           wallet={dialogue.peer_tip_wallet}
           verified={dialogue.peer_tip_wallet_verified ?? false}
         />
+      ) : null}
+
+      {reportTarget ? (
+        <div
+          className={styles.reportPanel}
+          role="group"
+          aria-label={t.report.report}
+        >
+          <p className={styles.reportTitle}>{t.report.report}</p>
+          <div className={styles.reportReasons}>
+            {(
+              [
+                ["abuse", t.report.reasonsAbuse],
+                ["spam", t.report.reasonsSpam],
+                ["self_harm", t.report.reasonsSelfHarm],
+                ["other", t.report.reasonsOther],
+              ] as const
+            ).map(([key, label]) => (
+              <button
+                key={key}
+                type="button"
+                className={reportReason === key ? styles.reasonOn : styles.reason}
+                aria-pressed={reportReason === key}
+                onClick={() => setReportReason(key)}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+          <textarea
+            className={styles.reportInput}
+            rows={2}
+            maxLength={2000}
+            placeholder={t.report.details}
+            value={reportDetails}
+            onChange={(e) => setReportDetails(e.target.value)}
+          />
+          <div className={styles.reportActions}>
+            <button
+              type="button"
+              className={styles.reportBtn}
+              disabled={!reportReason}
+              onClick={() => void reportMsg()}
+            >
+              {t.report.send}
+            </button>
+            <button
+              type="button"
+              className={styles.reportBtn}
+              onClick={() => {
+                setReportTarget(null);
+                setReportReason("");
+                setReportDetails("");
+              }}
+            >
+              {t.report.cancel}
+            </button>
+          </div>
+        </div>
       ) : null}
 
       {open ? (

@@ -179,6 +179,9 @@ export function DialoguePage() {
   const [replyTo, setReplyTo] = useState<ChatMessage | null>(null);
   const [editing, setEditing] = useState<ChatMessage | null>(null);
   const [forwardFor, setForwardFor] = useState<ChatMessage | null>(null);
+  const [reportTarget, setReportTarget] = useState<string | null>(null);
+  const [reportReason, setReportReason] = useState("");
+  const [reportDetails, setReportDetails] = useState("");
   const mediaRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<BlobPart[]>([]);
   const startedAt = useRef(0);
@@ -713,10 +716,18 @@ export function DialoguePage() {
     }
   }
 
-  async function reportMsg(messageId: string) {
+  async function reportMsg() {
+    if (!reportTarget || !reportReason) return;
     try {
-      const res = await api.reportMessage(messageId, "abuse");
+      const res = await api.reportMessage(
+        reportTarget,
+        reportReason,
+        reportDetails.trim(),
+      );
       setMsg(res.message);
+      setReportTarget(null);
+      setReportReason("");
+      setReportDetails("");
     } catch (err) {
       setError(err instanceof ApiError ? err.message : t.common.error);
     }
@@ -995,6 +1006,65 @@ export function DialoguePage() {
         ) : null}
       </div>
 
+      {reportTarget ? (
+        <div
+          className={styles.reportPanel}
+          role="group"
+          aria-label={t.report.report}
+        >
+          <p className={styles.reportTitle}>{t.report.report}</p>
+          <div className={styles.reportReasons}>
+            {(
+              [
+                ["abuse", t.report.reasonsAbuse],
+                ["spam", t.report.reasonsSpam],
+                ["self_harm", t.report.reasonsSelfHarm],
+                ["other", t.report.reasonsOther],
+              ] as const
+            ).map(([key, label]) => (
+              <button
+                key={key}
+                type="button"
+                className={reportReason === key ? styles.reasonOn : styles.reason}
+                aria-pressed={reportReason === key}
+                onClick={() => setReportReason(key)}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+          <textarea
+            className={styles.reportInput}
+            rows={2}
+            maxLength={2000}
+            placeholder={t.report.details}
+            value={reportDetails}
+            onChange={(e) => setReportDetails(e.target.value)}
+          />
+          <div className={styles.reportActions}>
+            <button
+              type="button"
+              className={styles.reportBtn}
+              disabled={!reportReason}
+              onClick={() => void reportMsg()}
+            >
+              {t.report.send}
+            </button>
+            <button
+              type="button"
+              className={styles.reportBtn}
+              onClick={() => {
+                setReportTarget(null);
+                setReportReason("");
+                setReportDetails("");
+              }}
+            >
+              {t.report.cancel}
+            </button>
+          </div>
+        </div>
+      ) : null}
+
       {open && (replyTo || editing) ? (
         <div className={styles.replyBar}>
           <span>
@@ -1139,7 +1209,9 @@ export function DialoguePage() {
           onDelete={(m) => void deleteMsg(m)}
           onReport={(m) => {
             setCtxMenu(null);
-            void reportMsg(m.id);
+            setReportReason("");
+            setReportDetails("");
+            setReportTarget(m.id);
           }}
           onTranslate={(m) => {
             setCtxMenu(null);

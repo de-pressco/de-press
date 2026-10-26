@@ -607,7 +607,7 @@ export interface paths {
         };
         /**
          * Helper Dashboard
-         * @description Сводка очередей и недавние репорты для хелперов (этичные метрики).
+         * @description Queue summary and recent reports for helpers (ethical metrics).
          */
         get: operations["api_v1_moderation_helper_dashboard"];
         put?: never;
@@ -667,57 +667,6 @@ export interface paths {
         put?: never;
         /** Create Block */
         post: operations["api_v1_moderation_create_block"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/moderation/dialogue-requests": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Helper Dialogue Review Inbox */
-        get: operations["api_v1_moderation_helper_dialogue_review_inbox"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/moderation/dialogue-requests/{request_id}/approve": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Helper Approve Dialogue Request */
-        post: operations["api_v1_moderation_helper_approve_dialogue_request"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/moderation/dialogue-requests/{request_id}/reject": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Helper Reject Dialogue Request */
-        post: operations["api_v1_moderation_helper_reject_dialogue_request"];
         delete?: never;
         options?: never;
         head?: never;
@@ -784,7 +733,7 @@ export interface paths {
         };
         /**
          * Admin Overview
-         * @description Стартовая сводка для staff: только счётчики, без содержимого.
+         * @description Staff overview: counters only, no content.
          */
         get: operations["api_v1_moderation_admin_overview"];
         put?: never;
@@ -804,7 +753,7 @@ export interface paths {
         };
         /**
          * Admin Reports
-         * @description Очередь жалоб для staff: фильтр по статусу, без личностей репортеров.
+         * @description Staff report queue: status filter, no reporter identities.
          */
         get: operations["api_v1_moderation_admin_reports"];
         put?: never;
@@ -826,7 +775,7 @@ export interface paths {
         put?: never;
         /**
          * Admin Resolve Report
-         * @description Решение по жалобе: hide|remove|dismiss + обязательная причина (Q12).
+         * @description Report decision: hide|remove|dismiss + a mandatory reason (Q12).
          */
         post: operations["api_v1_moderation_admin_resolve_report"];
         delete?: never;
@@ -844,11 +793,51 @@ export interface paths {
         };
         /**
          * Admin Moderation Log
-         * @description Журнал действий модерации: кто, что, почему.
+         * @description Moderation action log: who, what, why.
          */
         get: operations["api_v1_moderation_admin_moderation_log"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/helpers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Admin Helpers
+         * @description Helper roster (staff only): who can take human-help requests.
+         */
+        get: operations["api_v1_moderation_admin_helpers"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/helpers/{account_id}/duty": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Admin Helper Duty
+         * @description Staff can put a Helper on/off duty without touching Django admin.
+         */
+        post: operations["api_v1_moderation_admin_helper_duty"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1452,7 +1441,8 @@ export interface paths {
         get: operations["api_v1_helper_invite_get_invite"];
         put?: never;
         post?: never;
-        delete?: never;
+        /** Delete Invite */
+        delete: operations["api_v1_helper_invite_delete_invite"];
         options?: never;
         head?: never;
         patch?: never;
@@ -1590,7 +1580,7 @@ export interface paths {
         put?: never;
         /**
          * Send Test Digest
-         * @description Отправить тестовый дайджест на контактный email (для проверки SMTP).
+         * @description Send a test digest to the contact email (SMTP check).
          */
         post: operations["api_v1_profile_send_test_digest"];
         delete?: never;
@@ -1860,6 +1850,30 @@ export interface paths {
         get: operations["api_v1_therapy_therapy_session_detail"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/bot/webhook": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Bot Webhook
+         * @description Receive a Bot API update for the lobby bot.
+         *
+         *     Auth is the ``secret_token`` Telegram echoes back in the
+         *     ``X-Telegram-Bot-Api-Secret-Token`` header (constant-time compare). Returns
+         *     200 quickly; update handling is lightweight and synchronous.
+         */
+        post: operations["api_v1_bot_bot_webhook"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2438,26 +2452,6 @@ export interface components {
             /** Target Kind */
             target_kind: string;
         };
-        /** RequestOut */
-        RequestOut: {
-            /** Id */
-            id: string;
-            /** Story Id */
-            story_id: string;
-            /** Intent */
-            intent: string;
-            /** Note */
-            note: string;
-            /** Status */
-            status: string;
-            /** Created At */
-            created_at: string;
-            /**
-             * From Key
-             * @default
-             */
-            from_key: string;
-        };
         /** AdminOverviewOut */
         AdminOverviewOut: {
             /** Sessions 24H */
@@ -2492,6 +2486,10 @@ export interface components {
             reports_by_reason: {
                 [key: string]: number;
             };
+            /** Help Queue */
+            help_queue: number;
+            /** Helpers On Duty */
+            helpers_on_duty: number;
         };
         /** AdminReportOut */
         AdminReportOut: {
@@ -2553,8 +2551,30 @@ export interface components {
             story_id: string | null;
             /** Message Id */
             message_id: string | null;
+            /** Cloud Id */
+            cloud_id: string | null;
             /** Created At */
             created_at: string;
+        };
+        /** AdminHelperOut */
+        AdminHelperOut: {
+            /** Id */
+            id: string;
+            /** Email */
+            email: string;
+            /** Helper Org */
+            helper_org: string;
+            /** Is On Duty */
+            is_on_duty: boolean;
+            /** Is Active */
+            is_active: boolean;
+            /** Last Seen At */
+            last_seen_at?: string | null;
+        };
+        /** AdminHelperDutyIn */
+        AdminHelperDutyIn: {
+            /** On */
+            on: boolean;
         };
         /** IntentOut */
         IntentOut: {
@@ -2562,6 +2582,26 @@ export interface components {
             value: string;
             /** Label */
             label: string;
+        };
+        /** RequestOut */
+        RequestOut: {
+            /** Id */
+            id: string;
+            /** Story Id */
+            story_id: string;
+            /** Intent */
+            intent: string;
+            /** Note */
+            note: string;
+            /** Status */
+            status: string;
+            /** Created At */
+            created_at: string;
+            /**
+             * From Key
+             * @default
+             */
+            from_key: string;
         };
         /** RequestIn */
         RequestIn: {
@@ -2870,6 +2910,11 @@ export interface components {
              * @default 168
              */
             ttl_hours: number;
+        };
+        /** RevokeOut */
+        RevokeOut: {
+            /** Ok */
+            ok: boolean;
         };
         /** AcceptOut */
         AcceptOut: {
@@ -4122,70 +4167,6 @@ export interface operations {
             };
         };
     };
-    api_v1_moderation_helper_dialogue_review_inbox: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["RequestOut"][];
-                };
-            };
-        };
-    };
-    api_v1_moderation_helper_approve_dialogue_request: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                request_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["RequestOut"];
-                };
-            };
-        };
-    };
-    api_v1_moderation_helper_reject_dialogue_request: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                request_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["RequestOut"];
-                };
-            };
-        };
-    };
     api_v1_moderation_block_dialogue_peer: {
         parameters: {
             query?: never;
@@ -4277,6 +4258,7 @@ export interface operations {
             query?: {
                 status?: string;
                 limit?: number;
+                offset?: number;
             };
             header?: never;
             path?: never;
@@ -4325,6 +4307,7 @@ export interface operations {
         parameters: {
             query?: {
                 limit?: number;
+                offset?: number;
             };
             header?: never;
             path?: never;
@@ -4339,6 +4322,54 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AdminActionOut"][];
+                };
+            };
+        };
+    };
+    api_v1_moderation_admin_helpers: {
+        parameters: {
+            query?: {
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminHelperOut"][];
+                };
+            };
+        };
+    };
+    api_v1_moderation_admin_helper_duty: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                account_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AdminHelperDutyIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminHelperOut"];
                 };
             };
         };
@@ -5279,6 +5310,28 @@ export interface operations {
             };
         };
     };
+    api_v1_helper_invite_delete_invite: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                token: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RevokeOut"];
+                };
+            };
+        };
+    };
     api_v1_helper_invite_post_accept: {
         parameters: {
             query?: never;
@@ -5822,6 +5875,24 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["SessionOut"];
                 };
+            };
+        };
+    };
+    api_v1_bot_bot_webhook: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

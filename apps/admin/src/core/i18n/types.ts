@@ -90,6 +90,9 @@ export interface Messages {
     from: string;
     toStory: string;
     saved: string;
+    search: string;
+    priorityOnly: string;
+    noMatch: string;
   };
   helpers: {
     title: string;

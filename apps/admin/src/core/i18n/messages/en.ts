@@ -90,6 +90,9 @@ export const en: Messages = {
     from: "from",
     toStory: "to story",
     saved: "Queue updated.",
+    search: "Search name, text or story",
+    priorityOnly: "Priority only",
+    noMatch: "Nothing matches the filter.",
   },
   helpers: {
     title: "Helper roster",

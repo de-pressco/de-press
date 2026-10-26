@@ -90,6 +90,9 @@ export const ru: Messages = {
     from: "от",
     toStory: "к истории",
     saved: "Очередь обновлена.",
+    search: "Поиск по имени, тексту или истории",
+    priorityOnly: "Только приоритетные",
+    noMatch: "Под фильтр ничего не подходит.",
   },
   helpers: {
     title: "Состав хелперов",

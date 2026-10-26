@@ -132,6 +132,17 @@ body {
   margin-bottom: 12px;
 }
 
+.filters .search {
+  flex: 1 1 220px;
+  font: inherit;
+  font-size: var(--fs-xs);
+  color: var(--text-primary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-pill);
+  padding: 6px 12px;
+  background: var(--bg-surface);
+}
+
 .list {
   list-style: none;
   padding: 0;
