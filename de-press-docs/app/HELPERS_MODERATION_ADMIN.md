@@ -235,19 +235,18 @@ Django admin → *Support clouds* → bulk-actions теперь тоже идё�
 | GET | `/api/v1/moderation/clouds` | helper или staff |
 | POST | `/api/v1/moderation/clouds/{id}/approve` | helper или staff |
 | POST | `/api/v1/moderation/clouds/{id}/reject` | helper или staff |
-| GET | `/api/v1/moderation/dialogue-requests` | helper on duty (legacy, всегда пусто) |
-| POST | `/api/v1/moderation/dialogue-requests/{id}/approve` | helper (legacy) |
-| POST | `/api/v1/moderation/dialogue-requests/{id}/reject` | helper (legacy) |
 | POST | `/api/v1/stories/{id}/report` | любой |
 | POST | `/api/v1/messages/{id}/report` | участник диалога |
 | POST/GET/DELETE | `/api/v1/blocks…` | любой |
 | GET | `/api/v1/admin/overview` | staff |
 | GET | `/api/v1/admin/reports?status=` | staff |
 | POST | `/api/v1/admin/reports/{id}/resolve` | staff |
-| GET | `/api/v1/admin/moderation-log?limit=` | staff |
+| GET | `/api/v1/admin/moderation-log?limit=&offset=` | staff |
+| GET | `/api/v1/admin/helpers` | staff |
+| POST | `/api/v1/admin/helpers/{id}/duty` | staff |
 
 Прочее: `POST /api/v1/me/helper-duty`, `POST|GET /api/v1/helper-invites`,
-`GET /api/v1/helper-invites/{token}`, `POST /api/v1/helper-invites/{token}/accept`,
+`GET|DELETE /api/v1/helper-invites/{token}`, `POST /api/v1/helper-invites/{token}/accept`,
 `POST /api/v1/ai/support`, `POST /api/v1/ai/support/stream`.
 
 WebSocket: `/ws/helper/queue/` — только `is_helper` (duty не требуется), снимок очереди при подключении.
@@ -345,7 +344,8 @@ Sev: **BLK** — блокирует пилот, **M** — мешает кажд�
 
 | Показатель | Значение | Что значит |
 |---|---|---|
-| Accounts / helpers / on_duty | 1 / 0 / 0 | Help-путь никем не обслуживается; мэтч невозможен |
+| Accounts / helpers / on_duty | 1 / 1 / 0 | Роль хелпера выдана аккаунту владельца 2026-10-26; смена — тумблером |
+| Заявки помощи (pending) | **1** (аноним, 06:05 UTC) | Живой человек ждёт; берётся сразу после включения смены |
 | Staff | 1 | Консоль и Django admin доступны владельцу |
 | HelperInvite (всего / неиспользованных) | 0 / 0 | Онбординг не запускался |
 | Reports (open / reviewing) | 0 / 0 | Очередь жалоб пуста (и репорты почти не отправляются — см. B5) |
@@ -420,7 +420,7 @@ ssh BIA "curl -s -X POST http://127.0.0.1:8000/api/v1/ai/support -H 'Content-Typ
 
 ## 12. Что осталось не проверенным в этом проходе
 
-- Живой браузерный прогон очереди (нужен хелпер + второй клиент) — не делался, чтобы не менять роли на проде.
+- Живой браузерный прогон очереди (хелпер + второй клиент) — делается владельцем по чек-листу §11.
 - Rate-limit ИИ (30/час) и поведение при 429 провайдера — проверено только чтением кода.
 - Мобильная раскладка `/console/` — не смотрели (консоль проектировалась как десктопная).
 
