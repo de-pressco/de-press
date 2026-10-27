@@ -5,7 +5,7 @@ pre-translation RU versions live in `docs-ru-archive/` (gitignored).
 
 | RU (archive) | EN (canonical) | Notes |
 |---|---|---|
-| хелпер | helper | Role helping people on duty; never «волонтёр» |
+| хелпер | helper | Role helping people on duty; UI copy never says «волонтёр» (ADR-0010 keeps the descriptive EN "verified volunteer") |
 | слушатель /heard | hearer | Account connected via `hearers` (outreach) |
 | облако / support-облако | support cloud | Anonymous support entry (ADR-0008) |
 | тихие фразы | quiet phrases | Anti-panic silent phrase triggers |
@@ -23,7 +23,7 @@ pre-translation RU versions live in `docs-ru-archive/` (gitignored).
 | выговориться / излить | venting | The feed's purpose; UI label context |
 | исходящие / аутрич | outreach | Author → hearers initiations (ADR-0009) |
 | диалог | dialogue | 1:1 ephemeral chat (`Dialogue`, WS) |
-| инвайты | invites | Moderator/helper invite links (helper, therapist) |
+| инвайты | invites | Helper invite links (therapist invites live in ADR-0022) |
 | терапевт | therapist | Paid sessions contour (ADR-0022) |
 | сессия терапии | therapy session | `TherapySession` with manual payment confirm |
 | Solana Pay QR | Solana Pay QR | Keep as is; direct client→therapist transfer |

@@ -97,6 +97,13 @@ The API `GET /api/v1/moderation/dashboard` is live, the UI is not.
 - Notify and the inbox of Help Request / dialogue-review — **only** `is_helper && is_on_duty && is_active`. If nobody is on shift — wait as now + 112 + the AI link. Do not promise "an answer in 30 seconds".
 - Files: the identity model, `dialogue/help.py` (`_notify_helpers`, `list_help_inbox`), ChatList is optional.
 
+> **Superseded 2026-10-27 (owner decision).** The Help Request **inbox** is no longer limited to
+> on-duty Helpers: the shared pending pool is visible to every Helper, and duty gates only
+> notifications, instant match and presence. Also settled: **the moderator IS a Helper** — there is
+> no separate moderator role (`is_staff ⇒ is_helper`), so `/console/` and `/helper` are two doors of
+> the same role. Track A stays historical; the live state is
+> [`HELPERS_MODERATION_ADMIN.md`](./de-press-docs/app/HELPERS_MODERATION_ADMIN.md).
+
 ### A6. Online + instant match
 
 Only after A5.

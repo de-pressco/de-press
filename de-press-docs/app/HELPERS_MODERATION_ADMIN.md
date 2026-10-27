@@ -14,8 +14,8 @@
 | ИИ-чат на проде | **Включён.** `AI_API_KEY` добавлен в `/etc/depress/depress.env`, `depress-api` перезапущен, живой ответ 200 за ~3 с, `offline=false` |
 | Хелперы в коде | Готово: роль, смена (duty), heartbeat, мгновенный мэтч, живая очередь по WS, инвайты, дашборд, модерация облаков |
 | Хелперы на проде | Роль выдана аккаунту владельца (2026-10-26), смена включается тумблером в `/helper`. Инвайты — 0 |
-| Модерационное окно | `/helper`: Queue / Clouds / Summary. Мёртвая вкладка **Requests удалена** (2026-10-26) |
-| Админка `/console/` | Overview / Reports / **Clouds** / **Helpers** / Log, пагинация, ссылка на вход. Нет: терапии и правки тихих фраз |
+| Модерационное окно | `/helper`: Queue / Clouds / Summary. Очередь видна и вне смены (2026-10-27), у заявки есть «Взять» и «Пропустить». Мёртвая вкладка **Requests удалена** (2026-10-26) |
+| Админка `/console/` | Overview / Reports (**Очередь + История-тикеты**: кто закрыл, решение, причина) / **Clouds** / **Helpers** / Log, пагинация, карточка «Моя смена», мобильная вёрстка < 640px. Нет: терапии и правки тихих фраз |
 | Данные на проде | 1 аккаунт (staff/owner), 0 репортов, 0 pending-облаков, 0 терапевтов, 55 опубликованных историй / 75 записей всего |
 
 Три вещи, которые дают максимум эффекта за минимум работы:
@@ -32,7 +32,7 @@
 | B1 | мёртвая вкладка Requests | вкладка, 3 эндпоинта, сервисы и клиентские методы удалены |
 | B2 | Django-admin actions мимо сервисов | actions вызывают `approve_cloud`/`reject_cloud` |
 | B3 | облака без аудита | `ModerationAction.cloud` + `cloud_approved`/`cloud_rejected` (миграция 0007) |
-| B4 | Helper скрыт у staff | вкладка видна при `is_helper` **или** `is_staff` |
+| B4 | Helper скрыт у staff | инвариант `is_staff ⇒ is_helper` (2026-10-27), фолбэк `is_staff` удалён |
 | B5 | репорт всегда `other` | лист с 4 причинами + поле деталей (история и сообщения чата) |
 | B6 | mini без живой очереди | вкладка Queue по WS (тот же хук, что в браузере) |
 | B7 | консоль без входа | кнопка на `/admin/login/?next=/console/` |
@@ -103,13 +103,13 @@ ssh BIA "echo <sudo-pass> | sudo -S -p '' systemctl restart depress-api"
 
 | Поверхность | URL | Кто | Что делает | Ограничения |
 |---|---|---|---|---|
-| Browser SPA | `https://app.de-press.co/` (вкладка **Helper** → `/helper`) | `is_helper` (и `is_staff` по API) | Живая очередь заявок (WS), облака, сводка, duty-toggle | Вкладка в рейле скрыта для staff, если он не helper (п. B4) |
-| Mini App | `https://app.de-press.co/tg/` | `is_helper` | Облака + сводка + duty + приём заявок серыми строками в `/chat` (поллинг 20 с) | Нет живой очереди по WS и нет вкладки Requests (п. B6) |
+| Browser SPA | `https://app.de-press.co/` (вкладка **Helper** → `/helper`) | `is_helper` (staff — Helper по инварианту) | Живая очередь заявок (WS), облака, сводка, duty-toggle | Очередь видна и вне смены: смена гейтит только уведомления и мгновенный мэтч |
+| Mini App | `https://app.de-press.co/tg/` | `is_helper` | Живая очередь по WS, облака, сводка, duty, приём заявок серыми строками в `/chat` (поллинг 20 с) | Отдельной вкладки Requests нет (она не нужна: очередь в Helper и в чате) |
 | Staff-консоль | `https://app.de-press.co/console/` | `is_staff` | Overview (счётчики), Reports (разбор), Moderation log | Только отчёты; вход — через Django-сессию (п. B7) |
 | Django admin | `https://app.de-press.co/admin/` | `is_staff` / `is_superuser` | Аккаунты и роли, инвайты, облака bulk-действиями, репорты, аудит, фразы | Дефолтный Django-UI, часть действий идёт мимо сервисов (п. B2) |
 
-Ссылки между поверхностями нет ни в одну сторону: `/console/` не линкуется из приложения,
-`/admin/` — из `/console/`. Пока это «знание владельца», а не продукт.
+Ссылки между поверхностями: `/more` → **Moderation** ведёт в `/console/` (виден только staff); обратной
+ссылки из консоли нет. Смена включается и там, и там: `/console/` → карточка «Моя смена», `/helper` → карточка Duty.
 
 ---
 
@@ -119,10 +119,10 @@ ssh BIA "echo <sudo-pass> | sudo -S -p '' systemctl restart depress-api"
 |---|---|---|---|---|---|---|---|
 | Создать/отменить заявку помощи | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | Видеть `/help/presence` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Heartbeat `POST /help/heartbeat` | ❌ | ❌ | ✅ | ✅ | ✅ | ❌ | ❌ |
-| Duty-toggle `POST /me/helper-duty` | ❌ | ❌ | ✅ | ✅ | ✅ | ❌ | ❌ |
-| Inbox заявок `GET /help/requests` | ❌ | ❌ | ✅ (пусто вне смены) | ✅ | ✅ | ❌ | ❌ |
-| Взять/пропустить заявку | ❌ | ❌ | ✅ *(смена не требуется)* | ✅ | ✅ | ❌ | ❌ |
+| Heartbeat `POST /help/heartbeat` | ❌ | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Duty-toggle `POST /me/helper-duty` | ❌ | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Inbox заявок `GET /help/requests` | ❌ | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Взять/пропустить заявку | ❌ | ❌ | ✅ *(смена не требуется)* | ✅ | ✅ | ✅ | ✅ |
 | Мгновенный мэтч при создании заявки | — | — | — | ✅ | ✅ (least-recent-matched, блокировки учтены) | — | — |
 | Очередь облаков + approve/reject | ❌ | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | Подать репорт (история/сообщение) | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
@@ -133,9 +133,13 @@ ssh BIA "echo <sudo-pass> | sudo -S -p '' systemctl restart depress-api"
 
 Ключевые асимметрии (сознательные, но их надо знать):
 
-- **Взять заявку можно, будучи off-duty** — смена влияет только на уведомления/инбокс, не на accept. Так задумано в MAINPLAN A5.
-- **Инвайты и вкладка Requests требуют on-duty**, хотя создание инвайта — операция «штабная», не «на линии».
-- **Staff ≠ Helper**: staff видит облака и консоль, но не heartbeat/duty и не инбокс заявок.
+- **Модератор — это хелпер** (решение владельца 2026-10-27): `is_staff ⇒ is_helper` поддерживается в
+  `Account.save()`, поэтому «staff без линии» не существует. `/console/` (staff) и `/helper` — две двери
+  одной роли; отдельные колонки Staff/Superuser в таблице выше оставлены только для наглядности.
+- **Смена гейтит уведомления и мгновенный мэтч, но не видимость**: инбокс и WS-снапшот отдают общий пул
+  и вне смены (решение владельца 2026-10-27), поэтому хелпер, зашедший через 10 минут, видит заявку и
+  может её взять.
+- **Инвайты — «штабная» операция**: доступны любому хелперу в любой момент, смена не требуется.
 
 ---
 
@@ -159,7 +163,8 @@ ssh BIA "echo <sudo-pass> | sudo -S -p '' systemctl restart depress-api"
 
 ### 4.2. Встать на смену
 
-`/helper` → карточка Duty → `On duty` (`POST /api/v1/me/helper-duty {on:true}`).
+`/helper` → карточка Duty → `On duty`, либо `/console/` → карточка «Моя смена»
+(`POST /api/v1/me/helper-duty {on:true}`).
 Пока открыт `/helper` или `/chat`, клиент шлёт heartbeat; «online» = heartbeat ≤ 45 с
 (`backend/apps/dialogue/presence.py:16`). Тонкость: если хелпер сидит на `/feed` или `/patterns`,
 он **on duty, но не online** → мгновенного мэтча не будет, только персональное уведомление `help_requested`.
@@ -222,7 +227,7 @@ Django admin → *Support clouds* → bulk-actions теперь тоже идё�
 | POST | `/api/v1/help/heartbeat` | helper |
 | POST | `/api/v1/help/requests` | любой с идентичностью |
 | GET | `/api/v1/help/requests/mine` | автор заявки |
-| GET | `/api/v1/help/requests` | helper on duty |
+| GET | `/api/v1/help/requests` | helper (смена не требуется) |
 | POST | `/api/v1/help/requests/{id}/accept` | helper |
 | POST | `/api/v1/help/requests/{id}/skip` | helper |
 | POST | `/api/v1/help/requests/{id}/cancel` | автор заявки |
@@ -239,7 +244,7 @@ Django admin → *Support clouds* → bulk-actions теперь тоже идё�
 | POST | `/api/v1/messages/{id}/report` | участник диалога |
 | POST/GET/DELETE | `/api/v1/blocks…` | любой |
 | GET | `/api/v1/admin/overview` | staff |
-| GET | `/api/v1/admin/reports?status=` | staff |
+| GET | `/api/v1/admin/reports?status=` | staff; `open\|reviewing\|all\|resolved` (+ `decision`, `resolved_by`, `resolution_reason`, `resolved_at`) |
 | POST | `/api/v1/admin/reports/{id}/resolve` | staff |
 | GET | `/api/v1/admin/moderation-log?limit=&offset=` | staff |
 | GET | `/api/v1/admin/helpers` | staff |
@@ -281,7 +286,7 @@ Sev: **BLK** — блокирует пилот, **M** — мешает кажд�
 | B1 | **M** | Вкладка **Requests** мертва: `awaiting_helper` никто не выставляет | `apps/dialogue/services.py:325` (`Legacy… skip this gate`), `api/v1/moderation.py:194-223`, `apps/browser/src/features/helper/HelperQueue.tsx` (tab `requests`) | Хелпер видит пустой экран и копирайт про «мы проверили»; поддержка думает, что гейт работает | либо удалить вкладку + эндпоинты + i18n-ключи, либо вернуть запись `AWAITING_HELPER` в `request_dialogue`. Решение — за владельцем |
 | B2 | **BLK** | Два пути модерации облаков: Django-admin actions пишут статус напрямую | `apps/support/admin.py:15-36` vs `apps/support/services.py:596-644` | Облако «доставлено», но автор не получил `cloud_approved`; расходится с API-поведением | в actions вызывать `approve_cloud`/`reject_cloud` (actor из `request.user`), а не менять поля |
 | B3 | **M** | Модерация облаков не попадает в аудит | `ModerationAction` пишется только в `resolve_report` | Невозможно ответить «кто отклонил облако и почему» | добавить `cloud` FK + `CLOUD_APPROVED/CLOUD_REJECTED` в `ModerationActionKind` (миграция) и писать в сервисах |
-| B4 | **M** | Staff не видит вкладку Helper в рейле | `apps/browser/src/components/layout/Sidebar.tsx:78-80` (`key === "helper" && !isHelper`) | У owner (`is_staff`, не `is_helper`) нет входа в `/helper`, хотя страница и API разрешают | `!isHelper && !isStaff` в фильтре |
+| B4 | ✅ | Staff не видел вкладку Helper в рейле | закрыто 2026-10-26 фолбэком `is_staff`; с 2026-10-27 фолбэк удалён | — | `is_staff ⇒ is_helper` (инвариант в `Account.save()`) |
 | B5 | **BLK** | Репорт истории всегда `other`, без деталей | `apps/browser/src/features/feed/StoryPage.tsx:349-350` (`api.reportStory(id, "other")`) | В очереди нет причин, разбор вслепую; self-harm не отличить от спама | мини-форма: выбор `abuse/spam/self_harm/other` + поле деталей (API уже принимает) |
 | B6 | **M** | Mini App: нет живой очереди и вкладки Requests | `apps/mini-app/src/features/helper/HelperQueue.tsx:8` (`Tab = clouds \| summary`), `ChatList.tsx:60-66` (поллинг 20 с) | Хелпер в Telegram узнаёт о заявке с задержкой до 20 с и не видит очередь | либо `useHelperQueue` в mini (WS уже есть), либо честная плашка «очередь — в браузере» |
 | B7 | **M** | `/console/` без формы входа | `apps/admin/src/App.tsx:21-33` | Staff упирается в «Access denied» со ссылкой на приложение вместо `/admin/login` | ссылка на `/admin/login/?next=/console/` + подсказка |
@@ -355,7 +360,7 @@ Sev: **BLK** — блокирует пилот, **M** — мешает кажд�
 14. Тихие фразы (редактор + картинки) и фонд в консоли.
 15. B15 — отзыв инвайтов, TTL в UI, список организаций.
 16. Экспорт/выгрузка аудита, SLA-отчёт по ожиданию (медиана уже считается в `/help/dashboard`).
-17. Единая навигация: ссылки между `/console/`, `/admin/`, `/helper`.
+17. Единая навигация: `/more` → **Moderation** ведёт в `/console/` (2026-10-27); обратной ссылки нет.
 
 ---
 
@@ -415,12 +420,12 @@ ssh BIA "curl -s -X POST http://127.0.0.1:8000/api/v1/ai/support -H 'Content-Typ
 1. **Вход в консоль.** В окне A открой `https://app.de-press.co/admin/login/?next=/console/`, войди staff-аккаунтом →
    попадёшь в `/console/`. Вкладки: Overview, Reports, Clouds, Helpers, Log.
 2. **Роль хелпера.** В `/console/` → **Helpers**: должна быть строка с твоим email, `Не на смене`.
-   В рейле приложения появилась вкладка **Helper** (раньше её видели только `is_helper`).
-3. **Смена.** `/helper` → карточка Duty → «Встать на смену». В Summary: «На смене», в Helpers начнёт расти
-   «Последний heartbeat» (пока открыт `/helper` или `/chat`).
-4. **Очередь.** Пока ты **не на смене** (сними галочку), в окне B: `https://app.de-press.co/help` →
-   «Человек рядом» → заметка → отправить. Заявка уйдёт в очередь. Вернись в A, включи смену →
-   вкладка **Queue** покажет заявку с ожиданием; «Взять» → откроется `/chat/<id>` с правилами и заметкой.
+   В рейле приложения — вкладка **Helper** (staff — Helper по инварианту `is_staff ⇒ is_helper`).
+3. **Смена.** `/helper` → карточка Duty → «Встать на смену», либо `/console/` → карточка «Моя смена».
+   В Summary: «На смене», в Helpers начнёт расти «Последний heartbeat» (пока открыт `/helper` или `/chat`).
+4. **Очередь.** Сними смену. В окне B: `https://app.de-press.co/help` → «Человек рядом» → заметка → отправить.
+   Заявка уйдёт в общий пул и **сразу видна** в `Queue` (смена на видимость не влияет, решение 2026-10-27);
+   включи смену, если хочешь получать уведомления и мгновенный мэтч. «Взять» → откроется `/chat/<id>` с правилами и заметкой.
 5. **Мгновенный мэтч.** Оставь смену включённой и `/helper` открытым, в окне B отправь ещё одну заявку
    (или новое инкогнито) → диалог откроется сразу, без очереди.
 6. **Облака.** В окне B открой любую чужую историю → «Поддержать» → свободный текст → отправить.
@@ -443,5 +448,9 @@ ssh BIA "curl -s -X POST http://127.0.0.1:8000/api/v1/ai/support -H 'Content-Typ
 
 - Живой браузерный прогон очереди (хелпер + второй клиент) — делается владельцем по чек-листу §11.
 - Rate-limit ИИ (30/час) и поведение при 429 провайдера — проверено только чтением кода.
-- Мобильная раскладка `/console/` — не смотрели (консоль проектировалась как десктопная).
+- Мобильная раскладка `/console/` — CSS для ≤640px есть (скролл-табы, sticky-шапка, аудит-таблица как
+  карточки), но живой прогон на 360px ещё не делали.
+- Тикеты репортов (`decision/resolved_by/resolution_reason/resolved_at`) — проверены pytest; в живом
+  браузере история ещё не открывалась.
+- `/helper`: обновлённая вёрстка (стат-карточки, чип ожидания, скролл-табы) — только сборка/типы, глазами не смотрели.
 

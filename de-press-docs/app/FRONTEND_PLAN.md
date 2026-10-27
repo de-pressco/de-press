@@ -78,7 +78,7 @@ The plan follows the rules of the six domain skills (`better-interface`, `better
   - Bottom: sign-in/account + the language switcher + **Anti-Panic** (a separate red button).
   - The active page: `aria-current="page"` + a `--bg-active` highlight + a left indicator bar.
 - `Header` shrinks to: (hidden on mobile) brand + bell + panic; all the navigation moves into the sidebar.
-- **Adaptivity (for the mobile coder)**: on `< 900px` the sidebar turns into a **bottom tab bar** with 4–5 items (Feed, Chats, Mine?, Patterns, More) — we lay down the `BottomNav` component structure, the styles later.
+- **Adaptivity**: below 1100px the rail turns into a **bottom tab bar**: **Feed · Chats · More** + Anti-Panic as the last slot (canonical — [`MOBILE_PWA.md`](./MOBILE_PWA.md)). There is no Notifications tab: a bell counter is an engagement metric the product refuses.
 
 ### 3.2 Shell
 - `Shell.tsx`: `Sidebar` on the left, the content on the right; the content — a `max-width` per section.

@@ -28,7 +28,7 @@ The Q5 decision: the GitHub publication is deferred until all the other project 
 
 ## P4. The full retest
 
-- **Backend** (in chunks, a ~30s runner timeout): therapy, fund, identity, common+notifications, dialogue, ai (`env -u DEEPSEEK_API_KEY`), empathy+moderation, support, stories.
+- **Backend** (in chunks, a ~30s runner timeout): therapy, fund, identity, common+notifications, dialogue, ai, empathy+moderation, support, stories.
 - **Frontend:** browser vitest 64 + tsc + build; the mini-app build.
 - **The smoke matrix** for the manual check (P6): anti-panic · feed+clouds · quiet phrases · dialogue+voice+circles · help human/AI · helper (the queue, duty, invites) · the ZK patterns · notifications+`/inbox` · the fund (the wallet/banner/report) · the admin (the auth 403s, the aggregates without the content, the report resolution + the mandatory reason, the moderation log) · therapy (invite → catalog → session → QR → "I paid" → confirmation → dialogue) · the i18n switch · all the same in the Mini App inside Telegram.
 
@@ -36,7 +36,7 @@ The Q5 decision: the GitHub publication is deferred until all the other project 
 
 ## P5. The helper dashboard — ✅ done (2026-08-30)
 
-- A left tab (browser), visible to `is_helper` only; the existing `/helper` (HelperQueue) evolves into the dashboard.
+- A left tab (browser), visible to `is_helper` only (staff are Helpers: `is_staff ⇒ is_helper`); the existing `/helper` (HelperQueue) evolves into the dashboard.
 - The v1 composition: a live request queue over a WS channel from the start (Q4; the notifications-WS pattern), "take" → opening the dialogue (the call button is already in the dialogue), the duty status (the existing toggle), the summary (the existing one), the metrics from Q8.
 - A user starting a conversation with a helper already works via a help request; no direct calls (Q7).
 - The design by the DESIGN_V2 tokens; backend tests for new endpoints, if any appear.

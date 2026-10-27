@@ -63,7 +63,7 @@ A private support note attached to a Story. Never public. The author does not se
 _Avoid_: comment, reply, public thread, reaction showcase, author cloud inbox
 
 **Moderated Cloud**:
-A Support Cloud with free-form text that stays pending until a Helper (or moderator) approves it.
+A Support Cloud with free-form text that stays pending until a Helper approves it.
 _Avoid_: public comment awaiting review
 
 **Helper**:
