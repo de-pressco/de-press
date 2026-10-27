@@ -2,13 +2,21 @@ import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { api, ApiError } from "@/core/api/client";
+import { friendlyError } from "@/core/api/errorCopy";
 import { useI18n } from "@/core/i18n/context";
 import { fmt } from "@/core/i18n/flatten";
 import { useHelperHeartbeat } from "./useHelperHeartbeat";
 import { useHelperQueue } from "./useHelperQueue";
+import { waitTone, type WaitTone } from "./waitTone";
 import styles from "./HelperQueue.module.css";
 
 type Tab = "queue" | "clouds" | "summary";
+
+const TONE_CLASS: Record<WaitTone, string> = {
+  fresh: "",
+  warm: styles.chipWarm,
+  urgent: styles.chipUrgent,
+};
 
 export function HelperQueue() {
   const { t } = useI18n();
@@ -21,7 +29,7 @@ export function HelperQueue() {
     queryFn: () => api.me(),
   });
 
-  const canHelper = Boolean(meQuery.data?.is_helper || meQuery.data?.is_staff);
+  const canHelper = Boolean(meQuery.data?.is_helper);
   const isHelper = Boolean(meQuery.data?.is_helper);
   const onDuty = Boolean(meQuery.data?.is_on_duty);
   useHelperHeartbeat(isHelper);
@@ -87,6 +95,20 @@ export function HelperQueue() {
       await queryClient.invalidateQueries({ queryKey: ["helper-dashboard"] });
       navigate(`/chat/${dialogue.id}`);
     },
+    // Another Helper won the race: the server refuses, the list must refresh.
+    onError: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["help-requests"] });
+      await queryClient.invalidateQueries({ queryKey: ["helper-dashboard"] });
+      refreshQueue();
+    },
+  });
+
+  const skipHelp = useMutation({
+    mutationFn: (requestId: string) => api.skipHelpRequest(requestId),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["help-requests"] });
+      refreshQueue();
+    },
   });
 
   const approve = useMutation({
@@ -151,13 +173,12 @@ export function HelperQueue() {
     <div className={styles.pane}>
       <header className={styles.head}>
         <h1 className={styles.title}>{t.helper.title}</h1>
-        {isHelper ? (
+        {canHelper ? (
           <div className={onDuty ? styles.dutyOn : styles.duty}>
             <div>
               <p className={styles.dutyStatus}>
                 {onDuty ? t.helper.dutyOn : t.helper.dutyOff}
               </p>
-              <p className={styles.dutyLead}>{t.helper.dutyLead}</p>
             </div>
             <button
               type="button"
@@ -211,50 +232,106 @@ export function HelperQueue() {
       {tab === "queue" ? (
         <>
           {helpDashQuery.data ? (
-            <ul className={styles.metrics}>
-              <li>
-                {t.helper.metricQueue}: {helpDashQuery.data.queue_length}
+            <ul className={styles.stats}>
+              <li className={styles.stat}>
+                <span className={styles.statValue}>
+                  {helpDashQuery.data.queue_length}
+                </span>
+                <span className={styles.statLabel}>{t.helper.metricQueue}</span>
               </li>
-              <li>
-                {t.helper.metricMedianWait}:{" "}
-                {medianLabel(helpDashQuery.data.median_wait_seconds_7d)}
+              <li className={styles.stat}>
+                <span className={styles.statValue}>
+                  {medianLabel(helpDashQuery.data.median_wait_seconds_7d)}
+                </span>
+                <span className={styles.statLabel}>
+                  {t.helper.metricMedianWait}
+                </span>
               </li>
-              <li>
-                {t.helper.metricTaken24}: {helpDashQuery.data.taken_24h}
+              <li className={styles.stat}>
+                <span className={styles.statValue}>
+                  {helpDashQuery.data.taken_24h}
+                </span>
+                <span className={styles.statLabel}>{t.helper.metricTaken24}</span>
               </li>
-              <li>
-                {t.helper.metricClosed24}: {helpDashQuery.data.closed_24h}
+              <li className={styles.stat}>
+                <span className={styles.statValue}>
+                  {helpDashQuery.data.closed_24h}
+                </span>
+                <span className={styles.statLabel}>
+                  {t.helper.metricClosed24}
+                </span>
               </li>
-              <li>
-                {t.helper.metricTaken7d}: {helpDashQuery.data.taken_7d}
+              <li className={styles.stat}>
+                <span className={styles.statValue}>
+                  {helpDashQuery.data.taken_7d}
+                </span>
+                <span className={styles.statLabel}>{t.helper.metricTaken7d}</span>
               </li>
-              <li>
-                {t.helper.metricClosed7d}: {helpDashQuery.data.closed_7d}
+              <li className={styles.stat}>
+                <span className={styles.statValue}>
+                  {helpDashQuery.data.closed_7d}
+                </span>
+                <span className={styles.statLabel}>
+                  {t.helper.metricClosed7d}
+                </span>
               </li>
-              <li>
-                {t.helper.metricOnDuty}: {helpDashQuery.data.on_duty} ·{" "}
-                {helpDashQuery.data.online} {t.helper.metricOnline}
+              <li className={styles.stat}>
+                <span className={styles.statValue}>
+                  {helpDashQuery.data.on_duty}
+                </span>
+                <span className={styles.statLabel}>{t.helper.metricOnDuty}</span>
+              </li>
+              <li className={styles.stat}>
+                <span className={styles.statValue}>
+                  {helpDashQuery.data.online}
+                </span>
+                <span className={styles.statLabel}>{t.helper.metricOnline}</span>
               </li>
             </ul>
           ) : null}
-          {!onDuty ? (
-            <p className={styles.empty}>{t.helper.queueOffDuty}</p>
-          ) : helpQueue.length === 0 ? (
+          {acceptHelp.isError || skipHelp.isError ? (
+            <p className={styles.error} role="alert">
+              {friendlyError(
+                acceptHelp.error ?? skipHelp.error,
+                t.common.errorSoft,
+              )}
+            </p>
+          ) : null}
+          {helpQueue.length === 0 ? (
             <p className={styles.empty}>{t.helper.queueEmpty}</p>
           ) : (
             <ul className={styles.list}>
               {helpQueue.map((row) => (
                 <li key={row.id} className={styles.card}>
-                  <p className={styles.meta}>{waitLabel(row.created_at)}</p>
+                  <p className={styles.meta}>
+                    <span
+                      className={[
+                        styles.chip,
+                        TONE_CLASS[waitTone(row.created_at, now)],
+                      ]
+                        .filter(Boolean)
+                        .join(" ")}
+                    >
+                      {waitLabel(row.created_at)}
+                    </span>
+                  </p>
                   {row.note ? <p className={styles.body}>{row.note}</p> : null}
                   <div className={styles.actions}>
                     <button
                       type="button"
                       className={styles.approve}
-                      disabled={acceptHelp.isPending}
+                      disabled={acceptHelp.isPending || skipHelp.isPending}
                       onClick={() => acceptHelp.mutate(row.id)}
                     >
                       {t.helper.take}
+                    </button>
+                    <button
+                      type="button"
+                      className={styles.reject}
+                      disabled={acceptHelp.isPending || skipHelp.isPending}
+                      onClick={() => skipHelp.mutate(row.id)}
+                    >
+                      {t.help.requestSkip}
                     </button>
                   </div>
                 </li>
@@ -315,18 +392,24 @@ export function HelperQueue() {
         </p>
       ) : dash ? (
         <>
-          <ul className={styles.metrics}>
-            <li>
-              {t.helper.pendingClouds}: {dash.pending_clouds}
+          <ul className={styles.stats}>
+            <li className={styles.stat}>
+              <span className={styles.statValue}>{dash.pending_clouds}</span>
+              <span className={styles.statLabel}>{t.helper.pendingClouds}</span>
             </li>
-            <li>
-              {t.helper.openReports}: {dash.open_reports}
+            <li className={styles.stat}>
+              <span className={styles.statValue}>{dash.open_reports}</span>
+              <span className={styles.statLabel}>{t.helper.openReports}</span>
             </li>
-            <li>
-              {t.helper.reviewingReports}: {dash.reviewing_reports}
+            <li className={styles.stat}>
+              <span className={styles.statValue}>{dash.reviewing_reports}</span>
+              <span className={styles.statLabel}>
+                {t.helper.reviewingReports}
+              </span>
             </li>
-            <li>
-              {t.helper.reports7d}: {dash.reports_last_7d}
+            <li className={styles.stat}>
+              <span className={styles.statValue}>{dash.reports_last_7d}</span>
+              <span className={styles.statLabel}>{t.helper.reports7d}</span>
             </li>
           </ul>
           <h2 className={styles.sub}>{t.helper.recentReports}</h2>

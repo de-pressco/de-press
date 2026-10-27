@@ -15,7 +15,8 @@ export default defineConfig({
     },
   },
   server: {
-    port: 5175,
+    // 5176, not 5175: the Mini App dev server already binds 5175.
+    port: 5176,
     proxy: {
       "/api": { target: API_UPSTREAM, changeOrigin: true },
       "/media": { target: API_UPSTREAM, changeOrigin: true },

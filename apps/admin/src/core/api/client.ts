@@ -5,6 +5,7 @@
 
 import type {
   AdminHelper,
+  AdminMe,
   AdminOverview,
   ModerationActionLog,
   ModerationResult,
@@ -16,6 +17,7 @@ import type {
 
 export type {
   AdminHelper,
+  AdminMe,
   AdminOverview,
   AdminReport,
   ModerationActionLog,
@@ -77,6 +79,13 @@ export const api = {
   helpers: () => request<AdminHelper[]>("/admin/helpers"),
   setHelperDuty: (id: string, on: boolean) =>
     request<AdminHelper>(`/admin/helpers/${id}/duty`, {
+      method: "POST",
+      body: JSON.stringify({ on }),
+    }),
+  // Own shift: /console/ and /helper are two doors of the same Helper role.
+  me: () => request<AdminMe>("/me"),
+  setDuty: (on: boolean) =>
+    request<AdminMe>("/me/helper-duty", {
       method: "POST",
       body: JSON.stringify({ on }),
     }),

@@ -5,25 +5,23 @@ import { ApiError, api } from "../core/api/client";
 import type { AdminReport, ResolveBody } from "../core/api/types";
 import { useI18n } from "../core/i18n/context";
 
-const STATUS_FILTERS = [
-  "open",
-  "reviewing",
-  "resolved_hidden",
-  "resolved_dismissed",
-  "all",
-];
+const QUEUE_FILTERS = ["open", "reviewing"];
 const REASONS = ["abuse", "spam", "self_harm", "other"];
 const DECISIONS: Array<ResolveBody["decision"]> = ["hide", "dismiss", "remove"];
+
+type Mode = "queue" | "history";
 
 export function Reports({ onError }: { onError: (e: unknown) => void }) {
   const { t } = useI18n();
   const queryClient = useQueryClient();
+  const [mode, setMode] = useState<Mode>("queue");
   const [filter, setFilter] = useState("open");
   const [resolvingId, setResolvingId] = useState<string | null>(null);
+  const status = mode === "queue" ? filter : "resolved";
 
   const query = useInfiniteQuery({
-    queryKey: ["admin-reports", filter],
-    queryFn: ({ pageParam }) => api.reports(filter, pageParam),
+    queryKey: ["admin-reports", status],
+    queryFn: ({ pageParam }) => api.reports(status, pageParam),
     initialPageParam: 0,
     getNextPageParam: (last, all) =>
       last.length === 50 ? all.length * 50 : undefined,
@@ -58,20 +56,37 @@ export function Reports({ onError }: { onError: (e: unknown) => void }) {
 
   return (
     <section>
-      <h2 className="sub">{t.reports.queue}</h2>
+      <h2 className="sub">
+        {mode === "queue" ? t.reports.queue : t.reports.history}
+      </h2>
       <div className="filters">
-        {STATUS_FILTERS.map((status) => (
+        {(["queue", "history"] as const).map((m) => (
           <button
-            key={status}
+            key={m}
             type="button"
-            className={filter === status ? "tab tab-on" : "tab"}
-            onClick={() => setFilter(status)}
+            className={mode === m ? "tab tab-on" : "tab"}
+            onClick={() => {
+              setMode(m);
+              setFilter("open");
+              setResolvingId(null);
+            }}
           >
-            {status === "all"
-              ? t.reports.filterAll
-              : (t.statuses[status as keyof typeof t.statuses] ?? status)}
+            {m === "queue" ? t.reports.queueTab : t.reports.history}
           </button>
         ))}
+        {mode === "queue"
+          ? QUEUE_FILTERS.map((statusFilter) => (
+              <button
+                key={statusFilter}
+                type="button"
+                className={filter === statusFilter ? "btn" : "tab"}
+                onClick={() => setFilter(statusFilter)}
+              >
+                {t.statuses[statusFilter as keyof typeof t.statuses] ??
+                  statusFilter}
+              </button>
+            ))
+          : null}
       </div>
 
       {resolve.isSuccess ? <p className="badge">{t.reports.saved}</p> : null}
@@ -164,8 +179,23 @@ function ReportRow(props: {
           {t.reports.resolvedNote}: {row.resolved_note}
         </p>
       ) : null}
+      {row.decision ? (
+        <p className="meta">
+          {t.reports.closedBy}: {row.resolved_by || "—"} ·{" "}
+          {t.reports.closedAt}: {new Date(row.resolved_at).toLocaleString()}
+        </p>
+      ) : null}
+      {row.decision ? (
+        <p className="meta">
+          {t.reports.decision}:{" "}
+          {t.actions[row.decision as keyof typeof t.actions] ?? row.decision} ·{" "}
+          {t.reports.resolutionReason}:{" "}
+          {t.reasons[row.resolution_reason as keyof typeof t.reasons] ??
+            row.resolution_reason}
+        </p>
+      ) : null}
 
-      {open ? (
+      {row.decision ? null : open ? (
         <div className="resolve-form">
           <label>
             {t.reports.decision}

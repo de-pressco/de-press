@@ -27,6 +27,11 @@ export interface AdminReport {
   target_hidden: boolean;
   created_at: string;
   resolved_note: string;
+  /** Ticket trail: empty while the report is still open. */
+  decision: string;
+  resolved_by: string;
+  resolution_reason: string;
+  resolved_at: string;
 }
 
 export interface ResolveBody {
@@ -71,6 +76,13 @@ export interface ModerationResult {
   status: string;
   message: string;
   cloud_id: string;
+}
+
+export interface AdminMe {
+  pseudonym?: string;
+  is_staff?: boolean;
+  is_helper?: boolean;
+  is_on_duty?: boolean;
 }
 
 export interface AdminHelper {

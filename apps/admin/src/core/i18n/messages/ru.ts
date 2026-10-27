@@ -62,6 +62,11 @@ export const ru: Messages = {
   },
   reports: {
     queue: "Очередь жалоб",
+    queueTab: "Очередь",
+    history: "История (тикеты)",
+    closedBy: "Закрыл",
+    closedAt: "Закрыт",
+    resolutionReason: "Причина решения",
     filterAll: "Все",
     empty: "Пусто — очередь чиста.",
     targetStory: "Запись",

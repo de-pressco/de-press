@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { api } from "@/core/api/client";
 import { useAntiPanic } from "@/core/hooks/useAntiPanic";
 import { useI18n } from "@/core/i18n/context";
-import { DEFAULT_NAV_ORDER, type NavKey } from "@/core/navOrder";
+import { visibleNavKeys, type NavKey } from "@/core/navOrder";
 import { NavIcon, type NavIconName } from "./NavIcons";
 import styles from "./Sidebar.module.css";
 
@@ -13,7 +13,9 @@ const KEY_TO_ICON: Record<NavKey, NavIconName> = {
   chat: "chat",
   help: "help",
   patterns: "patterns",
+  therapy: "therapy",
   helper: "shield",
+  more: "more",
 };
 
 const KEY_TO_PATH: Record<NavKey, string> = {
@@ -21,7 +23,9 @@ const KEY_TO_PATH: Record<NavKey, string> = {
   chat: "/chat",
   help: "/help",
   patterns: "/patterns",
+  therapy: "/therapy",
   helper: "/helper",
+  more: "/more",
 };
 
 /** Telegram Desktop-style icon rail (~72px). */
@@ -54,7 +58,7 @@ export function Sidebar({
     refetchInterval: 20_000,
   });
 
-  const canHelper = Boolean(meQuery.data?.is_helper || meQuery.data?.is_staff);
+  const canHelper = Boolean(meQuery.data?.is_helper);
   const pendingRequests = (requestsQuery.data ?? []).filter(
     (r) => r.status === "pending" || r.status === "approved" || !r.status,
   ).length;
@@ -69,15 +73,14 @@ export function Sidebar({
       chat: t.nav.me,
       help: t.nav.help,
       patterns: t.nav.patterns,
+      therapy: t.nav.therapy,
       helper: t.nav.helper,
+      more: t.nav.more,
     }),
     [t],
   );
 
-  const visibleKeys = useMemo(
-    () => DEFAULT_NAV_ORDER.filter((key) => !(key === "helper" && !canHelper)),
-    [canHelper],
-  );
+  const visibleKeys = useMemo(() => visibleNavKeys(canHelper), [canHelper]);
 
   function softFor(key: NavKey): number | undefined {
     if (key === "chat" && chatUnread + pendingRequests > 0)

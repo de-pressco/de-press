@@ -133,6 +133,17 @@ export function IconEdit(props: IconProps) {
   );
 }
 
+export function IconTherapy(props: IconProps) {
+  return base(
+    props.active ? (
+      <path d="M3 12h4l2-5 4 10 2-5h6" stroke="none" />
+    ) : (
+      <path d="M3 12h4l2-5 4 10 2-5h6" />
+    ),
+    props,
+  );
+}
+
 export function IconMore(props: IconProps) {
   return base(
     props.active ? (
@@ -159,6 +170,7 @@ export type NavIconName =
   | "chat"
   | "help"
   | "patterns"
+  | "therapy"
   | "shield"
   | "edit"
   | "more";
@@ -174,6 +186,8 @@ function renderIcon(name: NavIconName, active: boolean) {
       return <IconHelp {...props} />;
     case "patterns":
       return <IconPatterns {...props} />;
+    case "therapy":
+      return <IconTherapy {...props} />;
     case "shield":
       return <IconShield {...props} />;
     case "edit":

@@ -55,12 +55,12 @@ export function ChatList() {
   });
 
   const isHelper = Boolean(meQuery.data?.is_helper);
-  const isOnDuty = Boolean(meQuery.data?.is_on_duty);
 
   const helpQuery = useQuery({
     queryKey: ["help-requests"],
     queryFn: () => api.helpInbox(),
-    enabled: isHelper && isOnDuty && !panic,
+    // D2 (2026-10-27): visible off duty as well.
+    enabled: isHelper && !panic,
     refetchInterval: panic ? false : 20_000,
   });
 

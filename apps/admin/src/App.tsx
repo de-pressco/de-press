@@ -6,6 +6,7 @@ import { Helpers } from "./features/Helpers";
 import { ModerationLog } from "./features/ModerationLog";
 import { Overview } from "./features/Overview";
 import { Reports } from "./features/Reports";
+import { Shift } from "./features/Shift";
 
 type Tab = "overview" | "reports" | "clouds" | "helpers" | "log";
 
@@ -61,6 +62,7 @@ export function App() {
             </button>
           ))}
         </nav>
+        <Shift onError={onApiError} />
         <button
           type="button"
           className="tab"

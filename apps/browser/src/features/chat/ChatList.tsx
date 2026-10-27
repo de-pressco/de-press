@@ -74,8 +74,9 @@ export function ChatList() {
   const helpQuery = useQuery({
     queryKey: ["help-requests"],
     queryFn: () => api.helpInbox(),
-    enabled:
-      Boolean(meQuery.data?.is_helper && meQuery.data?.is_on_duty) && !panic,
+    // D2 (2026-10-27): the shared pool is visible off duty too; duty only
+    // gates notifications and instant match.
+    enabled: Boolean(meQuery.data?.is_helper) && !panic,
     refetchInterval: panic ? false : 20_000,
   });
 

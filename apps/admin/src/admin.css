@@ -271,7 +271,123 @@ body {
   text-align: center;
 }
 
+.shift {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+}
+
+.shift-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--border-subtle);
+}
+
+.shift-dot-on {
+  background: var(--accent-hope);
+}
+
+.shift-label {
+  white-space: nowrap;
+}
+
 .empty {
   color: var(--text-muted);
+}
+
+/* --- Phone: the console is a working surface on 360px too (P1-3) ---------- */
+@media (max-width: 640px) {
+  .screen {
+    padding: 12px 12px 32px;
+  }
+
+  .top {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: var(--bg-main);
+    gap: 8px;
+    padding-bottom: 8px;
+  }
+
+  .top h1 {
+    width: 100%;
+    margin: 0;
+    font-size: var(--fs-lg);
+  }
+
+  .tabs {
+    width: 100%;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .tab {
+    flex: 0 0 auto;
+    min-height: 44px;
+    padding: 6px 12px;
+  }
+
+  .btn {
+    min-height: 44px;
+  }
+
+  .shift {
+    flex-wrap: wrap;
+  }
+
+  .cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .num {
+    font-size: var(--fs-2xl);
+  }
+
+  .meta,
+  .body,
+  .preview {
+    overflow-wrap: anywhere;
+  }
+
+  /* The audit table becomes a stack of labelled cards. */
+  .log thead {
+    display: none;
+  }
+
+  .log,
+  .log tbody,
+  .log tr,
+  .log td {
+    display: block;
+    width: 100%;
+  }
+
+  .log tr {
+    margin-bottom: 8px;
+    padding: 8px 10px;
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    background: var(--bg-surface);
+  }
+
+  .log td {
+    border: none;
+    padding: 2px 0;
+  }
+
+  .log td::before {
+    content: attr(data-label) ": ";
+    color: var(--text-muted);
+  }
 }
 

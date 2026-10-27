@@ -341,7 +341,7 @@ export function UserMenu({ open, onClose }: UserMenuProps) {
               </button>
             ) : null}
 
-            {isAccount && (me?.is_helper || me?.is_staff) ? (
+            {isAccount && me?.is_helper ? (
               <Link
                 to="/helper/invite"
                 className={styles.ghostBtn}

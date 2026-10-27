@@ -50,11 +50,19 @@ export function ModerationLog({ onError }: { onError: (e: unknown) => void }) {
         <tbody>
           {rows.map((a) => (
             <tr key={a.id}>
-              <td>{new Date(a.created_at).toLocaleString()}</td>
-              <td>{t.actions[a.action as keyof typeof t.actions] ?? a.action}</td>
-              <td>{a.reason ? (t.reasons[a.reason as keyof typeof t.reasons] ?? a.reason) : "—"}</td>
-              <td>{a.note || "—"}</td>
-              <td>{a.actor_email || "—"}</td>
+              <td data-label={t.log.when}>
+                {new Date(a.created_at).toLocaleString()}
+              </td>
+              <td data-label={t.log.action}>
+                {t.actions[a.action as keyof typeof t.actions] ?? a.action}
+              </td>
+              <td data-label={t.log.reason}>
+                {a.reason
+                  ? (t.reasons[a.reason as keyof typeof t.reasons] ?? a.reason)
+                  : "—"}
+              </td>
+              <td data-label={t.log.note}>{a.note || "—"}</td>
+              <td data-label={t.log.actor}>{a.actor_email || "—"}</td>
             </tr>
           ))}
         </tbody>

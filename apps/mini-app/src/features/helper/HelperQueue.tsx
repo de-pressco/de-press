@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api, ApiError } from "@/core/api/client";
+import { friendlyError } from "@/core/api/errorCopy";
 import { useI18n } from "@/core/i18n/context";
 import { useHelperHeartbeat } from "./useHelperHeartbeat";
 import { useHelperQueue } from "./useHelperQueue";
@@ -18,7 +19,7 @@ export function HelperQueue() {
     queryFn: () => api.me(),
   });
 
-  const canHelper = Boolean(meQuery.data?.is_helper || meQuery.data?.is_staff);
+  const canHelper = Boolean(meQuery.data?.is_helper);
   const isHelper = Boolean(meQuery.data?.is_helper);
   const onDuty = Boolean(meQuery.data?.is_on_duty);
   useHelperHeartbeat(isHelper);
@@ -40,6 +41,19 @@ export function HelperQueue() {
     mutationFn: (requestId: string) => api.acceptHelpRequest(requestId),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["dialogues"] });
+      await queryClient.invalidateQueries({ queryKey: ["help-requests"] });
+      refreshQueue();
+    },
+    // Another Helper won the race: refresh so the row disappears.
+    onError: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["help-requests"] });
+      refreshQueue();
+    },
+  });
+
+  const skipHelp = useMutation({
+    mutationFn: (requestId: string) => api.skipHelpRequest(requestId),
+    onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["help-requests"] });
       refreshQueue();
     },
@@ -107,13 +121,12 @@ export function HelperQueue() {
     <div className={styles.pane}>
       <header className={styles.head}>
         <h1 className={styles.title}>{t.helper.title}</h1>
-        {isHelper ? (
+        {canHelper ? (
           <div className={onDuty ? styles.dutyOn : styles.duty}>
             <div>
               <p className={styles.dutyStatus}>
                 {onDuty ? t.helper.dutyOn : t.helper.dutyOff}
               </p>
-              <p className={styles.dutyLead}>{t.helper.dutyLead}</p>
             </div>
             <button
               type="button"
@@ -165,32 +178,50 @@ export function HelperQueue() {
       </header>
 
       {tab === "queue" ? (
-        !onDuty ? (
-          <p className={styles.empty}>{t.helper.dutyLead}</p>
-        ) : helpQueue.length === 0 ? (
-          <p className={styles.empty}>{t.helper.empty}</p>
-        ) : (
-          <ul className={styles.list}>
-            {helpQueue.map((row) => (
-              <li key={row.id} className={styles.card}>
-                <p className={styles.meta}>
-                  {new Date(row.created_at).toLocaleString()}
-                </p>
-                {row.note ? <p className={styles.body}>{row.note}</p> : null}
-                <div className={styles.actions}>
-                  <button
-                    type="button"
-                    className={styles.approve}
-                    disabled={acceptHelp.isPending}
-                    onClick={() => acceptHelp.mutate(row.id)}
-                  >
-                    {t.help.waitOpenChat}
-                  </button>
-                </div>
-              </li>
-            ))}
-          </ul>
-        )
+        <>
+          {acceptHelp.isError || skipHelp.isError ? (
+            <p className={styles.error} role="alert">
+              {friendlyError(
+                acceptHelp.error ?? skipHelp.error,
+                t.common.errorSoft,
+              )}
+            </p>
+          ) : null}
+          {helpQueue.length === 0 ? (
+            <p className={styles.empty}>{t.helper.empty}</p>
+          ) : (
+            <ul className={styles.list}>
+              {helpQueue.map((row) => (
+                <li key={row.id} className={styles.card}>
+                  <p className={styles.meta}>
+                    <span className={styles.chip}>
+                      {new Date(row.created_at).toLocaleString()}
+                    </span>
+                  </p>
+                  {row.note ? <p className={styles.body}>{row.note}</p> : null}
+                  <div className={styles.actions}>
+                    <button
+                      type="button"
+                      className={styles.approve}
+                      disabled={acceptHelp.isPending || skipHelp.isPending}
+                      onClick={() => acceptHelp.mutate(row.id)}
+                    >
+                      {t.help.waitOpenChat}
+                    </button>
+                    <button
+                      type="button"
+                      className={styles.reject}
+                      disabled={acceptHelp.isPending || skipHelp.isPending}
+                      onClick={() => skipHelp.mutate(row.id)}
+                    >
+                      {t.help.requestSkip}
+                    </button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </>
       ) : tab === "clouds" ? (
         queueQuery.isLoading ? (
           <p className={styles.empty}>{t.helper.loading}</p>
@@ -244,18 +275,24 @@ export function HelperQueue() {
         </p>
       ) : dash ? (
         <>
-          <ul className={styles.metrics}>
-            <li>
-              {t.helper.pendingClouds}: {dash.pending_clouds}
+          <ul className={styles.stats}>
+            <li className={styles.stat}>
+              <span className={styles.statValue}>{dash.pending_clouds}</span>
+              <span className={styles.statLabel}>{t.helper.pendingClouds}</span>
             </li>
-            <li>
-              {t.helper.openReports}: {dash.open_reports}
+            <li className={styles.stat}>
+              <span className={styles.statValue}>{dash.open_reports}</span>
+              <span className={styles.statLabel}>{t.helper.openReports}</span>
             </li>
-            <li>
-              {t.helper.reviewingReports}: {dash.reviewing_reports}
+            <li className={styles.stat}>
+              <span className={styles.statValue}>{dash.reviewing_reports}</span>
+              <span className={styles.statLabel}>
+                {t.helper.reviewingReports}
+              </span>
             </li>
-            <li>
-              {t.helper.reports7d}: {dash.reports_last_7d}
+            <li className={styles.stat}>
+              <span className={styles.statValue}>{dash.reports_last_7d}</span>
+              <span className={styles.statLabel}>{t.helper.reports7d}</span>
             </li>
           </ul>
           <h2 className={styles.sub}>{t.helper.recentReports}</h2>
@@ -265,9 +302,7 @@ export function HelperQueue() {
             <ul className={styles.list}>
               {dash.recent_reports.map((row) => (
                 <li key={row.id} className={styles.card}>
-                  <p className={styles.meta}>
-                    {reasonLabel(row.reason)} · {row.status}
-                  </p>
+                  <p className={styles.meta}>{reasonLabel(row.reason)}</p>
                   {row.story_preview ? (
                     <p className={styles.preview}>{row.story_preview}</p>
                   ) : null}

@@ -10,7 +10,7 @@ export function HelperInviteCreate() {
   const meQuery = useQuery({ queryKey: ["me"], queryFn: () => api.me() });
   const [org, setOrg] = useState("");
   const [link, setLink] = useState("");
-  const allowed = Boolean(meQuery.data?.is_helper || meQuery.data?.is_staff);
+  const allowed = Boolean(meQuery.data?.is_helper);
 
   const create = useMutation({
     mutationFn: () => api.createHelperInvite(org.trim()),

@@ -62,6 +62,11 @@ export interface Messages {
   };
   reports: {
     queue: string;
+    queueTab: string;
+    history: string;
+    closedBy: string;
+    closedAt: string;
+    resolutionReason: string;
     filterAll: string;
     empty: string;
     targetStory: string;

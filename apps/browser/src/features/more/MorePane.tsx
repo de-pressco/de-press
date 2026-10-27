@@ -21,6 +21,7 @@ export function MorePane() {
     staleTime: 60_000,
   });
   const isHelper = Boolean(meQuery.data?.is_helper);
+  const isStaff = Boolean(meQuery.data?.is_staff);
 
   return (
     <div className={styles.pane}>
@@ -34,6 +35,15 @@ export function MorePane() {
         <ListRow to="/therapy" title={t.nav.therapy} avatarText="T" />
         {isHelper ? (
           <ListRow to="/helper" title={t.nav.helper} avatarText="H" />
+        ) : null}
+        {isStaff ? (
+          <ListRow
+            asButton
+            title={t.helper.dashboardTitle}
+            subtitle={t.helper.dashboardLead}
+            avatarText="M"
+            onClick={() => window.location.assign("/console/")}
+          />
         ) : null}
         <ListRow
           asButton

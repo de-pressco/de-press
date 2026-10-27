@@ -4,13 +4,14 @@
 
 ## The main rule
 
-**Browser and Mini App are two separate applications.**  
+**Browser, Mini App and the staff console are three separate applications.**  
 UI changes in one do **not** automatically reach the other.
 
 | App | Path | Port (dev) | Purpose |
 |-----|------|------------|------------|
 | **Browser** | [`browser/`](./browser/) | **5174** | The standalone web client of de-press (a PWA) |
 | **Mini App** | [`mini-app/`](./mini-app/) | **5175** | The Telegram Mini App host (mobile-first), built with a `/tg/` base |
+| **Admin console** | [`admin/`](./admin/) | **5176** | The staff-only moderation console, built with a `/console/` base (not an App Host) |
 
 ```
 apps/

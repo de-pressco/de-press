@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import QRCode from "qrcode";
 import { api, ApiError } from "@/core/api/client";
+import { useFocusTrap, useInertBackground } from "@/core/hooks/useFocusTrap";
 import type { TherapySession } from "@/core/api/types";
 import { useI18n } from "@/core/i18n/context";
 import styles from "./TherapyPane.module.css";
@@ -38,20 +39,37 @@ function PayModal({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const claimed = session.status === "payment_claimed";
+  const titleId = useId();
+  const cardRef = useRef<HTMLDivElement | null>(null);
+  useFocusTrap(cardRef, true);
+  useInertBackground(cardRef, true);
 
-  void (async () => {
-    if (qr) return;
-    try {
-      setQr(
-        await QRCode.toDataURL(
+  // Generate once per session address (was started from the render body).
+  useEffect(() => {
+    let cancelled = false;
+    void (async () => {
+      try {
+        const url = await QRCode.toDataURL(
           solanaPayUri(session.solana_address, session.price_sol),
           { margin: 1, width: 220 },
-        ),
-      );
-    } catch {
-      setQr(null);
-    }
-  })();
+        );
+        if (!cancelled) setQr(url);
+      } catch {
+        if (!cancelled) setQr(null);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [session.solana_address, session.price_sol]);
+
+  useEffect(() => {
+    const onKey = (ev: KeyboardEvent) => {
+      if (ev.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [onClose]);
 
   const markPaid = async () => {
     setBusy(true);
@@ -67,9 +85,16 @@ function PayModal({
   };
 
   return (
-    <div className={styles.overlay} role="dialog" aria-modal="true">
-      <div className={styles.card}>
-        <h2 className={styles.cardTitle}>{t.therapy.payTitle}</h2>
+    <div
+      className={styles.overlay}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby={titleId}
+    >
+      <div className={styles.card} ref={cardRef}>
+        <h2 className={styles.cardTitle} id={titleId}>
+          {t.therapy.payTitle}
+        </h2>
         <p className={styles.muted}>{t.therapy.payText}</p>
         {claimed ? (
           <p className={styles.claimed}>{t.therapy.awaitingConfirm}</p>

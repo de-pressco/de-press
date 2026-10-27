@@ -62,6 +62,11 @@ export const en: Messages = {
   },
   reports: {
     queue: "Reports queue",
+    queueTab: "Queue",
+    history: "History (tickets)",
+    closedBy: "Closed by",
+    closedAt: "Closed",
+    resolutionReason: "Resolution reason",
     filterAll: "All",
     empty: "Nothing here — the queue is clear.",
     targetStory: "Story",
