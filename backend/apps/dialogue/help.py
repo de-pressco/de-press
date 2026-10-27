@@ -46,9 +46,7 @@ def _is_helper(actor: Actor) -> bool:
     return bool(actor.account is not None and actor.account.is_helper)
 
 
-def _is_on_duty_helper(actor: Actor) -> bool:
-    acc = actor.account
-    return bool(acc is not None and acc.is_helper and acc.is_on_duty and acc.is_active)
+
 
 
 def _requester_actor(req: HelpRequest) -> Actor:
@@ -162,8 +160,13 @@ def create_help_request(actor: Actor, *, note: str = "") -> HelpRequest:
 
 
 def list_help_inbox(actor: Actor) -> list[HelpRequest]:
-    """Pending help requests visible to this Helper (excludes skips and own)."""
-    if not _is_on_duty_helper(actor):
+    """Pending help requests visible to this Helper (excludes skips and own).
+
+    Visibility is not gated by duty (owner decision 2026-10-27): a Helper who
+    comes online ten minutes later still sees the shared pool. Duty gates
+    notifications and instant match only — see `_notify_helpers`.
+    """
+    if not _is_helper(actor):
         return []
 
     skipped_ids = HelpRequestSkip.objects.filter(helper=actor.account).values_list(

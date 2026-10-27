@@ -59,7 +59,8 @@ class Account(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=True)
     # Helper: verified volunteer / partner-org listener (ADR-0010). Not a clinician by default.
     is_helper = models.BooleanField(default=False, db_index=True)
-    # Shift flag: Help Request notify+inbox only when on duty.
+    # Shift flag: Help Request notifications and instant match only when on duty
+    # (the shared queue itself is visible off duty — owner decision 2026-10-27).
     is_on_duty = models.BooleanField(default=False, db_index=True)
     # Heartbeat for instant match. Online = helper_seen_at within 45s (see presence.py).
     helper_seen_at = models.DateTimeField(null=True, blank=True, db_index=True)
@@ -134,6 +135,19 @@ class Account(AbstractBaseUser, PermissionsMixin):
             return ""
         org = (self.helper_org or "").strip()
         return f"Helper · {org}" if org else "Helper"
+
+    def save(self, *args, **kwargs):
+        # The moderator IS a Helper (owner rule 2026-10-27): the console role and
+        # the on-duty role are one role, so an account with staff access can never
+        # exist without the helper flag (that half-role used to get 403 from
+        # duty/heartbeat/inbox while /console/ let it in).
+        # shortcut: no ops-only staff; if one is ever needed, add a separate flag.
+        if self.is_staff or self.is_superuser:
+            self.is_helper = True
+            update_fields = kwargs.get("update_fields")
+            if update_fields is not None:
+                kwargs["update_fields"] = set(update_fields) | {"is_helper"}
+        super().save(*args, **kwargs)
 
 
 class HelperInvite(models.Model):

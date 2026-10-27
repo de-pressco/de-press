@@ -166,6 +166,53 @@ async def test_queue_ws_cancel_event(settings):
     await comm.disconnect()
 
 
+@pytest.mark.django_db(transaction=True)
+@pytest.mark.asyncio
+async def test_queue_ws_snapshot_visible_off_duty(settings):
+    """D2 (2026-10-27): visibility is not gated by duty — a Helper who comes
+    online later still sees the shared pool; duty gates notifications/match."""
+    settings.CHANNEL_LAYERS = IN_MEMORY
+    helper = await database_sync_to_async(Account.objects.create_user)(
+        email="qws-off@ex.com",
+        password="password123",
+        is_helper=True,  # is_on_duty defaults to False
+    )
+    visitor = await database_sync_to_async(Account.objects.create_user)(
+        email="qws-off-v@ex.com",
+        password="password123",
+    )
+    req = await database_sync_to_async(create_help_request)(
+        Actor(kind="account", account=visitor),
+        note="я тут",
+    )
+
+    comm = await _comm_for(helper)
+    connected, _ = await comm.connect()
+    assert connected is True
+    snapshot = await comm.receive_json_from(timeout=5)
+    assert snapshot["type"] == "snapshot"
+    assert [row["id"] for row in snapshot["queue"]] == [str(req.id)]
+    await comm.disconnect()
+
+
+@pytest.mark.django_db(transaction=True)
+@pytest.mark.asyncio
+async def test_queue_ws_allows_staff_moderator(settings):
+    """Moderator IS a Helper: a staff account connects without an extra flag."""
+    settings.CHANNEL_LAYERS = IN_MEMORY
+    staff = await database_sync_to_async(Account.objects.create_user)(
+        email="qws-staff@ex.com",
+        password="password123",
+        is_staff=True,
+    )
+    comm = await _comm_for(staff)
+    connected, _ = await comm.connect()
+    assert connected is True
+    snapshot = await comm.receive_json_from(timeout=5)
+    assert snapshot == {"type": "snapshot", "queue": []}
+    await comm.disconnect()
+
+
 @pytest.mark.django_db
 def test_helper_dashboard_metrics(helper_client, helper, visitor):
     body = helper_client.get("/api/v1/help/dashboard").json()

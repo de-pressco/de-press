@@ -14,6 +14,7 @@ from apps.identity.models import Account
 from apps.identity.services import Actor
 from apps.moderation.models import (
     ModerationAction,
+    ModerationActionKind,
     Report,
     ReportReason,
     ReportStatus,
@@ -216,6 +217,20 @@ _DECISION_STATUS = {
 }
 _TERMINAL_DECISIONS = ("hide", "remove", "dismiss")
 
+# The audit row stores the model choice, not the API decision word.
+_DECISION_ACTION = {
+    "reviewing": ModerationActionKind.REVIEWING,
+    "hide": ModerationActionKind.HIDDEN,
+    "remove": ModerationActionKind.REMOVED,
+    "dismiss": ModerationActionKind.DISMISSED,
+}
+# Rows written before 2026-10-27 hold the decision word itself.
+_LEGACY_ACTION = {
+    "hide": ModerationActionKind.HIDDEN,
+    "remove": ModerationActionKind.REMOVED,
+    "dismiss": ModerationActionKind.DISMISSED,
+}
+
 
 @transaction.atomic
 def resolve_report(
@@ -312,7 +327,7 @@ def _apply_decision(
         story=story,
         message=message,
         actor=actor,
-        action=decision,
+        action=_DECISION_ACTION[decision],
         reason=reason,
         note=note,
     )

@@ -2511,6 +2511,26 @@ export interface components {
             created_at: string;
             /** Resolved Note */
             resolved_note: string;
+            /**
+             * Decision
+             * @default
+             */
+            decision: string;
+            /**
+             * Resolved By
+             * @default
+             */
+            resolved_by: string;
+            /**
+             * Resolution Reason
+             * @default
+             */
+            resolution_reason: string;
+            /**
+             * Resolved At
+             * @default
+             */
+            resolved_at: string;
         };
         /** AdminResolveOut */
         AdminResolveOut: {

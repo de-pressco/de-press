@@ -17,6 +17,7 @@ from apps.moderation.blocks import (
 )
 from apps.moderation.models import (
     ModerationAction,
+    ModerationActionKind,
     Report,
     ReportReason,
     ReportStatus,
@@ -279,6 +280,11 @@ class AdminReportOut(Schema):
     target_hidden: bool
     created_at: str
     resolved_note: str
+    # Ticket trail (Q12: the moderator's own decision, never reporter/author data).
+    decision: str = ""
+    resolved_by: str = ""
+    resolution_reason: str = ""
+    resolved_at: str = ""
 
 
 class AdminResolveIn(Schema):
@@ -324,7 +330,40 @@ def _require_staff_only(actor) -> None:
         raise HttpError(403, "Staff access required")
 
 
-def _admin_report_out(report: Report) -> AdminReportOut:
+# Presentation normalisation for audit rows written before 2026-10-27, where the
+# service stored the decision word ("dismiss") instead of the model choice.
+_ACTION_WORD = {"hide": "hidden", "remove": "removed", "dismiss": "dismissed"}
+
+
+def _latest_actions(report_ids) -> dict[str, ModerationAction]:
+    """Latest terminal decision per report: who closed the ticket, when and why."""
+    latest: dict[str, ModerationAction] = {}
+    if not report_ids:
+        return latest
+    rows = (
+        ModerationAction.objects.filter(
+            report_id__in=report_ids,
+            # Terminal only; legacy rows keep the decision word (see _ACTION_WORD).
+            action__in=(
+                ModerationActionKind.HIDDEN,
+                ModerationActionKind.REMOVED,
+                ModerationActionKind.DISMISSED,
+                "hide",
+                "remove",
+                "dismiss",
+            ),
+        )
+        .select_related("actor")
+        .order_by("created_at")
+    )
+    for action in rows:
+        latest[str(action.report_id)] = action
+    return latest
+
+
+def _admin_report_out(
+    report: Report, action: ModerationAction | None = None
+) -> AdminReportOut:
     """The moderator sees only the reported content itself (Q12), never the reporter identity."""
     if report.story_id and report.story is not None:
         target_kind = "story"
@@ -347,6 +386,10 @@ def _admin_report_out(report: Report) -> AdminReportOut:
         target_hidden=target_hidden,
         created_at=report.created_at.isoformat(),
         resolved_note=report.resolved_note or "",
+        decision=_ACTION_WORD.get(action.action, action.action) if action else "",
+        resolved_by=(action.actor.email if action and action.actor else ""),
+        resolution_reason=action.reason if action else "",
+        resolved_at=action.created_at.isoformat() if action else "",
     )
 
 
@@ -383,17 +426,22 @@ def admin_reports(request, status: str = "open", limit: int = 50, offset: int = 
     """Staff report queue: status filter, no reporter identities."""
     actor = require_actor(request)
     _require_staff_only(actor)
-    if status != "all" and status not in ReportStatus.values:
+    if status not in ("all", "resolved") and status not in ReportStatus.values:
         raise HttpError(
             400,
-            f"Invalid status. Allowed: all, {', '.join(ReportStatus.values)}",
+            f"Invalid status. Allowed: all, resolved, {', '.join(ReportStatus.values)}",
         )
     limit = max(1, min(limit, 100))
     offset = max(0, offset)
     qs = Report.objects.order_by("-created_at").select_related("story", "message")
-    if status != "all":
+    if status == "resolved":
+        # Both resolved kinds — the history view; `decision` tells them apart.
+        qs = qs.filter(status__startswith="resolved_")
+    elif status != "all":
         qs = qs.filter(status=status)
-    return [_admin_report_out(r) for r in qs[offset : offset + limit]]
+    page = list(qs[offset : offset + limit])
+    actions = _latest_actions([r.id for r in page])
+    return [_admin_report_out(r, actions.get(str(r.id))) for r in page]
 
 
 @router.post("/admin/reports/{report_id}/resolve", response=AdminResolveOut)
@@ -413,7 +461,10 @@ def admin_resolve_report(request, report_id: UUID, payload: AdminResolveIn):
         msg = str(exc)
         raise HttpError(404 if "not found" in msg else 400, msg) from exc
     fresh = Report.objects.select_related("story", "message").get(pk=report.id)
-    return AdminResolveOut(ok=True, report=_admin_report_out(fresh))
+    actions = _latest_actions([fresh.id])
+    return AdminResolveOut(
+        ok=True, report=_admin_report_out(fresh, actions.get(str(fresh.id)))
+    )
 
 
 @router.get("/admin/moderation-log", response=list[AdminActionOut])
@@ -427,7 +478,7 @@ def admin_moderation_log(request, limit: int = 100, offset: int = 0):
     return [
         AdminActionOut(
             id=str(a.id),
-            action=a.action,
+            action=_ACTION_WORD.get(a.action, a.action),
             reason=a.reason,
             note=a.note,
             actor_email=(a.actor.email if a.actor else ""),

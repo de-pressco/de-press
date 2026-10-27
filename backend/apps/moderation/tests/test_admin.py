@@ -193,7 +193,7 @@ def test_resolve_hides_story_logs_and_notifies(staff, user, story):
     assert first.resolved_note == "травля подтверждена"
     # Смежные жалобы на ту же историю закрыты тем же решением.
     assert second.status == ReportStatus.RESOLVED_HIDDEN
-    actions = ModerationAction.objects.filter(action="hide")
+    actions = ModerationAction.objects.filter(action="hidden")
     assert actions.count() == 2
     assert actions.filter(actor=staff, reason="abuse").count() == 2
     # Оба автора жалоб уведомлены, без данных второй стороны.
@@ -215,7 +215,7 @@ def test_resolve_removes_story(staff, user, story):
     assert response.status_code == 200
     story.refresh_from_db()
     assert story.status == StoryStatus.REMOVED
-    assert ModerationAction.objects.filter(action="remove").count() == 1
+    assert ModerationAction.objects.filter(action="removed").count() == 1
 
 
 @pytest.mark.django_db
@@ -359,8 +359,11 @@ def test_admin_helpers_roster_and_duty_toggle(staff, helper):
     roster = client.get("/api/v1/admin/helpers")
     assert roster.status_code == 200
     rows = roster.json()
-    assert [row["email"] for row in rows] == [helper.email]
-    assert rows[0]["is_on_duty"] is False
+    # The moderator IS a Helper (owner rule 2026-10-27), so the staff account is
+    # in the roster as well.
+    by_email = {row["email"]: row for row in rows}
+    assert set(by_email) == {helper.email, staff.email}
+    assert by_email[helper.email]["is_on_duty"] is False
 
     on = client.post(
         f"/api/v1/admin/helpers/{helper.id}/duty",
@@ -396,3 +399,72 @@ def test_admin_endpoints_reject_non_staff(helper, user):
         ).status_code
         == 403
     )
+
+@pytest.mark.django_db
+def test_admin_report_ticket_shows_who_closed_it(staff, user, story):
+    """Ticket history: decision, resolver, reason and time — never reporter data (Q12)."""
+    submit_report(
+        Actor(kind="account", account=user), story.id, reason=ReportReason.SPAM
+    )
+    report = Report.objects.filter(story=story).first()
+    client = _client(staff)
+
+    fresh = client.get("/api/v1/admin/reports?status=open").json()[0]
+    assert fresh["decision"] == ""
+    assert fresh["resolved_by"] == ""
+    assert fresh["resolved_at"] == ""
+
+    client.post(
+        f"/api/v1/admin/reports/{report.id}/resolve",
+        {"decision": "dismiss", "reason": "other", "note": "не нарушение"},
+        content_type="application/json",
+    )
+
+    history = client.get("/api/v1/admin/reports?status=resolved").json()
+    assert len(history) == 1
+    ticket = history[0]
+    assert ticket["decision"] == "dismissed"
+    assert ticket["resolution_reason"] == "other"
+    assert ticket["resolved_by"] == staff.email
+    assert ticket["resolved_at"]
+    assert ticket["resolved_note"] == "не нарушение"
+    assert "from_account" not in ticket
+
+@pytest.mark.django_db
+def test_dismiss_writes_the_model_choice_to_the_audit(staff, user, story):
+    """Root fix 2026-10-27: the audit row stores a ModerationActionKind choice."""
+    submit_report(
+        Actor(kind="account", account=user), story.id, reason=ReportReason.SPAM
+    )
+    report = Report.objects.filter(story=story).first()
+    _client(staff).post(
+        f"/api/v1/admin/reports/{report.id}/resolve",
+        {"decision": "dismiss", "reason": "other", "note": ""},
+        content_type="application/json",
+    )
+    row = ModerationAction.objects.get(report=report)
+    assert row.action == "dismissed"
+    assert ModerationAction.objects.filter(action="dismiss").count() == 0
+
+
+@pytest.mark.django_db
+def test_ticket_normalises_legacy_audit_rows(staff, user, story):
+    """Rows written before 2026-10-27 hold 'dismiss'; the ticket reads 'dismissed'."""
+    submit_report(
+        Actor(kind="account", account=user), story.id, reason=ReportReason.SPAM
+    )
+    report = Report.objects.filter(story=story).first()
+    report.status = ReportStatus.RESOLVED_DISMISSED
+    report.save(update_fields=["status"])
+    ModerationAction.objects.create(
+        report=report, actor=staff, action="dismiss", reason="abuse", note="legacy"
+    )
+
+    ticket = _client(staff).get("/api/v1/admin/reports?status=resolved").json()[0]
+    assert ticket["decision"] == "dismissed"
+    assert ticket["resolution_reason"] == "abuse"
+    assert ticket["resolved_by"] == staff.email
+    assert ticket["resolved_at"]
+
+    assert "from_session" not in ticket
+

@@ -141,7 +141,9 @@ def test_helper_skip_hides_from_inbox(helper_client):
 
 
 @pytest.mark.django_db
-def test_off_duty_helper_inbox_empty_until_toggle():
+def test_helper_sees_the_queue_off_duty():
+    """D2 (2026-10-27): the shared pool is visible to every Helper; duty only
+    controls notifications and instant match."""
     helper = Account.objects.create_user(
         email="duty-api@ex.com", password="password123", is_helper=True
     )
@@ -158,7 +160,7 @@ def test_off_duty_helper_inbox_empty_until_toggle():
 
     off_inbox = client.get("/api/v1/help/requests")
     assert off_inbox.status_code == 200
-    assert off_inbox.json() == []
+    assert req_id in [r["id"] for r in off_inbox.json()]
 
     toggled = client.post(
         "/api/v1/me/helper-duty",

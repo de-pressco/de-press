@@ -232,7 +232,8 @@ def test_existing_story_dialogue_still_requires_story_in_request_flow():
 
 
 @pytest.mark.django_db
-def test_off_duty_helper_is_not_notified_and_has_empty_inbox():
+def test_off_duty_helper_is_not_notified_but_sees_the_queue():
+    """Duty gates notifications, not visibility (owner decision 2026-10-27)."""
     off = Account.objects.create_user(
         email="off@ex.com", password="password123", is_helper=True
     )
@@ -251,7 +252,7 @@ def test_off_duty_helper_is_not_notified_and_has_empty_inbox():
     assert Notification.objects.filter(
         kind=NotificationKind.HELP_REQUESTED, recipient_account=on
     ).exists()
-    assert list_help_inbox(Actor(kind="account", account=off)) == []
+    assert list_help_inbox(Actor(kind="account", account=off))[0].id == req.id
     assert list_help_inbox(Actor(kind="account", account=on))[0].id == req.id
 
 
