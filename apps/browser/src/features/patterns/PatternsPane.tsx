@@ -12,6 +12,7 @@ import {
 import { queueCompanionShare } from "@/core/memory/companionShare";
 import { useI18n } from "@/core/i18n/context";
 import { useToast } from "@/core/toast";
+import { BackButton } from "@/components/tg/BackButton";
 import { MoodChart } from "./MoodChart";
 import { MoodHeatmap } from "./MoodHeatmap";
 import styles from "./PatternsPane.module.css";
@@ -380,6 +381,7 @@ export function PatternsPane() {
   return (
     <div className={styles.pane}>
       <header className={styles.head}>
+        <BackButton fallback="/more" />
         <h1 className={styles.title}>{t.patterns.title}</h1>
         <p className={styles.banner}>{t.patterns.zkBanner}</p>
       </header>

@@ -10,6 +10,13 @@
   background: var(--bg-chat);
 }
 
+/* Readable measure on desktop (same pattern as TherapyPane). */
+.pane > * {
+  width: 100%;
+  max-width: 46rem;
+  margin-inline: auto;
+}
+
 .head {
   display: flex;
   flex-direction: column;
@@ -419,6 +426,13 @@
 .reflectionInput:focus-visible {
   outline: none;
   box-shadow: var(--focus-ring);
+}
+
+/* No native resize grip under touch (pointer-based inputs keep it). */
+@media (hover: none) {
+  .reflectionInput {
+    resize: none;
+  }
 }
 
 .reflectionList {

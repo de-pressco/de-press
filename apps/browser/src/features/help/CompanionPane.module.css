@@ -153,7 +153,10 @@
 .assistant {
   align-self: flex-start;
   background: var(--bg-bubble-them);
-  color: var(--text-bubble);
+  /* --text-bubble is authored for the dark «me» bubble; on the light «them»
+     surface it is unreadable in the light theme (1.25:1) — text-primary is
+     the per-theme safe pair (mirrors DialoguePage .them). */
+  color: var(--text-primary);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-bubble-them);
 }

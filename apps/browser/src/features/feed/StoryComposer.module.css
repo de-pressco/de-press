@@ -91,6 +91,13 @@
   box-shadow: var(--focus-ring);
 }
 
+/* No native resize grip under touch (pointer-based inputs keep it). */
+@media (hover: none) {
+  .textarea {
+    resize: none;
+  }
+}
+
 .actions {
   display: flex;
   flex-wrap: wrap;

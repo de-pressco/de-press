@@ -9,6 +9,7 @@ import { FundCard } from "@/features/fund/FundCard";
 import { TipWalletForm } from "@/features/fund/TipWalletForm";
 import { NotifySettingsCard } from "@/features/notifications/NotifySettingsCard";
 import { IconCheck, IconDownload, IconUser } from "@/components/layout/NavIcons";
+import { BackButton } from "@/components/tg/BackButton";
 import styles from "./SettingsPane.module.css";
 
 export function SettingsPane() {
@@ -25,6 +26,7 @@ export function SettingsPane() {
   return (
     <div className={styles.pane}>
       <header className={styles.head}>
+        <BackButton fallback="/more" />
         <h1 className={styles.title}>{t.nav.settings}</h1>
       </header>
       <div className={styles.list}>

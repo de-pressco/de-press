@@ -524,6 +524,11 @@
   box-shadow: none;
 }
 
+/* Keyboard focus lights the composer pill, not the naked textarea (a11y). */
+.composerInput:focus-within {
+  box-shadow: var(--focus-ring);
+}
+
 .composerTextarea::placeholder {
   color: var(--text-muted);
 }

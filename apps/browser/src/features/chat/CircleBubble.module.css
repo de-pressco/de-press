@@ -76,7 +76,9 @@
   border: none;
   border-radius: 50%;
   background: color-mix(in srgb, var(--bg-main) 62%, transparent);
-  color: var(--text-bubble);
+  /* text-primary reads on the translucent plate in every theme (text-bubble
+     is near-white and vanishes on the light-theme plate). */
+  color: var(--text-primary);
   display: inline-flex;
   align-items: center;
   justify-content: center;

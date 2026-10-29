@@ -1,0 +1,26 @@
+/* «← Back» pill — shared back affordance for nested More-section panes.
+   Visual parity with the HelpPane back button. */
+.back {
+  align-self: flex-start;
+  margin-block-end: 0.45rem;
+  min-height: 2.25rem;
+  padding: 0.3rem 0.7rem;
+  border: 1px solid var(--border-subtle);
+  border-radius: 0.75rem;
+  background: transparent;
+  color: var(--text-muted);
+  font: inherit;
+  font-size: var(--fs-sm);
+  cursor: pointer;
+  transition-property: background-color, color, transform;
+  transition-duration: 0.15s;
+}
+
+.back:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.back:active {
+  transform: scale(0.96);
+}

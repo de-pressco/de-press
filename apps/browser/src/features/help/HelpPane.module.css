@@ -184,6 +184,13 @@
   opacity: 0.6;
 }
 
+/* No native resize grip under touch (pointer-based inputs keep it). */
+@media (hover: none) {
+  .note {
+    resize: none;
+  }
+}
+
 /* Desktop (>1099px) renders /help as a full-bleed page: the halves fill the
    first screen, the human half is clickable as a whole (stretched CTA), and
    the optional note stays phone/tablet-only. Matches ViewportMode desktop. */

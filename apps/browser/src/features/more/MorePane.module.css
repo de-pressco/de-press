@@ -25,6 +25,14 @@
   flex-direction: column;
 }
 
+/* Readable measure on desktop (same pattern as TherapyPane). */
+.pane > .head,
+.pane > .list {
+  width: 100%;
+  max-width: 46rem;
+  margin-inline: auto;
+}
+
 .staff {
   margin-top: 0.75rem;
 }

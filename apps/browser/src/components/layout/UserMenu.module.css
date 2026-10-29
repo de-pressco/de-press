@@ -119,10 +119,9 @@
   padding: 0.4rem 0.85rem;
 }
 
-.langSearch:focus,
 .langSearch:focus-visible {
   outline: none;
-  box-shadow: none;
+  box-shadow: var(--focus-ring);
 }
 
 .langList {

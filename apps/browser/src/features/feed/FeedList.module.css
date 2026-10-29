@@ -56,6 +56,11 @@
   box-shadow: none;
 }
 
+/* Keyboard focus lights the pill, not the naked input (a11y). */
+.search:focus-within {
+  box-shadow: var(--focus-ring);
+}
+
 .searchInput::placeholder {
   color: var(--text-muted);
 }

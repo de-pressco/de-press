@@ -5,6 +5,7 @@ import QRCode from "qrcode";
 import { api, ApiError } from "@/core/api/client";
 import { useFocusTrap, useInertBackground } from "@/core/hooks/useFocusTrap";
 import type { TherapySession } from "@/core/api/types";
+import { BackButton } from "@/components/tg/BackButton";
 import { useI18n } from "@/core/i18n/context";
 import styles from "./TherapyPane.module.css";
 
@@ -269,6 +270,7 @@ export function TherapyPane() {
   return (
     <div className={styles.pane}>
       <header className={styles.head}>
+        <BackButton fallback="/more" />
         <h1 className={styles.title}>{t.therapy.title}</h1>
       </header>
       <p className={styles.lead}>{t.therapy.lead}</p>

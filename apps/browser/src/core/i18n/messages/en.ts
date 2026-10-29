@@ -368,7 +368,7 @@ export const en: Messages = {
     closeMenu: "Close",
   },
   shell: {
-    pickStory: "Pick a thought on the left.",
+    pickStory: "Pick a thought from the feed.",
     pickChat: "Pick a dialogue or accept a request.",
     patternsSoon: "Patterns (on-device only) — content later.",
     helpSoon: "Help — content later.",
