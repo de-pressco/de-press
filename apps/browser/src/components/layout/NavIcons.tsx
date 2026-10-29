@@ -364,6 +364,23 @@ export function IconBug(props: IconProps) {
   );
 }
 
+export function IconPin(props: IconProps) {
+  // Канцелярская кнопка: «чат закреплён». Заменяет эмодзи 📌 — монохромный
+  // глиф держит единый язык иконок и одинаков на всех платформах.
+  const w = props.active ? 2.2 : 1.5;
+  return base(
+    <>
+      <path d="M12 17v5" fill="none" strokeWidth={w} />
+      <path
+        d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1z"
+        fill="none"
+        strokeWidth={w}
+      />
+    </>,
+    props,
+  );
+}
+
 export type NavIconName =
   | "feed"
   | "chat"
@@ -378,7 +395,8 @@ export type NavIconName =
   | "gear"
   | "terminal"
   | "smile"
-  | "bug";
+  | "bug"
+  | "pin";
 
 function renderIcon(name: NavIconName, active: boolean) {
   const props = { active };
@@ -411,6 +429,8 @@ function renderIcon(name: NavIconName, active: boolean) {
       return <IconSmile {...props} />;
     case "bug":
       return <IconBug {...props} />;
+    case "pin":
+      return <IconPin {...props} />;
   }
 }
 

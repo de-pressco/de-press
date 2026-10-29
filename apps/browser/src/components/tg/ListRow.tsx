@@ -5,6 +5,7 @@ import {
 } from "react";
 import { Link } from "react-router-dom";
 import { useLongPress } from "@/core/hooks/useLongPress";
+import { IconPin } from "@/components/layout/NavIcons";
 import styles from "./ListRow.module.css";
 
 export interface ListRowProps {
@@ -119,7 +120,7 @@ export function ListRow({
       ) : null}
       {pinned ? (
         <span className={styles.pinMark} aria-hidden>
-          📌
+          <IconPin />
         </span>
       ) : null}
       {onMore ? (

@@ -8,7 +8,7 @@ import {
   isMoreSectionPath,
   isPhoneNestedChromePath,
 } from "@/core/viewport";
-import { NavIcon, type NavIconName } from "./NavIcons";
+import { IconPanic, NavIcon, type NavIconName } from "./NavIcons";
 import styles from "./TabBar.module.css";
 
 const TABS: {
@@ -115,8 +115,8 @@ export function TabBar() {
         title={t.nav.panic}
         aria-label={t.nav.panic}
       >
-        <span className={styles.panicMark} aria-hidden>
-          !
+        <span className={styles.iconWrap}>
+          <IconPanic />
         </span>
         <span className={styles.label}>{t.nav.panic}</span>
       </button>

@@ -71,16 +71,3 @@
 .panic {
   color: var(--accent-panic);
 }
-
-.panicMark {
-  width: 1.35rem;
-  height: 1.35rem;
-  border-radius: 50%;
-  border: 2px solid var(--accent-panic);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 800;
-  font-size: var(--fs-xs);
-  line-height: 1;
-}

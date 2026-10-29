@@ -8,7 +8,7 @@ import {
   readNavPrefs,
   type NavKey,
 } from "@/core/navOrder";
-import { NavIcon, type NavIconName } from "./NavIcons";
+import { IconPanic, NavIcon, type NavIconName } from "./NavIcons";
 import { UserMenu } from "./UserMenu";
 import styles from "./Sidebar.module.css";
 
@@ -132,9 +132,7 @@ export function Sidebar() {
         title={t.nav.panic}
         aria-label={t.nav.panic}
       >
-        <span className={styles.panicMark} aria-hidden>
-          !
-        </span>
+        <IconPanic />
       </button>
 
       <UserMenu open={menuOpen} onClose={() => setMenuOpen(false)} />
