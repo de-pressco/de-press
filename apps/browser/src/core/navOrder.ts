@@ -6,7 +6,6 @@ export type NavKey =
   | "notifications"
   | "help"
   | "patterns"
-  | "therapy"
   | "more"
   | "helper";
 
@@ -16,14 +15,14 @@ export const DEFAULT_NAV_ORDER: NavKey[] = [
   "notifications",
   "help",
   "patterns",
-  "therapy",
   "helper",
   "more",
 ];
 
 /**
- * Rail items for this role. `helper` is role-gated; therapy and more are always
- * there so the desktop rail reaches every pane (owner decision 2026-10-27).
+ * Rail items for this role. `helper` is role-gated; `more` is always there so
+ * the desktop rail reaches the remaining panes. Therapy is not on the rail —
+ * it lives inside the Help pane (owner decision 2026-10-29).
  * Staff are Helpers by invariant (`is_staff ⇒ is_helper`), so `canHelper` is
  * just `me.is_helper`.
  */

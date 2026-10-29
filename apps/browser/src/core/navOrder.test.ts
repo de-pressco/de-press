@@ -11,11 +11,11 @@ describe("visibleNavKeys", () => {
     expect(visibleNavKeys(true)).toEqual(DEFAULT_NAV_ORDER);
   });
 
-  it("always exposes Therapy and More — the desktop-reachability fix", () => {
+  it("always exposes More, and Therapy is not on the rail — Therapy lives in the Help pane now", () => {
     for (const canHelper of [false, true]) {
-      expect(visibleNavKeys(canHelper)).toEqual(
-        expect.arrayContaining(["therapy", "more"]),
-      );
+      const keys = visibleNavKeys(canHelper);
+      expect(keys).toContain("more");
+      expect(keys).not.toContain("therapy");
     }
   });
 });

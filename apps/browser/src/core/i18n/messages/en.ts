@@ -13,7 +13,6 @@ export const en: Messages = {
     companion: "AI",
     patterns: "Patterns",
     help: "Help",
-    therapy: "Therapy",
     guides: "Guides",
     safety: "Safety",
     login: "Log in",
@@ -638,6 +637,11 @@ export const en: Messages = {
     aiLead:
       "A quiet assistant. This is AI, not a live person. No diagnoses and no “just smile”.",
     aiCta: "Open",
+    therapyTag: "Therapy",
+    therapyTitle: "Talk to a specialist (therapist)",
+    therapyLead:
+      "Paid sessions with therapists. You pay the therapist directly — the platform is not a middleman.",
+    therapyCta: "Open",
     waitTitle: "Looking for a person nearby",
     waitBody:
       "This is not 112 and not an ambulance. If you are at risk — emergency services 112 / 103. You can wait, open AI, or cancel the request.",

@@ -14,7 +14,6 @@ const KEY_TO_ICON: Record<NavKey, NavIconName> = {
   notifications: "bell",
   help: "help",
   patterns: "patterns",
-  therapy: "therapy",
   helper: "shield",
   more: "more",
 };
@@ -25,7 +24,6 @@ const KEY_TO_PATH: Record<NavKey, string> = {
   notifications: "/notifications",
   help: "/help",
   patterns: "/patterns",
-  therapy: "/therapy",
   helper: "/helper",
   more: "/more",
 };
@@ -83,7 +81,6 @@ export function Sidebar({
       notifications: t.notifications.title,
       help: t.nav.help,
       patterns: t.nav.patterns,
-      therapy: t.nav.therapy,
       helper: t.nav.helper,
       more: t.nav.more,
     }),

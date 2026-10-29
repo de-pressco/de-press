@@ -16,11 +16,11 @@ function goBackOr(
 }
 
 /**
- * Help gate: on desktop the whole page splits into two halves — AI (link to
- * the full-width /help/ai) and human (one click creates a HelpRequest and
- * leads to /help/wait, where an on-duty Helper can pick it up). On
- * phone/tablet the halves stack (≈ the previous card layout) and the
- * optional note stays.
+ * Help gate: on desktop the page splits into three halves — AI (link to the
+ * full-width /help/ai), human (one click creates a HelpRequest and leads to
+ * /help/wait, where an on-duty Helper can pick it up) and therapy (link to
+ * /therapy, rightmost). On phone/tablet the halves stack (≈ the previous
+ * card layout) and the optional note stays.
  */
 export function HelpPane() {
   const { t } = useI18n();
@@ -88,6 +88,13 @@ export function HelpPane() {
             onChange={(e) => setNote(e.target.value)}
           />
         </article>
+
+        <Link to="/therapy" className={`${styles.half} ${styles.halfTherapy}`}>
+          <span className={styles.tag}>{t.help.therapyTag}</span>
+          <h2 className={styles.halfTitle}>{t.help.therapyTitle}</h2>
+          <p className={styles.halfLead}>{t.help.therapyLead}</p>
+          <span className={styles.halfCta}>{t.help.therapyCta}</span>
+        </Link>
       </section>
     </div>
   );

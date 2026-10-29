@@ -58,7 +58,7 @@
   text-wrap: pretty;
 }
 
-/* Two halves: AI promo (left) and human helper (right). */
+/* Three entry halves: AI promo, human helper, therapy (rightmost on desktop). */
 .gate {
   display: grid;
   grid-template-columns: 1fr;
@@ -143,6 +143,7 @@
 }
 
 .halfAi:hover .halfCta,
+.halfTherapy:hover .halfCta,
 .halfHuman button.halfCta:hover:not(:disabled) {
   background: var(--bg-hover);
 }
@@ -208,7 +209,7 @@
 
   .gate {
     flex: 1 0 auto;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
     gap: 1.25rem;
     min-height: calc(100dvh - 14rem);
   }

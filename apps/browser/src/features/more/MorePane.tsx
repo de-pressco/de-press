@@ -7,7 +7,6 @@ import {
   IconPatterns,
   IconShield,
   IconTerminal,
-  IconTherapy,
 } from "@/components/layout/NavIcons";
 import { useI18n } from "@/core/i18n/context";
 import { BugReport } from "@/features/more/BugReport";
@@ -33,7 +32,6 @@ export function MorePane() {
         <QuickCheckin />
         <ListRow to="/patterns" title={t.nav.patterns} avatarIcon={<IconPatterns />} />
         <ListRow to="/help" title={t.nav.help} avatarIcon={<IconHelp />} />
-        <ListRow to="/therapy" title={t.nav.therapy} avatarIcon={<IconTherapy />} />
         <ListRow to="/settings" title={t.nav.settings} avatarIcon={<IconGear />} />
         <BugReport />
         {isHelper ? (

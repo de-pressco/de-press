@@ -20,7 +20,6 @@ export type Messages = {
     companion: string;
     patterns: string;
     help: string;
-    therapy: string;
     guides: string;
     safety: string;
     login: string;
@@ -604,6 +603,10 @@ export type Messages = {
     aiTitle: string;
     aiLead: string;
     aiCta: string;
+    therapyTag: string;
+    therapyTitle: string;
+    therapyLead: string;
+    therapyCta: string;
     waitTitle: string;
     waitBody: string;
     waitCancel: string;
