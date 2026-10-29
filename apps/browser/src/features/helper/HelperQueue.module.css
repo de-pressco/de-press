@@ -18,6 +18,13 @@
   margin-inline: auto;
 }
 
+/* Desktop: anchor content to the rail edge (queue, clouds, summary alike). */
+@media (min-width: 1100px) {
+  .pane > * {
+    margin-inline: 0;
+  }
+}
+
 .head {
   display: flex;
   flex-direction: column;

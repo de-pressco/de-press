@@ -204,6 +204,20 @@
   margin-inline: auto;
 }
 
+/* Desktop: anchor head/thread/composer to the rail edge; the back pill is
+   phone/tablet chrome — the rail covers navigation. */
+@media (min-width: 1100px) {
+  .head,
+  .thread,
+  .compose {
+    margin-inline: 0;
+  }
+
+  .back {
+    display: none;
+  }
+}
+
 .label {
   margin: 0;
   font-size: var(--fs-sm);

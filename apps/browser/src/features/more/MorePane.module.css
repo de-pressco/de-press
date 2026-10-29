@@ -33,6 +33,14 @@
   margin-inline: auto;
 }
 
+/* Desktop: anchor the column to the rail edge — no floating centered list. */
+@media (min-width: 1100px) {
+  .pane > .head,
+  .pane > .list {
+    margin-inline: 0;
+  }
+}
+
 .staff {
   margin-top: 0.75rem;
 }

@@ -24,3 +24,10 @@
 .back:active {
   transform: scale(0.96);
 }
+
+/* Desktop has the persistent nav rail — the back pill is phone/tablet chrome. */
+@media (min-width: 1100px) {
+  .back {
+    display: none;
+  }
+}

@@ -12,6 +12,13 @@
   margin-inline: auto;
 }
 
+/* Desktop: anchor the column to the rail edge — no floating centered pane. */
+@media (min-width: 1100px) {
+  .pane {
+    margin-inline: 0;
+  }
+}
+
 .head {
   display: flex;
   flex-direction: column;
