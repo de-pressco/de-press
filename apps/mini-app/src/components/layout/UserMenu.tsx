@@ -2,7 +2,7 @@ import { useEffect, useId, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { api, ApiError } from "@/core/api/client";
-import type { VoiceRetention } from "@/core/api/types";
+import type { NotificationKind, VoiceRetention } from "@/core/api/types";
 import { useHost } from "@/core/host/HostContext";
 import { useI18n } from "@/core/i18n/context";
 import { UI_LANGS, langLabel } from "@/core/i18n/uiLangs";
@@ -12,6 +12,28 @@ import { FundCard } from "@/features/fund/FundCard";
 import { TipWalletForm } from "@/features/fund/TipWalletForm";
 import { ThemeSwitch } from "./ThemeSwitch";
 import styles from "./UserMenu.module.css";
+
+// Helper-only kinds: hidden for everyone else (the backend gates them too).
+const HELPER_KINDS: ReadonlySet<NotificationKind> = new Set([
+  "help_requested",
+  "dialogue_request_review",
+  "report_new",
+]);
+
+const KIND_LIST: NotificationKind[] = [
+  "message",
+  "dialogue_request",
+  "dialogue_opened",
+  "outreach_intro",
+  "dialogue_deleted",
+  "support_cloud",
+  "cloud_approved",
+  "silent_empathy",
+  "report_resolved",
+  "help_requested",
+  "dialogue_request_review",
+  "report_new",
+];
 
 interface UserMenuProps {
   open: boolean;
@@ -54,6 +76,7 @@ export function UserMenu({ open, onClose }: UserMenuProps) {
 
   const me = meQuery.data;
   const isAccount = Boolean(me?.is_authenticated && me.kind === "account");
+  const isHelper = Boolean(me?.is_helper);
   const notifySettings = notifyQuery.data;
   const hasTelegram = Boolean(notifySettings?.has_telegram);
 
@@ -180,6 +203,25 @@ export function UserMenu({ open, onClose }: UserMenuProps) {
     },
   });
 
+  const saveKind = useMutation({
+    mutationFn: (args: { kind: NotificationKind; enabled: boolean }) =>
+      api.updateNotifySettings({
+        notify_kinds: { [args.kind]: args.enabled },
+        // The endpoint resets omitted channel fields to their defaults —
+        // pass the loaded values through (same pattern as saveTelegramNotify).
+        notify_email_opt_in: notifySettings?.notify_email_opt_in ?? false,
+        notify_digest_frequency:
+          notifySettings?.notify_digest_frequency ?? "off",
+      }),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["notify-settings"] });
+      setError(null);
+    },
+    onError: (err) => {
+      setError(err instanceof ApiError ? err.message : t.common.error);
+    },
+  });
+
   if (!open) return null;
 
   const busy =
@@ -188,6 +230,7 @@ export function UserMenu({ open, onClose }: UserMenuProps) {
     logout.isPending ||
     duty.isPending ||
     saveTelegramNotify.isPending ||
+    saveKind.isPending ||
     testTelegramDigest.isPending;
 
   const tgFreq =
@@ -421,6 +464,26 @@ export function UserMenu({ open, onClose }: UserMenuProps) {
                 <p className={styles.hint}>{t.notify.telegramHint}</p>
               </fieldset>
             ) : null}
+
+            <fieldset className={styles.voiceField}>
+              <legend>{t.notify.kindsTitle}</legend>
+              {KIND_LIST.filter(
+                (kind) => isHelper || !HELPER_KINDS.has(kind),
+              ).map((kind) => (
+                <label key={kind} className={styles.radio}>
+                  <input
+                    type="checkbox"
+                    checked={notifySettings?.notify_kinds?.[kind] ?? true}
+                    disabled={busy || notifyQuery.isLoading}
+                    onChange={(e) => {
+                      saveKind.mutate({ kind, enabled: e.target.checked });
+                    }}
+                  />
+                  <span>{t.notifications.kind[kind] ?? kind}</span>
+                </label>
+              ))}
+              <p className={styles.hint}>{t.notify.kindsHint}</p>
+            </fieldset>
 
             {error ? <p className={styles.error} role="alert">{error}</p> : null}
 

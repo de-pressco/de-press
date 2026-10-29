@@ -22,7 +22,16 @@ describe("resolveTarget", () => {
   });
 
   it("routes help request notifications", () => {
-    expect(resolveTarget(note("help_requested", { request_id: "r1" }))).toBe("/chat");
+    expect(resolveTarget(note("help_requested", { request_id: "r1" }))).toBe(
+      "/helper",
+    );
+    // instant match carries the dialogue: go straight to the chat
+    expect(
+      resolveTarget(note("help_requested", { request_id: "r1", dialogue_id: "d4" })),
+    ).toBe("/chat/d4");
+    expect(resolveTarget(note("report_new", { report_id: "rp1" }))).toBe(
+      "/helper",
+    );
     expect(resolveTarget(note("help_accepted", { dialogue_id: "d3" }))).toBe("/chat/d3");
     expect(resolveTarget(note("help_accepted"))).toBe("/help/wait");
   });

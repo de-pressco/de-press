@@ -59,6 +59,11 @@ const CompanionPane = lazy(() =>
 const InboxPage = lazy(() =>
   import("@/features/inbox/InboxPage").then((m) => ({ default: m.InboxPage })),
 );
+const NotificationsPane = lazy(() =>
+  import("@/features/notifications/NotificationsPane").then((m) => ({
+    default: m.NotificationsPane,
+  })),
+);
 const MorePane = lazy(() =>
   import("@/features/more/MorePane").then((m) => ({ default: m.MorePane })),
 );
@@ -121,6 +126,7 @@ function AppRoutes() {
           <Route path="/helper/join" element={<HelperJoin />} />
           <Route path="/helper/invite" element={<HelperInviteCreate />} />
           <Route path="/inbox" element={<InboxPage />} />
+          <Route path="/notifications" element={<NotificationsPane />} />
           <Route path="/more" element={<MorePane />} />
           <Route path="*" element={<EmptyPane text={t.shell.notFound} />} />
         </Route>

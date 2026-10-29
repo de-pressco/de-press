@@ -46,6 +46,10 @@ export function useNotifications(
     const handleEnvelope = (data: ServerEnvelope) => {
       if (data.type === "notification.new" && data.notification) {
         const kind = data.notification.kind;
+        void queryClient.invalidateQueries({ queryKey: ["notifications"] });
+        void queryClient.invalidateQueries({
+          queryKey: ["notifications-unread"],
+        });
         if (
           kind === "dialogue_request" ||
           kind === "dialogue_opened" ||

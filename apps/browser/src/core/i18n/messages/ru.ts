@@ -667,6 +667,10 @@ export const ru: Messages = {
   },
   notifications: {
     openNotice: "Открыть",
+    title: "Уведомления",
+    empty: "Пока тихо. Ничего нового.",
+    markAllRead: "Прочитать всё",
+    justNow: "только что",
     kind: {
       dialogue_request: "Кто-то хочет диалог с тобой",
       support_cloud: "Тебе прислали тихое облачко",
@@ -674,6 +678,18 @@ export const ru: Messages = {
       dialogue_opened: "Автор открыл диалог",
       outreach_intro: "Автор написал тебе (outreach)",
       message: "Новое сообщение в диалоге",
+      dialogue_deleted: "Собеседник удалил диалог",
+      silent_empathy: "Кто-то сидел с тобой молча",
+      help_requested: "Кто-то просит человека рядом",
+      help_accepted: "Helper принял твой запрос",
+      dialogue_request_review: "Запрос диалога ждёт проверки",
+      report_resolved:
+        "Твоя жалоба рассмотрена — спасибо, что помогаешь держать место безопасным",
+      report_new: "Новая жалоба — посмотри очередь",
+    },
+    settings: {
+      title: "Какие уведомления присылать",
+      hint: "Выключенное событие не приходит ни тостом, ни в Telegram.",
     },
   },
   common: {

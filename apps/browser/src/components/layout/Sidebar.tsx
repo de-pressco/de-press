@@ -11,6 +11,7 @@ import styles from "./Sidebar.module.css";
 const KEY_TO_ICON: Record<NavKey, NavIconName> = {
   feed: "feed",
   chat: "chat",
+  notifications: "bell",
   help: "help",
   patterns: "patterns",
   therapy: "therapy",
@@ -21,6 +22,7 @@ const KEY_TO_ICON: Record<NavKey, NavIconName> = {
 const KEY_TO_PATH: Record<NavKey, string> = {
   feed: "/feed",
   chat: "/chat",
+  notifications: "/notifications",
   help: "/help",
   patterns: "/patterns",
   therapy: "/therapy",
@@ -58,6 +60,13 @@ export function Sidebar({
     refetchInterval: 20_000,
   });
 
+  const unreadQuery = useQuery({
+    queryKey: ["notifications-unread"],
+    queryFn: () => api.notificationsUnreadCount(),
+    staleTime: 15_000,
+    refetchInterval: 90_000,
+  });
+
   const canHelper = Boolean(meQuery.data?.is_helper);
   const pendingRequests = (requestsQuery.data ?? []).filter(
     (r) => r.status === "pending" || r.status === "approved" || !r.status,
@@ -71,6 +80,7 @@ export function Sidebar({
     (): Record<NavKey, string> => ({
       feed: t.nav.feed,
       chat: t.nav.me,
+      notifications: t.notifications.title,
       help: t.nav.help,
       patterns: t.nav.patterns,
       therapy: t.nav.therapy,
@@ -85,6 +95,8 @@ export function Sidebar({
   function softFor(key: NavKey): number | undefined {
     if (key === "chat" && chatUnread + pendingRequests > 0)
       return chatUnread + pendingRequests;
+    const unread = unreadQuery.data?.count ?? 0;
+    if (key === "notifications" && unread > 0) return unread;
     return undefined;
   }
 

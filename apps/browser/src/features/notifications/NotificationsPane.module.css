@@ -1,0 +1,125 @@
+.pane {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+  flex: 1;
+  background: var(--bg-chat);
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--bg-surface);
+  flex-shrink: 0;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.markAll {
+  border: none;
+  background: transparent;
+  color: var(--accent-hope);
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 0.4rem 0.55rem;
+  border-radius: 0.5rem;
+  min-height: 40px;
+}
+
+.markAll:hover:not(:disabled) {
+  background: var(--bg-hover);
+}
+
+.markAll:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.markAllIdle {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+}
+
+.row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  width: 100%;
+  text-align: start;
+  padding: 0.85rem 1rem;
+  border: none;
+  border-bottom: 1px solid var(--border-subtle);
+  background: transparent;
+  color: var(--text-primary);
+  transition-property: background-color;
+  transition-duration: 0.15s;
+}
+
+.row:hover {
+  background: var(--bg-hover);
+}
+
+.rowUnread {
+  background: var(--accent-hope-soft);
+}
+
+.rowUnread:hover {
+  background: var(--accent-hope-mid);
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  margin-top: 0.45rem;
+  border-radius: 50%;
+  background: transparent;
+  flex-shrink: 0;
+}
+
+.dotOn {
+  background: var(--accent-hope);
+  opacity: 0.85;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.kind {
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.time {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.empty {
+  padding: 1.5rem 1rem;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}

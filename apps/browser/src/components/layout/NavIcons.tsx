@@ -165,6 +165,23 @@ export function IconMore(props: IconProps) {
   );
 }
 
+export function IconBell(props: IconProps) {
+  return base(
+    props.active ? (
+      <>
+        <path d="M6 9a6 6 0 1 1 12 0c0 7 3 7 3 7H3s3 0 3-7" />
+        <path d="M10 19a2 2 0 0 0 4 0" stroke="none" fill="currentColor" />
+      </>
+    ) : (
+      <>
+        <path d="M6 9a6 6 0 1 1 12 0c0 7 3 7 3 7H3s3 0 3-7" />
+        <path d="M10 19a2 2 0 0 0 4 0" />
+      </>
+    ),
+    props,
+  );
+}
+
 export type NavIconName =
   | "feed"
   | "chat"
@@ -173,7 +190,8 @@ export type NavIconName =
   | "therapy"
   | "shield"
   | "edit"
-  | "more";
+  | "more"
+  | "bell";
 
 function renderIcon(name: NavIconName, active: boolean) {
   const props = { active };
@@ -194,6 +212,8 @@ function renderIcon(name: NavIconName, active: boolean) {
       return <IconEdit {...props} />;
     case "more":
       return <IconMore {...props} />;
+    case "bell":
+      return <IconBell {...props} />;
   }
 }
 

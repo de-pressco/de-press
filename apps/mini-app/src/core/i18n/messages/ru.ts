@@ -261,6 +261,27 @@ export const ru: Messages = {
     telegramFreqImmediate: "Сразу (каждое событие)",
     telegramFreqDaily: "Раз в день (дайджест)",
     telegramTest: "Проверить дайджест в Telegram",
+    kindsTitle: "Какие события присылать",
+    kindsHint: "Выключенное событие не приходит ни тостом, ни в Telegram.",
+  },
+  notifications: {
+    openNotice: "Открыть",
+    kind: {
+      dialogue_request: "Кто-то хочет диалог с тобой",
+      support_cloud: "Тебе прислали тихое облачко",
+      cloud_approved: "Твоё облачко одобрено и видно автору",
+      dialogue_opened: "Автор открыл диалог",
+      outreach_intro: "Автор написал тебе (outreach)",
+      message: "Новое сообщение в диалоге",
+      dialogue_deleted: "Собеседник удалил диалог",
+      silent_empathy: "Кто-то сидел с тобой молча",
+      help_requested: "Кто-то просит человека рядом",
+      help_accepted: "Helper принял твой запрос",
+      dialogue_request_review: "Запрос диалога ждёт проверки",
+      report_resolved:
+        "Твоя жалоба рассмотрена — спасибо, что помогаешь держать место безопасным",
+      report_new: "Новая жалоба — посмотри очередь",
+    },
   },
   auth: {
     loginTitle: "Вход",

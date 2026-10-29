@@ -3,6 +3,7 @@
 export type NavKey =
   | "feed"
   | "chat"
+  | "notifications"
   | "help"
   | "patterns"
   | "therapy"
@@ -12,6 +13,7 @@ export type NavKey =
 export const DEFAULT_NAV_ORDER: NavKey[] = [
   "feed",
   "chat",
+  "notifications",
   "help",
   "patterns",
   "therapy",

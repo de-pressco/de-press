@@ -1,5 +1,7 @@
 export type Locale = string;
 
+import type { NotificationKind } from "@/core/api/types";
+
 export const LOCALES: Locale[] = ["en", "ru"];
 export const DEFAULT_LOCALE: Locale = "en";
 export const LOCALE_COOKIE = "depress_locale";
@@ -250,6 +252,12 @@ export type Messages = {
     telegramFreqImmediate: string;
     telegramFreqDaily: string;
     telegramTest: string;
+    kindsTitle: string;
+    kindsHint: string;
+  };
+  notifications: {
+    openNotice: string;
+    kind: Partial<Record<NotificationKind, string>>;
   };
   auth: {
     loginTitle: string;

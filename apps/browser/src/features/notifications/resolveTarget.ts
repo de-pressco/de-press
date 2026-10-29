@@ -14,7 +14,10 @@ export function resolveTarget(n: AppNotification): string | null {
     case "message":
       return p.dialogue_id ? `/chat/${p.dialogue_id}` : "/chat";
     case "help_requested":
-      return "/chat";
+      // Helpers only: instant match carries dialogue_id, queue pings do not.
+      return p.dialogue_id ? `/chat/${p.dialogue_id}` : "/helper";
+    case "report_new":
+      return "/helper";
     case "help_accepted":
       return p.dialogue_id ? `/chat/${p.dialogue_id}` : "/help/wait";
     case "silent_empathy":

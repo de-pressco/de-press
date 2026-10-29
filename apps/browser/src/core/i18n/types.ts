@@ -622,7 +622,15 @@ export type Messages = {
   };
   notifications: {
     openNotice: string;
+    title: string;
+    empty: string;
+    markAllRead: string;
+    justNow: string;
     kind: Partial<Record<NotificationKind, string>>;
+    settings: {
+      title: string;
+      hint: string;
+    };
   };
   inbox: {
     title: string;

@@ -21,9 +21,12 @@ const CHAT_NOTICE_KINDS = new Set<NotificationKind>([
   "dialogue_request",
   "dialogue_opened",
   "outreach_intro",
+  "message",
   "dialogue_deleted",
   "support_cloud",
   "cloud_approved",
+  "help_requested",
+  "report_new",
 ]);
 
 /** Already looking at chats — list/inbox updates in place, no toast. */
@@ -31,6 +34,7 @@ const MUTE_ON_CHAT_PAGE = new Set<NotificationKind>([
   "dialogue_request",
   "dialogue_opened",
   "outreach_intro",
+  "message",
 ]);
 
 function onChatPage(pathname: string): boolean {

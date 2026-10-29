@@ -9,6 +9,7 @@ import { FundCard } from "@/features/fund/FundCard";
 import { TipWalletForm } from "@/features/fund/TipWalletForm";
 import { BugReport } from "@/features/more/BugReport";
 import { QuickCheckin } from "@/features/more/QuickCheckin";
+import { NotifySettingsCard } from "@/features/notifications/NotifySettingsCard";
 import styles from "./MorePane.module.css";
 
 export function MorePane() {
@@ -30,6 +31,7 @@ export function MorePane() {
       </header>
       <div className={styles.list}>
         <QuickCheckin />
+        <NotifySettingsCard isHelper={isHelper} />
         <ListRow to="/patterns" title={t.nav.patterns} avatarText="P" />
         <ListRow to="/help" title={t.nav.help} avatarText="?" />
         <ListRow to="/therapy" title={t.nav.therapy} avatarText="T" />

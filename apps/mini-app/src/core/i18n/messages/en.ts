@@ -260,6 +260,27 @@ export const en: Messages = {
     telegramFreqImmediate: "Immediate (each event)",
     telegramFreqDaily: "Daily digest",
     telegramTest: "Test Telegram digest",
+    kindsTitle: "Which events to send",
+    kindsHint: "A switched-off event arrives neither as a toast nor via Telegram.",
+  },
+  notifications: {
+    openNotice: "Open",
+    kind: {
+      dialogue_request: "Someone wants a dialogue with you",
+      support_cloud: "You received a quiet cloud",
+      cloud_approved: "Your cloud is approved and visible to the author",
+      dialogue_opened: "The author opened a dialogue",
+      outreach_intro: "The author wrote to you (outreach)",
+      message: "New message in the dialogue",
+      dialogue_deleted: "The other person deleted the dialogue",
+      silent_empathy: "Someone sat with you silently",
+      help_requested: "Someone is asking for a person nearby",
+      help_accepted: "A Helper accepted your request",
+      dialogue_request_review: "A dialogue request is waiting for review",
+      report_resolved:
+        "Your report was reviewed — thank you for keeping this place safe",
+      report_new: "New report — check the queue",
+    },
   },
   auth: {
     loginTitle: "Log in",
