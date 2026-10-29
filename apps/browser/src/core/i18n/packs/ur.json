@@ -659,5 +659,7 @@
   "composer.topicNone": "کوئی موضوع نہیں",
   "composer.publish": "شائع کریں",
   "composer.publishing": "شائع ہو رہا ہے…",
-  "composer.publishError": "نوٹ شائع نہیں ہو سکا۔"
+  "composer.publishError": "نوٹ شائع نہیں ہو سکا۔",
+  "nav.settings": "ترتیبات",
+  "settings.staffSection": "ٹیم"
 }

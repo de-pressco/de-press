@@ -659,5 +659,7 @@
   "composer.topicNone": "কোনো বিষয় নেই",
   "composer.publish": "প্রকাশ করুন",
   "composer.publishing": "প্রকাশ করা হচ্ছে…",
-  "composer.publishError": "নোটটি প্রকাশ করা যায়নি।"
+  "composer.publishError": "নোটটি প্রকাশ করা যায়নি।",
+  "nav.settings": "সেটিংস",
+  "settings.staffSection": "দল"
 }

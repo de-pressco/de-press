@@ -67,6 +67,11 @@ const NotificationsPane = lazy(() =>
 const MorePane = lazy(() =>
   import("@/features/more/MorePane").then((m) => ({ default: m.MorePane })),
 );
+const SettingsPane = lazy(() =>
+  import("@/features/settings/SettingsPane").then((m) => ({
+    default: m.SettingsPane,
+  })),
+);
 
 function EmptyPane({ text }: { text: string }) {
   return (
@@ -128,6 +133,7 @@ function AppRoutes() {
           <Route path="/inbox" element={<InboxPage />} />
           <Route path="/notifications" element={<NotificationsPane />} />
           <Route path="/more" element={<MorePane />} />
+          <Route path="/settings" element={<SettingsPane />} />
           <Route path="*" element={<EmptyPane text={t.shell.notFound} />} />
         </Route>
       </Routes>

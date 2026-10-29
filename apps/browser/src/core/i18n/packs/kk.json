@@ -659,5 +659,7 @@
   "composer.topicNone": "Тақырып жоқ",
   "composer.publish": "Жариялау",
   "composer.publishing": "Жариялануда…",
-  "composer.publishError": "Жазбаны жариялау мүмкін болмады."
+  "composer.publishError": "Жазбаны жариялау мүмкін болмады.",
+  "nav.settings": "Баптаулар",
+  "settings.staffSection": "Қызметтік"
 }

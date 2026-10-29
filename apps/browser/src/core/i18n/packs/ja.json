@@ -659,5 +659,7 @@
   "composer.topicNone": "トピックなし",
   "composer.publish": "投稿する",
   "composer.publishing": "投稿中…",
-  "composer.publishError": "ノートを投稿できませんでした。"
+  "composer.publishError": "ノートを投稿できませんでした。",
+  "nav.settings": "設定",
+  "settings.staffSection": "チーム"
 }

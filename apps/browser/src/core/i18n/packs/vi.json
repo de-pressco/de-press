@@ -659,5 +659,7 @@
   "composer.topicNone": "Không có chủ đề",
   "composer.publish": "Đăng",
   "composer.publishing": "Đang đăng…",
-  "composer.publishError": "Không thể đăng ghi chú."
+  "composer.publishError": "Không thể đăng ghi chú.",
+  "nav.settings": "Cài đặt",
+  "settings.staffSection": "Nhóm"
 }

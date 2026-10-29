@@ -24,6 +24,7 @@ export const ru: Messages = {
     about: "О проекте",
     account: "Аккаунт",
     more: "Ещё",
+    settings: "Настройки",
     skipToContent: "Перейти к содержимому",
     edit: "Настроить меню",
     moveUp: "Выше",
@@ -45,6 +46,9 @@ export const ru: Messages = {
     checkinRow: "Быстрая отметка",
     checkinHint: "Как ты сейчас? Сохранится только на этом устройстве.",
     checkinClose: "Свернуть",
+  },
+  settings: {
+    staffSection: "Служебное",
   },
   footer: {
     tagline: "Не медицина. Не коммерция. Просто место посидеть рядом.",

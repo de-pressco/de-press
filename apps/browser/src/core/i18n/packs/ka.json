@@ -659,5 +659,7 @@
   "composer.topicNone": "თემის გარეშე",
   "composer.publish": "გამოქვეყნება",
   "composer.publishing": "ქვეყნდება…",
-  "composer.publishError": "შენიშვნის გამოქვეყნება ვერ მოხერხდა."
+  "composer.publishError": "შენიშვნის გამოქვეყნება ვერ მოხერხდა.",
+  "nav.settings": "პარამეტრები",
+  "settings.staffSection": "გუნდისთვის"
 }

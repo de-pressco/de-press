@@ -659,5 +659,7 @@
   "composer.topicNone": "ไม่มีหัวข้อ",
   "composer.publish": "เผยแพร่",
   "composer.publishing": "กำลังเผยแพร่…",
-  "composer.publishError": "ไม่สามารถเผยแพร่โน้ตได้"
+  "composer.publishError": "ไม่สามารถเผยแพร่โน้ตได้",
+  "nav.settings": "ตั้งค่า",
+  "settings.staffSection": "ทีมงาน"
 }

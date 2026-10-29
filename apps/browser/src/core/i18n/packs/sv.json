@@ -659,5 +659,7 @@
   "composer.topicNone": "Inget ämne",
   "composer.publish": "Publicera",
   "composer.publishing": "Publicerar…",
-  "composer.publishError": "Kunde inte publicera anteckningen."
+  "composer.publishError": "Kunde inte publicera anteckningen.",
+  "nav.settings": "Inställningar",
+  "settings.staffSection": "Team"
 }

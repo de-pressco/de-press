@@ -659,5 +659,7 @@
   "composer.topicNone": "Χωρίς θέμα",
   "composer.publish": "Δημοσίευση",
   "composer.publishing": "Δημοσίευση…",
-  "composer.publishError": "Δεν ήταν δυνατή η δημοσίευση της σημείωσης."
+  "composer.publishError": "Δεν ήταν δυνατή η δημοσίευση της σημείωσης.",
+  "nav.settings": "Ρυθμίσεις",
+  "settings.staffSection": "Ομάδα"
 }

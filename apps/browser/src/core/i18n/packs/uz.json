@@ -659,5 +659,7 @@
   "composer.topicNone": "Mavzusiz",
   "composer.publish": "E'lon qilish",
   "composer.publishing": "E'lon qilinmoqda…",
-  "composer.publishError": "Eslatmani e'lon qilib bo'lmadi."
+  "composer.publishError": "Eslatmani e'lon qilib bo'lmadi.",
+  "nav.settings": "Sozlamalar",
+  "settings.staffSection": "Xizmat"
 }

@@ -659,5 +659,7 @@
   "composer.topicNone": "无话题",
   "composer.publish": "发布",
   "composer.publishing": "发布中…",
-  "composer.publishError": "无法发布这条笔记。"
+  "composer.publishError": "无法发布这条笔记。",
+  "nav.settings": "设置",
+  "settings.staffSection": "团队"
 }

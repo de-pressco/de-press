@@ -659,5 +659,7 @@
   "composer.topicNone": "Geen onderwerp",
   "composer.publish": "Publiceren",
   "composer.publishing": "Publiceren…",
-  "composer.publishError": "Kon de notitie niet publiceren."
+  "composer.publishError": "Kon de notitie niet publiceren.",
+  "nav.settings": "Instellingen",
+  "settings.staffSection": "Team"
 }

@@ -1,5 +1,5 @@
 import { useMemo, type ReactNode } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/core/api/client";
 import { useAntiPanic } from "@/core/hooks/useAntiPanic";
@@ -100,6 +100,10 @@ export function Sidebar({
     return undefined;
   }
 
+  const { pathname } = useLocation();
+  // /settings has no rail icon of its own — keep the More rail item lit.
+  const moreSection = pathname.startsWith("/settings");
+
   return (
     <aside className={styles.rail} data-chrome="rail" aria-label={t.nav.ariaMain}>
       <button
@@ -124,7 +128,9 @@ export function Sidebar({
               key={key}
               to={KEY_TO_PATH[key]}
               className={({ isActive }) =>
-                isActive ? `${styles.item} ${styles.itemActive}` : styles.item
+                isActive || (key === "more" && moreSection)
+                  ? `${styles.item} ${styles.itemActive}`
+                  : styles.item
               }
               title={label}
               aria-label={
@@ -135,7 +141,10 @@ export function Sidebar({
             >
               {({ isActive }): ReactNode => (
                 <>
-                  <NavIcon name={KEY_TO_ICON[key]} active={isActive} />
+                  <NavIcon
+                    name={KEY_TO_ICON[key]}
+                    active={isActive || (key === "more" && moreSection)}
+                  />
                   {soft != null && soft > 0 ? (
                     <span className={styles.dot} aria-hidden />
                   ) : null}

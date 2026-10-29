@@ -659,5 +659,7 @@
   "composer.topicNone": "Бе мавзӯъ",
   "composer.publish": "Нашр кардан",
   "composer.publishing": "Нашр шуда истодааст…",
-  "composer.publishError": "Нашр карда нашуд."
+  "composer.publishError": "Нашр карда нашуд.",
+  "nav.settings": "Танзимотҳо",
+  "settings.staffSection": "Барои даста"
 }

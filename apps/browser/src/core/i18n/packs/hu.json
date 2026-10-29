@@ -659,5 +659,7 @@
   "composer.topicNone": "Nincs téma",
   "composer.publish": "Közzététel",
   "composer.publishing": "Közzététel…",
-  "composer.publishError": "Nem sikerült közzétenni a jegyzetet."
+  "composer.publishError": "Nem sikerült közzétenni a jegyzetet.",
+  "nav.settings": "Beállítások",
+  "settings.staffSection": "Csapat"
 }

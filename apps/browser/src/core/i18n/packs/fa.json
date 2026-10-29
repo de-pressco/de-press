@@ -659,5 +659,7 @@
   "composer.topicNone": "بدون موضوع",
   "composer.publish": "منتشر کن",
   "composer.publishing": "در حال انتشار…",
-  "composer.publishError": "نتوانستیم یادداشت را منتشر کنیم."
+  "composer.publishError": "نتوانستیم یادداشت را منتشر کنیم.",
+  "nav.settings": "تنظیمات",
+  "settings.staffSection": "تیم"
 }

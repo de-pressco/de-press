@@ -659,5 +659,7 @@
   "composer.topicNone": "Без тэмы",
   "composer.publish": "Апублікаваць",
   "composer.publishing": "Публікуем…",
-  "composer.publishError": "Не ўдалося апублікаваць нататку."
+  "composer.publishError": "Не ўдалося апублікаваць нататку.",
+  "nav.settings": "Налады",
+  "settings.staffSection": "Службовае"
 }

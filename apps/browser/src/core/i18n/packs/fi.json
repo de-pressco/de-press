@@ -659,5 +659,7 @@
   "composer.topicNone": "Ei aihetta",
   "composer.publish": "Julkaise",
   "composer.publishing": "Julkaistaan…",
-  "composer.publishError": "Muistiinpanon julkaiseminen epäonnistui."
+  "composer.publishError": "Muistiinpanon julkaiseminen epäonnistui.",
+  "nav.settings": "Asetukset",
+  "settings.staffSection": "Tiimi"
 }

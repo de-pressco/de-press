@@ -659,5 +659,7 @@
   "composer.topicNone": "Без тема",
   "composer.publish": "Публикувай",
   "composer.publishing": "Публикуване…",
-  "composer.publishError": "Бележката не можа да бъде публикувана."
+  "composer.publishError": "Бележката не можа да бъде публикувана.",
+  "nav.settings": "Настройки",
+  "settings.staffSection": "Екип"
 }

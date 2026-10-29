@@ -659,5 +659,7 @@
   "composer.topicNone": "Ingen tema",
   "composer.publish": "Publiser",
   "composer.publishing": "Publiserer…",
-  "composer.publishError": "Kunne ikke publisere notatet."
+  "composer.publishError": "Kunne ikke publisere notatet.",
+  "nav.settings": "Innstillinger",
+  "settings.staffSection": "Team"
 }

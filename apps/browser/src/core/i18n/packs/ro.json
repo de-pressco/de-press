@@ -659,5 +659,7 @@
   "composer.topicNone": "Fără subiect",
   "composer.publish": "Publică",
   "composer.publishing": "Se publică…",
-  "composer.publishError": "Nu am putut publica nota."
+  "composer.publishError": "Nu am putut publica nota.",
+  "nav.settings": "Setări",
+  "settings.staffSection": "Echipă"
 }

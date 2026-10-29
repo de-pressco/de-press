@@ -659,5 +659,7 @@
   "composer.topicNone": "Aucun sujet",
   "composer.publish": "Publier",
   "composer.publishing": "Publication…",
-  "composer.publishError": "Impossible de publier la note."
+  "composer.publishError": "Impossible de publier la note.",
+  "nav.settings": "Paramètres",
+  "settings.staffSection": "Équipe"
 }

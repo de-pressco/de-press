@@ -659,5 +659,7 @@
   "composer.topicNone": "بلا موضوع",
   "composer.publish": "نشر",
   "composer.publishing": "جارٍ النشر…",
-  "composer.publishError": "تعذّر نشر الملاحظة."
+  "composer.publishError": "تعذّر نشر الملاحظة.",
+  "nav.settings": "الإعدادات",
+  "settings.staffSection": "الفريق"
 }

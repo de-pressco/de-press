@@ -659,5 +659,7 @@
   "composer.topicNone": "Intet emne",
   "composer.publish": "Udgiv",
   "composer.publishing": "Udgiv…",
-  "composer.publishError": "Kunne ikke udgive noten."
+  "composer.publishError": "Kunne ikke udgive noten.",
+  "nav.settings": "Indstillinger",
+  "settings.staffSection": "Team"
 }

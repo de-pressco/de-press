@@ -24,6 +24,7 @@ export const en: Messages = {
     about: "About",
     account: "Account",
     more: "More",
+    settings: "Settings",
     skipToContent: "Skip to content",
     edit: "Edit menu",
     moveUp: "Move up",
@@ -45,6 +46,9 @@ export const en: Messages = {
     checkinRow: "Quick check-in",
     checkinHint: "How are you right now? Saved only on this device.",
     checkinClose: "Collapse",
+  },
+  settings: {
+    staffSection: "Staff",
   },
   footer: {
     tagline: "Not medicine. Not commerce. Just a place to sit with you.",

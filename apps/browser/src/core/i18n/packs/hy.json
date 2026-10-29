@@ -659,5 +659,7 @@
   "composer.topicNone": "Առանց թեմայի",
   "composer.publish": "Հրապարակել",
   "composer.publishing": "Հրապարակվում է…",
-  "composer.publishError": "Չհաջողվեց հրապարակել գրառումը։"
+  "composer.publishError": "Չհաջողվեց հրապարակել գրառումը։",
+  "nav.settings": "Կարգավորումներ",
+  "settings.staffSection": "Թիմի համար"
 }

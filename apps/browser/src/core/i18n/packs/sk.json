@@ -659,5 +659,7 @@
   "composer.topicNone": "Bez témy",
   "composer.publish": "Zverejniť",
   "composer.publishing": "Zverejňujem…",
-  "composer.publishError": "Poznámku sa nepodarilo zverejniť."
+  "composer.publishError": "Poznámku sa nepodarilo zverejniť.",
+  "nav.settings": "Nastavenia",
+  "settings.staffSection": "Tím"
 }

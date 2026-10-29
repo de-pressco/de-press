@@ -27,6 +27,7 @@ export function isPhoneNestedChromePath(pathname: string): boolean {
 export function isMoreSectionPath(pathname: string): boolean {
   return (
     pathname === "/more" ||
+    pathname.startsWith("/settings") ||
     pathname.startsWith("/help") ||
     pathname.startsWith("/patterns") ||
     pathname.startsWith("/helper") ||

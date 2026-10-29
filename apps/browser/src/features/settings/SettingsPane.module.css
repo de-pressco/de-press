@@ -1,0 +1,26 @@
+.pane {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+  overflow-y: auto;
+  flex: 1;
+  background: var(--bg-chat);
+}
+
+.head {
+  flex-shrink: 0;
+  padding: 1rem 1.1rem 0.5rem;
+}
+
+.title {
+  margin: 0;
+  font-size: var(--fs-3xl);
+  font-weight: 600;
+  text-wrap: balance;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+}

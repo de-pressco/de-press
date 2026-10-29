@@ -659,5 +659,7 @@
   "composer.topicNone": "Tanpa topik",
   "composer.publish": "Terbitkan",
   "composer.publishing": "Menerbitkan…",
-  "composer.publishError": "Gagal menerbitkan catatan."
+  "composer.publishError": "Gagal menerbitkan catatan.",
+  "nav.settings": "Pengaturan",
+  "settings.staffSection": "Tim"
 }

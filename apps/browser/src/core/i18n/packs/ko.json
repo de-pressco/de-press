@@ -659,5 +659,7 @@
   "composer.topicNone": "주제 없음",
   "composer.publish": "게시하기",
   "composer.publishing": "게시 중…",
-  "composer.publishError": "메모를 게시하지 못했어요."
+  "composer.publishError": "메모를 게시하지 못했어요.",
+  "nav.settings": "설정",
+  "settings.staffSection": "팀"
 }

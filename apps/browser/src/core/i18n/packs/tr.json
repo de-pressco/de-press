@@ -659,5 +659,7 @@
   "composer.topicNone": "Konu yok",
   "composer.publish": "Yayınla",
   "composer.publishing": "Yayınlanıyor…",
-  "composer.publishError": "Not yayınlanamadı."
+  "composer.publishError": "Not yayınlanamadı.",
+  "nav.settings": "Ayarlar",
+  "settings.staffSection": "Ekip"
 }

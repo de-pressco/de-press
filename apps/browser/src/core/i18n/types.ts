@@ -31,6 +31,7 @@ export type Messages = {
     about: string;
     account: string;
     more: string;
+    settings: string;
     skipToContent: string;
     edit: string;
     moveUp: string;
@@ -52,6 +53,9 @@ export type Messages = {
     checkinRow: string;
     checkinHint: string;
     checkinClose: string;
+  };
+  settings: {
+    staffSection: string;
   };
   footer: {
     tagline: string;

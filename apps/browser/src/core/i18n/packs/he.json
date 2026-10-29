@@ -659,5 +659,7 @@
   "composer.topicNone": "ללא נושא",
   "composer.publish": "פרסום",
   "composer.publishing": "מפרסם…",
-  "composer.publishError": "לא הצלחנו לפרסם את הפתק."
+  "composer.publishError": "לא הצלחנו לפרסם את הפתק.",
+  "nav.settings": "הגדרות",
+  "settings.staffSection": "הצוות"
 }

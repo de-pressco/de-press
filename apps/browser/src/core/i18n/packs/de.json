@@ -659,5 +659,7 @@
   "composer.topicNone": "Kein Thema",
   "composer.publish": "Veröffentlichen",
   "composer.publishing": "Wird veröffentlicht…",
-  "composer.publishError": "Die Notiz konnte nicht veröffentlicht werden."
+  "composer.publishError": "Die Notiz konnte nicht veröffentlicht werden.",
+  "nav.settings": "Einstellungen",
+  "settings.staffSection": "Team"
 }

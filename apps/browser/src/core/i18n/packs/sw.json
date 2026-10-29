@@ -659,5 +659,7 @@
   "composer.topicNone": "Hakuna mada",
   "composer.publish": "Chapisha",
   "composer.publishing": "Inachapisha…",
-  "composer.publishError": "Imeshindwa kuchapisha dokezo."
+  "composer.publishError": "Imeshindwa kuchapisha dokezo.",
+  "nav.settings": "Mipangilio",
+  "settings.staffSection": "Timu"
 }

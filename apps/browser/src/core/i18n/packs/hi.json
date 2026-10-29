@@ -659,5 +659,7 @@
   "composer.topicNone": "कोई विषय नहीं",
   "composer.publish": "प्रकाशित करें",
   "composer.publishing": "प्रकाशित हो रहा है…",
-  "composer.publishError": "नोट प्रकाशित नहीं हो सका।"
+  "composer.publishError": "नोट प्रकाशित नहीं हो सका।",
+  "nav.settings": "सेटिंग्स",
+  "settings.staffSection": "टीम"
 }

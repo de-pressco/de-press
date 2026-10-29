@@ -659,5 +659,7 @@
   "composer.topicNone": "Mövzu yoxdur",
   "composer.publish": "Dərc et",
   "composer.publishing": "Dərc edilir…",
-  "composer.publishError": "Qeydi dərc etmək mümkün olmadı."
+  "composer.publishError": "Qeydi dərc etmək mümkün olmadı.",
+  "nav.settings": "Parametrlər",
+  "settings.staffSection": "Komanda üçün"
 }

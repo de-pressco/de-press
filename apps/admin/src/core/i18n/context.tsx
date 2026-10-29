@@ -24,7 +24,7 @@ interface I18nContextValue {
 const I18nContext = createContext<I18nContextValue | null>(null);
 
 export function I18nProvider({ children }: { children: ReactNode }) {
-  const [lang, setLangState] = useState<Lang>("ru");
+  const [lang, setLangState] = useState<Lang>("en");
   const setLang = useCallback((next: Lang) => setLangState(next), []);
   const value = useMemo<I18nContextValue>(
     () => ({ lang, t: MESSAGES[lang], setLang }),

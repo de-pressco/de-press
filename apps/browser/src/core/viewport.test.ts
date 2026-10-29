@@ -55,6 +55,7 @@ describe("isPhoneNestedChromePath", () => {
 describe("isMoreSectionPath", () => {
   it("lights More for overflow panes", () => {
     expect(isMoreSectionPath("/more")).toBe(true);
+    expect(isMoreSectionPath("/settings")).toBe(true);
     expect(isMoreSectionPath("/help")).toBe(true);
     expect(isMoreSectionPath("/patterns")).toBe(true);
     expect(isMoreSectionPath("/helper")).toBe(true);

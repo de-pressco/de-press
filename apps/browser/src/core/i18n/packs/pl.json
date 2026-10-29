@@ -659,5 +659,7 @@
   "composer.topicNone": "Bez tematu",
   "composer.publish": "Opublikuj",
   "composer.publishing": "Publikowanie…",
-  "composer.publishError": "Nie udało się opublikować notatki."
+  "composer.publishError": "Nie udało się opublikować notatki.",
+  "nav.settings": "Ustawienia",
+  "settings.staffSection": "Zespół"
 }
