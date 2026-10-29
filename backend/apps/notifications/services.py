@@ -27,6 +27,15 @@ _INBOX_HIDDEN = (
 )
 
 
+def kind_enabled_for(recipient: Actor, kind: str) -> bool:
+    """Per-kind opt-out gate (notify_kinds JSON). Missing kind = enabled."""
+    src = recipient.account if recipient.account is not None else recipient.session
+    if src is None:
+        return False
+    prefs = src.notify_kinds or {}
+    return bool(prefs.get(kind, True))
+
+
 def _recipient_q(actor: Actor) -> Q:
     """Query filter for notifications belonging to this actor."""
     if actor.account is not None:
@@ -40,17 +49,21 @@ def notify(
     recipient: Actor,
     kind: str,
     payload: dict[str, Any] | None = None,
-) -> Notification:
+) -> Notification | None:
     """Create a private notification for the recipient and broadcast live.
 
     Safe inside `@transaction.atomic`: the broadcast is deferred to
     `transaction.on_commit`, so peers only see committed state.
+    Returns None (no row) when the recipient opted out of this kind.
     """
     if recipient.account is None and recipient.session is None:
         raise NotificationError("Recipient has no identity")
 
     if kind not in NotificationKind.values:
         raise NotificationError(f"Unknown kind: {kind}")
+
+    if not kind_enabled_for(recipient, kind):
+        return None
 
     notif = Notification.objects.create(
         recipient_account=recipient.account,

@@ -3044,6 +3044,13 @@ export interface components {
              * @default false
              */
             notify_telegram_opt_in: boolean;
+            /**
+             * Notify Kinds
+             * @default {}
+             */
+            notify_kinds: {
+                [key: string]: unknown;
+            };
         };
         /** NotifySettingsIn */
         NotifySettingsIn: {
@@ -3064,6 +3071,10 @@ export interface components {
             contact_email: string;
             /** Notify Telegram Opt In */
             notify_telegram_opt_in?: boolean | null;
+            /** Notify Kinds */
+            notify_kinds?: {
+                [key: string]: unknown;
+            } | null;
         };
         /** DigestTestOut */
         DigestTestOut: {

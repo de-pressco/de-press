@@ -62,11 +62,14 @@ def test_dialogue_request_accept_message():
     assert len(list_messages(peer, dialogue.id)) >= 3
     from apps.notifications.models import Notification
 
+    # Owner decision 2026-10-29: a peer reply pings (plumbing row, hidden
+    # from the inbox list); the sender's own message never pings them
+    # (see test_message_notify.py for the sender-side guarantee).
     assert (
         Notification.objects.filter(
             kind="message", recipient_account=author_acc
         ).count()
-        == 0
+        == 1
     )
 
 

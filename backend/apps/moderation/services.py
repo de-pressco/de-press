@@ -32,6 +32,23 @@ class ReportError(Exception):
     pass
 
 
+def _notify_helpers_new_report(report: Report, *, source: str) -> None:
+    """New report → on-duty Helpers (duty gates notifications, like help)."""
+    payload = {
+        "report_id": str(report.id),
+        "reason": report.reason,
+        "source": source,
+    }
+    for helper in Account.objects.on_duty_helpers():
+        if report.from_account_id == helper.id:
+            continue
+        notify(
+            Actor(kind="account", account=helper),
+            NotificationKind.REPORT_NEW,
+            payload,
+        )
+
+
 @dataclass(frozen=True, slots=True)
 class SubmitResult:
     report: Report
@@ -116,6 +133,7 @@ def submit_report(
     if not created:
         return SubmitResult(report=report, created=False)
 
+    _notify_helpers_new_report(report, source="story")
     return SubmitResult(report=report, created=True)
 
 
@@ -160,6 +178,8 @@ def _submit_help_message_report(
         if report is None:
             raise ReportError("Could not create report") from None
         return SubmitResult(report=report, created=False)
+    if created:
+        _notify_helpers_new_report(report, source="help")
     return SubmitResult(report=report, created=created)
 
 

@@ -44,6 +44,10 @@ import type {
   AiSupportResponse,
   SendCircleOptions,
   VoiceRetentionSettings,
+  AppNotification,
+  UnreadCountResponse,
+  MarkNotificationReadResponse,
+  MarkAllNotificationsReadResponse,
 } from "./types";
 
 /** Same-origin relative base (Vite proxies /api, /media, /ws → Django). */
@@ -767,6 +771,24 @@ export const api = {
 
   moderationDashboard: () =>
     request<ModerationDashboard>("/api/v1/moderation/dashboard"),
+
+  notifications: (limit = 30) =>
+    request<AppNotification[]>(`/api/v1/me/notifications?limit=${limit}`),
+
+  notificationsUnreadCount: () =>
+    request<UnreadCountResponse>("/api/v1/me/notifications/unread-count"),
+
+  markNotificationRead: (notificationId: string) =>
+    request<MarkNotificationReadResponse>(
+      `/api/v1/me/notifications/${notificationId}/read`,
+      { method: "POST" },
+    ),
+
+  markAllNotificationsRead: () =>
+    request<MarkAllNotificationsReadResponse>(
+      "/api/v1/me/notifications/read-all",
+      { method: "POST" },
+    ),
 
   notifySettings: () => request<NotifySettings>("/api/v1/me/notify-settings"),
 

@@ -22,6 +22,7 @@ class NotificationKind(models.TextChoices):
     HELP_ACCEPTED = "help_accepted", "Help request accepted"
     DIALOGUE_REQUEST_REVIEW = "dialogue_request_review", "Dialogue request helper review"
     REPORT_RESOLVED = "report_resolved", "Report resolved"
+    REPORT_NEW = "report_new", "New report"
 
 
 class Notification(models.Model):

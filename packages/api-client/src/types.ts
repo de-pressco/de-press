@@ -315,7 +315,8 @@ export type NotificationKind =
   | "help_requested"
   | "help_accepted"
   | "dialogue_request_review"
-  | "report_resolved";
+  | "report_resolved"
+  | "report_new";
 
 export interface AppNotification {
   id: string;
@@ -354,6 +355,8 @@ export interface NotifySettings {
   email_verified: boolean;
   has_telegram?: boolean;
   notify_telegram_opt_in?: boolean;
+  /** Stored per-kind opt-outs (kind -> bool); a missing kind means enabled. */
+  notify_kinds?: Record<string, boolean>;
 }
 
 export interface NotifySettingsUpdate {
@@ -361,6 +364,8 @@ export interface NotifySettingsUpdate {
   notify_digest_frequency?: "off" | "immediate" | "daily";
   contact_email?: string;
   notify_telegram_opt_in?: boolean;
+  /** Partial per-kind update; backend merges it into the stored dict. */
+  notify_kinds?: Record<string, boolean>;
 }
 
 export interface DigestTestResponse {

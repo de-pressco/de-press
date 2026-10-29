@@ -11,6 +11,7 @@ from apps.identity.services import (
     require_actor,
     set_voice_retention,
 )
+from apps.notifications.models import NotificationKind
 from apps.notifications.softnotify import (
     SoftNotifyError,
     send_soft_notify,
@@ -28,6 +29,7 @@ class NotifySettingsIn(Schema):
     notify_digest_frequency: str = "daily"
     contact_email: str = ""  # For anonymous session only
     notify_telegram_opt_in: bool | None = None  # Account + telegram_id only
+    notify_kinds: dict | None = None  # kind -> bool; missing keys stay as-is
 
 
 class NotifySettingsOut(Schema):
@@ -38,6 +40,7 @@ class NotifySettingsOut(Schema):
     email_verified: bool = False
     has_telegram: bool = False
     notify_telegram_opt_in: bool = False
+    notify_kinds: dict = {}  # stored deviations; missing kind = enabled
 
 
 class DigestTestOut(Schema):
@@ -59,6 +62,7 @@ def _settings_out(actor) -> NotifySettingsOut:
             notify_telegram_opt_in=bool(
                 getattr(acc, "notify_telegram_opt_in", False)
             ),
+            notify_kinds=dict(acc.notify_kinds or {}),
         )
     sess = actor.session
     if sess is not None:
@@ -70,6 +74,7 @@ def _settings_out(actor) -> NotifySettingsOut:
             email_verified=bool(sess.contact_email_verified),
             has_telegram=False,
             notify_telegram_opt_in=False,
+            notify_kinds=dict(sess.notify_kinds or {}),
         )
     return NotifySettingsOut(
         ok=True,
@@ -115,6 +120,16 @@ def update_notify_settings(request, payload: NotifySettingsIn):
     if freq not in ("off", "immediate", "daily"):
         raise HttpError(400, "Invalid notify_digest_frequency")
 
+    kinds_update = payload.notify_kinds
+    if kinds_update is not None:
+        bad = sorted(
+            k
+            for k, v in kinds_update.items()
+            if k not in NotificationKind.values or not isinstance(v, bool)
+        )
+        if bad:
+            raise HttpError(400, f"Unknown notify_kinds: {', '.join(bad)}")
+
     try:
         verify_session_email(actor, email=payload.contact_email or None)
     except SoftNotifyError as exc:
@@ -133,6 +148,9 @@ def update_notify_settings(request, payload: NotifySettingsIn):
                 )
             acc.notify_telegram_opt_in = bool(payload.notify_telegram_opt_in)
             fields.append("notify_telegram_opt_in")
+        if kinds_update is not None:
+            acc.notify_kinds = {**(acc.notify_kinds or {}), **kinds_update}
+            fields.append("notify_kinds")
         acc.save(update_fields=fields)
     elif actor.session is not None:
         if payload.notify_telegram_opt_in:
@@ -140,9 +158,11 @@ def update_notify_settings(request, payload: NotifySettingsIn):
         sess = actor.session
         sess.notify_email_opt_in = bool(payload.notify_email_opt_in)
         sess.notify_digest_frequency = freq
-        sess.save(
-            update_fields=["notify_email_opt_in", "notify_digest_frequency"]
-        )
+        fields = ["notify_email_opt_in", "notify_digest_frequency"]
+        if kinds_update is not None:
+            sess.notify_kinds = {**(sess.notify_kinds or {}), **kinds_update}
+            fields.append("notify_kinds")
+        sess.save(update_fields=fields)
     else:
         raise HttpError(400, "No identity")
 

@@ -176,8 +176,25 @@ def unread_count_for(dialogue: Dialogue, actor: Actor) -> int:
 
 
 def _notify_peer_message(dialogue: Dialogue, other: Actor | None, msg: Message) -> None:
-    """Chat unread lives on the thread list / chat rail, not the inbox."""
-    return
+    """Chat unread lives on the thread list / chat rail, not the inbox.
+
+    The MESSAGE row is live/digest plumbing (WS toast + soft-notify) and
+    stays hidden from the inbox list (see notifications.services._INBOX_HIDDEN).
+    A muted side gets no message pings (mute_dialogue).
+    """
+    if other is None:
+        return
+    author_side = other.account_id == dialogue.author_account_id or (
+        other.session_id == dialogue.author_session_id
+    )
+    muted = dialogue.muted_author if author_side else dialogue.muted_peer
+    if muted:
+        return
+    notify(
+        other,
+        NotificationKind.MESSAGE,
+        {"dialogue_id": str(dialogue.id), "message_id": str(msg.id)},
+    )
 
 
 def _abandoned(dialogue: Dialogue) -> bool:

@@ -93,6 +93,8 @@ class Account(AbstractBaseUser, PermissionsMixin):
     telegram_language_code = models.CharField(max_length=8, blank=True, default="")
     # Soft-notify via Telegram Bot (Mini App host). Opt-in only; never default spam.
     notify_telegram_opt_in = models.BooleanField(default=False)
+    # Per-kind in-app notification opt-out (kind -> bool). Missing kind = on.
+    notify_kinds = models.JSONField(default=dict, blank=True)
     # Last successful Telegram daily digest (for incremental unread window).
     telegram_digest_last_at = models.DateTimeField(null=True, blank=True)
     # Last sent neutral check-in nudge (throttle; blind to local check-ins).
@@ -192,6 +194,8 @@ class AnonymousSession(models.Model):
     contact_email = models.EmailField(blank=True, default="")
     contact_email_verified = models.BooleanField(default=False)
     notify_email_opt_in = models.BooleanField(default=False)
+    # Per-kind in-app notification opt-out (kind -> bool). Missing kind = on.
+    notify_kinds = models.JSONField(default=dict, blank=True)
     notify_digest_frequency = models.CharField(
         max_length=16,
         choices=[

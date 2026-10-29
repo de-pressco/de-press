@@ -13,9 +13,10 @@ from apps.dialogue.speech import get_translator, is_stub_translation
 logger = logging.getLogger(__name__)
 
 # UI catalog cap for the AI translation proxy. Raised 560 -> 640 when the
-# therapy contour (ADR-0022) added its ru/en strings; keep the vitest
-# catalog-budget test (flatten.test.ts) in sync with this number.
-MAX_KEYS = 656
+# therapy contour (ADR-0022) added its ru/en strings; 640 -> 690 when the
+# notifications comeback added pane + per-kind settings strings. Keep the
+# vitest catalog-budget test (flatten.test.ts) in sync with this number.
+MAX_KEYS = 690
 CHUNK = 500
 
 _FENCE = re.compile(r"^```(?:json)?\s*|\s*```$", re.I | re.M)
