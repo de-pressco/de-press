@@ -209,6 +209,9 @@
 
   .gate {
     flex: 1 0 auto;
+    /* Full-bleed: drop the 72rem column cap — three equal 1fr columns
+       stretch to the whole page width and resize with it. */
+    max-width: none;
     grid-template-columns: 1fr 1fr 1fr;
     gap: 1.25rem;
     min-height: calc(100dvh - 14rem);
