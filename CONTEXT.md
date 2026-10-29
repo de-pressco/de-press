@@ -119,7 +119,7 @@ On-device mood notes used only for the person's self-awareness; never uploaded a
 _Avoid_: clinical journal, server profile
 
 **Notification**:
-A private nudge to an Actor about a relevant event. The in-app inbox shows DialogueRequest, dialogue opened/deleted, outreach — not new chat messages and not Support Clouds (those live as unread on the chat list or as a feed-row gesture). A Notification row may still exist for live/digest plumbing; it is never displayed publicly.
+A private nudge to an Actor about a relevant event. The in-app inbox shows DialogueRequest, dialogue opened/deleted, outreach — not new chat messages and not Support Clouds (those live as unread on the chat list or as a feed-row gesture). A Notification row may still exist for live/digest plumbing; it is never displayed publicly. The bell pane is back (owner decision 2026-10-29): browser ships the tab, mini-app ships live toasts. Per-kind opt-out lives in `notify_kinds` on the identity (missing kind = enabled; the gate sits inside `notify()`, so it cuts WS, Telegram and email alike). Helper-only kinds: `help_requested`, `report_new` (duty-gated like help) and `dialogue_request_review`.
 _Avoid_: bell counter as engagement metric, public notification feed, feed unread as vanity
 
 **Inbox**:
