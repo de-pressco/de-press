@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useLocalMemory } from "@/core/hooks/useLocalMemory";
 import { useI18n } from "@/core/i18n/context";
 import { ListRow } from "@/components/tg/ListRow";
+import { IconSmile } from "@/components/layout/NavIcons";
 import styles from "./QuickCheckin.module.css";
 
 /**
@@ -24,7 +25,7 @@ export function QuickCheckin() {
           asButton
           title={t.more.checkinRow}
           subtitle={ready ? t.patterns.disabled : t.patterns.loading}
-          avatarText="◔"
+          avatarIcon={<IconSmile />}
           muted
         />
       </div>
@@ -50,7 +51,7 @@ export function QuickCheckin() {
         asButton
         title={t.more.checkinRow}
         subtitle={open ? undefined : t.more.checkinHint}
-        avatarText="◔"
+        avatarIcon={<IconSmile />}
         onClick={() => {
           setSaved(false);
           setFailed(false);

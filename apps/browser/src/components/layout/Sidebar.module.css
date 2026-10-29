@@ -117,16 +117,3 @@
 .panic:active {
   transform: scale(0.96);
 }
-
-.panicMark {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  border: 2px solid var(--accent-panic);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 800;
-  font-size: var(--fs-lg);
-  line-height: 1;
-}

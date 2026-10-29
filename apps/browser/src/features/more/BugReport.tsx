@@ -3,6 +3,7 @@ import { useMutation } from "@tanstack/react-query";
 import { api } from "@/core/api/client";
 import { useI18n } from "@/core/i18n/context";
 import { ListRow } from "@/components/tg/ListRow";
+import { IconBug } from "@/components/layout/NavIcons";
 import styles from "./BugReport.module.css";
 
 /**
@@ -27,7 +28,7 @@ export function BugReport() {
         asButton
         title={t.more.reportBug}
         subtitle={open ? undefined : t.more.reportBugHint}
-        avatarText="!"
+        avatarIcon={<IconBug />}
         onClick={() => setOpen((v) => !v)}
       />
       {open ? (

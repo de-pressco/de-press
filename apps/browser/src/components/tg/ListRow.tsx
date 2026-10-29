@@ -14,7 +14,10 @@ export interface ListRowProps {
   time?: string;
   /** Overlay just before the timestamp; must not change row flow. */
   timeLeading?: ReactNode;
-  avatarText: string;
+  /** Letter monogram for the avatar circle (ignored when avatarIcon is set). */
+  avatarText?: string;
+  /** Icon glyph rendered inside the avatar circle instead of a letter. */
+  avatarIcon?: ReactNode;
   active?: boolean;
   muted?: boolean;
   softCount?: number;
@@ -46,6 +49,7 @@ export function ListRow({
   time,
   timeLeading,
   avatarText,
+  avatarIcon,
   active,
   muted,
   softCount,
@@ -95,7 +99,7 @@ export function ListRow({
   const body = (
     <>
       <span className={styles.avatar} aria-hidden>
-        {avatarText.slice(0, 1).toUpperCase()}
+        {avatarIcon ?? (avatarText ? avatarText.slice(0, 1).toUpperCase() : null)}
       </span>
       <span className={styles.main}>
         <span className={styles.top}>

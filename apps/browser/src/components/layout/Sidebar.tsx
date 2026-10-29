@@ -5,7 +5,7 @@ import { api } from "@/core/api/client";
 import { useAntiPanic } from "@/core/hooks/useAntiPanic";
 import { useI18n } from "@/core/i18n/context";
 import { visibleNavKeys, type NavKey } from "@/core/navOrder";
-import { NavIcon, type NavIconName } from "./NavIcons";
+import { IconPanic, NavIcon, type NavIconName } from "./NavIcons";
 import styles from "./Sidebar.module.css";
 
 const KEY_TO_ICON: Record<NavKey, NavIconName> = {
@@ -162,9 +162,7 @@ export function Sidebar({
         title={t.nav.panic}
         aria-label={t.nav.panic}
       >
-        <span className={styles.panicMark} aria-hidden>
-          !
-        </span>
+        <IconPanic />
       </button>
     </aside>
   );

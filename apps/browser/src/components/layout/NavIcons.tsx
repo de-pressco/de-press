@@ -1,4 +1,4 @@
-/** Sidebar icons: outline default, currentColor, stroke 1.5 (regular text). */
+/** App icon set: sidebar rail, panic mark, More-row avatars. Outline default, currentColor, stroke 1.5 (regular text). */
 import { useId } from "react";
 
 import styles from "./NavIcons.module.css";
@@ -31,14 +31,48 @@ function base(
 }
 
 export function IconFeed(props: IconProps) {
+  // Газета: рамка + строки поста. Активное состояние — заливка с вырезанными
+  // строками через SVG-маску (как в IconHelp): вырез показывает реальный фон,
+  // а не закрашивается токеном (ломалось бы на --bg-active и любых темах).
+  const maskId = `dp-feed-cut-${useId().replace(/[^a-zA-Z0-9_-]/g, "")}`;
   return base(
     props.active ? (
-      <path d="M4 6h16v2H4V6zm0 5h16v2H4v-2zm0 5h10v2H4v-2z" />
+      <>
+        <defs>
+          <mask
+            id={maskId}
+            maskUnits="userSpaceOnUse"
+            x="0"
+            y="0"
+            width="24"
+            height="24"
+          >
+            <rect width="24" height="24" fill="#fff" />
+            <path
+              d="M8 9h8M8 12.75h8M8 16.5h4.5"
+              fill="none"
+              stroke="#000"
+              strokeWidth={1.8}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </mask>
+        </defs>
+        <rect
+          x="4"
+          y="4"
+          width="16"
+          height="16"
+          rx="2.5"
+          fill="currentColor"
+          stroke="none"
+          mask={`url(#${maskId})`}
+        />
+      </>
     ) : (
       <>
-        <path d="M4 6h16" />
-        <path d="M4 12h16" />
-        <path d="M4 18h10" />
+        <rect x="4" y="4" width="16" height="16" rx="2.5" />
+        <path d="M8 9h8M8 12.75h8M8 16.5h4.5" />
       </>
     ),
     props,
@@ -98,22 +132,59 @@ export function IconHelp(props: IconProps) {
 }
 
 export function IconPatterns(props: IconProps) {
+  // График с точками: «мои замеры и их динамика». Активное состояние —
+  // толще линия + крупнее точки (line-art не заливается).
+  const w = props.active ? 2.2 : 1.5;
   return base(
-    props.active ? (
-      <path d="M3 12c2-4 4-4 6 0s4 4 6 0 4-4 6 0" stroke="none" />
-    ) : (
-      <path d="M3 12c2-4 4-4 6 0s4 4 6 0 4-4 6 0" />
-    ),
+    <>
+      <path d="M4.5 17.5 9.5 11.5 13.5 14.5 19.5 6.5" fill="none" strokeWidth={w} />
+      <circle cx="9.5" cy="11.5" r={props.active ? 1.6 : 1.3} fill="currentColor" stroke="none" />
+      <circle cx="13.5" cy="14.5" r={props.active ? 1.6 : 1.3} fill="currentColor" stroke="none" />
+      <circle cx="19.5" cy="6.5" r={props.active ? 1.6 : 1.3} fill="currentColor" stroke="none" />
+    </>,
     props,
   );
 }
 
 export function IconShield(props: IconProps) {
+  // Щит с галочкой: «дежурство принято / проверенные люди». Вырез галочки —
+  // через SVG-маску (как в IconHelp), чтобы работало на любом фоне.
+  const maskId = `dp-shield-cut-${useId().replace(/[^a-zA-Z0-9_-]/g, "")}`;
   return base(
     props.active ? (
-      <path d="M12 3 5 6v6c0 5 3.5 8 7 9 3.5-1 7-4 7-9V6l-7-3z" />
+      <>
+        <defs>
+          <mask
+            id={maskId}
+            maskUnits="userSpaceOnUse"
+            x="0"
+            y="0"
+            width="24"
+            height="24"
+          >
+            <rect width="24" height="24" fill="#fff" />
+            <path
+              d="M9.1 11.9l2 2 3.8-4.1"
+              fill="none"
+              stroke="#000"
+              strokeWidth={1.7}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </mask>
+        </defs>
+        <path
+          d="M12 3 5 6v6c0 5 3.5 8 7 9 3.5-1 7-4 7-9V6l-7-3z"
+          fill="currentColor"
+          stroke="none"
+          mask={`url(#${maskId})`}
+        />
+      </>
     ) : (
-      <path d="M12 3 5 6v6c0 5 3.5 8 7 9 3.5-1 7-4 7-9V6l-7-3z" />
+      <>
+        <path d="M12 3 5 6v6c0 5 3.5 8 7 9 3.5-1 7-4 7-9V6l-7-3z" />
+        <path d="M9.1 11.9l2 2 3.8-4.1" />
+      </>
     ),
     props,
   );
@@ -134,12 +205,20 @@ export function IconEdit(props: IconProps) {
 }
 
 export function IconTherapy(props: IconProps) {
+  // Росток: рост и восстановление, принципиально не «медицина».
+  // Активное состояние — залитые листья, стебель остаётся линией.
   return base(
-    props.active ? (
-      <path d="M3 12h4l2-5 4 10 2-5h6" stroke="none" />
-    ) : (
-      <path d="M3 12h4l2-5 4 10 2-5h6" />
-    ),
+    <>
+      <path d="M12 20.5v-6.9" fill="none" strokeWidth={1.5} />
+      <path
+        d="M12 13.6C8.9 13.6 6.7 11.7 6.1 8.2c3.7.4 5.8 2.3 5.9 5.4z"
+        fill={props.active ? "currentColor" : "none"}
+      />
+      <path
+        d="M12 13.6c.2-3.4 2.4-5.4 6-5.7-.2 3.5-2.5 5.5-6 5.7z"
+        fill={props.active ? "currentColor" : "none"}
+      />
+    </>,
     props,
   );
 }
@@ -182,6 +261,87 @@ export function IconBell(props: IconProps) {
   );
 }
 
+export function IconPanic(props: IconProps) {
+  // Спасательный круг для кнопки «Мне хуево»: мгновенное «держись, тебя
+  // вытащат». Тёплый образ помощи вместо «ошибки/запрета».
+  const w = props.active ? 2.2 : 1.5;
+  return base(
+    <>
+      <circle cx="12" cy="12" r="8.4" fill="none" strokeWidth={w} />
+      <circle cx="12" cy="12" r="3.5" fill="none" strokeWidth={w} />
+      <path
+        d="M14.5 9.5 18 6M9.5 9.5 6 6M9.5 14.5 6 18M14.5 14.5 18 18"
+        fill="none"
+        strokeWidth={w}
+      />
+    </>,
+    props,
+  );
+}
+
+export function IconGear(props: IconProps) {
+  const w = props.active ? 2.2 : 1.5;
+  return base(
+    <>
+      <circle cx="12" cy="12" r="3.3" fill="none" strokeWidth={w} />
+      <path
+        d="M12 3.6v2.5M12 17.9v2.5M4.9 7.8l2.2 1.3M16.9 14.9l2.2 1.3M4.9 16.2l2.2-1.3M16.9 9.1l2.2-1.3"
+        fill="none"
+        strokeWidth={w}
+      />
+    </>,
+    props,
+  );
+}
+
+export function IconTerminal(props: IconProps) {
+  const w = props.active ? 2.2 : 1.5;
+  return base(
+    <>
+      <rect x="3.5" y="4.5" width="17" height="15" rx="2.5" fill="none" strokeWidth={w} />
+      <path d="M8 9.5l3 2.7-3 2.7" fill="none" strokeWidth={w} />
+      <path d="M13.5 15.5h4" fill="none" strokeWidth={w} />
+    </>,
+    props,
+  );
+}
+
+export function IconSmile(props: IconProps) {
+  const w = props.active ? 2.2 : 1.5;
+  return base(
+    <>
+      <circle cx="12" cy="12" r="8.4" fill="none" strokeWidth={w} />
+      <path d="M9.2 9.8h.01M14.8 9.8h.01" fill="none" strokeWidth={w} />
+      <path d="M8.6 13.7a4.6 4.6 0 0 0 6.8 0" fill="none" strokeWidth={w} />
+    </>,
+    props,
+  );
+}
+
+export function IconBug(props: IconProps) {
+  const w = props.active ? 2 : 1.5;
+  return base(
+    <>
+      <path d="m8 2 1.88 1.88" fill="none" strokeWidth={w} />
+      <path d="M14.12 3.88 16 2" fill="none" strokeWidth={w} />
+      <path d="M9 7.13v-1a3.003 3.003 0 1 1 6 0v1" fill="none" strokeWidth={w} />
+      <path
+        d="M12 20c-3.3 0-6-2.7-6-6v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3c0 3.3-2.7 6-6 6"
+        fill="none"
+        strokeWidth={w}
+      />
+      <path d="M12 20v-9" fill="none" strokeWidth={w} />
+      <path d="M6.53 9C4.6 8.8 3 7.1 3 5" fill="none" strokeWidth={w} />
+      <path d="M6 13H2" fill="none" strokeWidth={w} />
+      <path d="M3 21c0-2.1 1.7-3.9 3.8-4" fill="none" strokeWidth={w} />
+      <path d="M20.97 5c0 2.1-1.6 3.8-3.5 4" fill="none" strokeWidth={w} />
+      <path d="M22 13h-4" fill="none" strokeWidth={w} />
+      <path d="M17.2 17c2.1.1 3.8 1.9 3.8 4" fill="none" strokeWidth={w} />
+    </>,
+    props,
+  );
+}
+
 export type NavIconName =
   | "feed"
   | "chat"
@@ -191,7 +351,12 @@ export type NavIconName =
   | "shield"
   | "edit"
   | "more"
-  | "bell";
+  | "bell"
+  | "panic"
+  | "gear"
+  | "terminal"
+  | "smile"
+  | "bug";
 
 function renderIcon(name: NavIconName, active: boolean) {
   const props = { active };
@@ -214,6 +379,16 @@ function renderIcon(name: NavIconName, active: boolean) {
       return <IconMore {...props} />;
     case "bell":
       return <IconBell {...props} />;
+    case "panic":
+      return <IconPanic {...props} />;
+    case "gear":
+      return <IconGear {...props} />;
+    case "terminal":
+      return <IconTerminal {...props} />;
+    case "smile":
+      return <IconSmile {...props} />;
+    case "bug":
+      return <IconBug {...props} />;
   }
 }
 

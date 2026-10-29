@@ -1,6 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/core/api/client";
 import { ListRow } from "@/components/tg/ListRow";
+import {
+  IconGear,
+  IconHelp,
+  IconPatterns,
+  IconShield,
+  IconTerminal,
+  IconTherapy,
+} from "@/components/layout/NavIcons";
 import { useI18n } from "@/core/i18n/context";
 import { BugReport } from "@/features/more/BugReport";
 import { QuickCheckin } from "@/features/more/QuickCheckin";
@@ -23,21 +31,21 @@ export function MorePane() {
       </header>
       <div className={styles.list}>
         <QuickCheckin />
-        <ListRow to="/patterns" title={t.nav.patterns} avatarText="P" />
-        <ListRow to="/help" title={t.nav.help} avatarText="?" />
-        <ListRow to="/therapy" title={t.nav.therapy} avatarText="T" />
-        <ListRow to="/settings" title={t.nav.settings} avatarText="⚙" />
+        <ListRow to="/patterns" title={t.nav.patterns} avatarIcon={<IconPatterns />} />
+        <ListRow to="/help" title={t.nav.help} avatarIcon={<IconHelp />} />
+        <ListRow to="/therapy" title={t.nav.therapy} avatarIcon={<IconTherapy />} />
+        <ListRow to="/settings" title={t.nav.settings} avatarIcon={<IconGear />} />
         <BugReport />
         {isHelper ? (
           <section className={styles.staff}>
             <p className={styles.staffCaption}>{t.settings.staffSection}</p>
-            <ListRow to="/helper" title={t.nav.helper} avatarText="H" />
+            <ListRow to="/helper" title={t.nav.helper} avatarIcon={<IconShield />} />
             {isStaff ? (
               <ListRow
                 asButton
                 title={t.helper.dashboardTitle}
                 subtitle={t.helper.dashboardLead}
-                avatarText="M"
+                avatarIcon={<IconTerminal />}
                 onClick={() => window.location.assign("/console/")}
               />
             ) : null}
