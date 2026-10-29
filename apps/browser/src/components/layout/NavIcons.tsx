@@ -381,6 +381,48 @@ export function IconPin(props: IconProps) {
   );
 }
 
+export function IconUser(props: IconProps) {
+  // Персона: аккаунт и профиль.
+  const w = props.active ? 2.2 : 1.5;
+  return base(
+    <>
+      <path
+        d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"
+        fill="none"
+        strokeWidth={w}
+      />
+      <circle cx="12" cy="7" r="4" fill="none" strokeWidth={w} />
+    </>,
+    props,
+  );
+}
+
+export function IconDownload(props: IconProps) {
+  // Загрузка: установка приложения (PWA).
+  const w = props.active ? 2.2 : 1.5;
+  return base(
+    <>
+      <path
+        d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"
+        fill="none"
+        strokeWidth={w}
+      />
+      <path d="m7 10 5 5 5-5" fill="none" strokeWidth={w} />
+      <path d="M12 15V3" fill="none" strokeWidth={w} />
+    </>,
+    props,
+  );
+}
+
+export function IconCheck(props: IconProps) {
+  // Готово: уже установлено / действие выполнено.
+  const w = props.active ? 2.2 : 1.5;
+  return base(
+    <path d="M20 6 9 17l-5-5" fill="none" strokeWidth={w} />,
+    props,
+  );
+}
+
 export type NavIconName =
   | "feed"
   | "chat"
@@ -396,7 +438,10 @@ export type NavIconName =
   | "terminal"
   | "smile"
   | "bug"
-  | "pin";
+  | "pin"
+  | "user"
+  | "download"
+  | "check";
 
 function renderIcon(name: NavIconName, active: boolean) {
   const props = { active };
@@ -431,6 +476,12 @@ function renderIcon(name: NavIconName, active: boolean) {
       return <IconBug {...props} />;
     case "pin":
       return <IconPin {...props} />;
+    case "user":
+      return <IconUser {...props} />;
+    case "download":
+      return <IconDownload {...props} />;
+    case "check":
+      return <IconCheck {...props} />;
   }
 }
 

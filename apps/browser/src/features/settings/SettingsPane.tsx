@@ -8,6 +8,7 @@ import { usePwaInstall } from "@/core/hooks/usePwaInstall";
 import { FundCard } from "@/features/fund/FundCard";
 import { TipWalletForm } from "@/features/fund/TipWalletForm";
 import { NotifySettingsCard } from "@/features/notifications/NotifySettingsCard";
+import { IconCheck, IconDownload, IconUser } from "@/components/layout/NavIcons";
 import styles from "./SettingsPane.module.css";
 
 export function SettingsPane() {
@@ -30,7 +31,7 @@ export function SettingsPane() {
         <ListRow
           asButton
           title={t.nav.account}
-          avatarText="@"
+          avatarIcon={<IconUser />}
           onClick={() => account?.open()}
         />
         <NotifySettingsCard isHelper={isHelper} />
@@ -42,12 +43,17 @@ export function SettingsPane() {
           />
         ) : null}
         {pwa.isStandalone ? (
-          <ListRow asButton title={t.nav.installed} avatarText="·" muted />
+          <ListRow
+            asButton
+            title={t.nav.installed}
+            avatarIcon={<IconCheck />}
+            muted
+          />
         ) : pwa.canInstall ? (
           <ListRow
             asButton
             title={t.nav.install}
-            avatarText="↓"
+            avatarIcon={<IconDownload />}
             onClick={() => void pwa.prompt()}
           />
         ) : pwa.isIos ? (
@@ -55,7 +61,7 @@ export function SettingsPane() {
             asButton
             title={t.nav.install}
             subtitle={t.nav.installIos}
-            avatarText="↓"
+            avatarIcon={<IconDownload />}
             muted
           />
         ) : null}
