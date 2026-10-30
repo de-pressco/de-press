@@ -392,6 +392,13 @@ export type Messages = {
     error: string;
     wipe: string;
     wipeConfirm: string;
+    newChat: string;
+    chats: string;
+    rename: string;
+    deleteChat: string;
+    deleteConfirm: string;
+    untitled: string;
+    stop: string;
   };
   antiPanic: {
     menuTitle: string;

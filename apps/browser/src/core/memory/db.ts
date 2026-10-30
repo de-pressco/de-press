@@ -4,10 +4,11 @@
  */
 
 const DB_NAME = "depress_zk";
-const DB_VERSION = 4;
+const DB_VERSION = 5;
 const STORE = "mood_entries";
 const META = "meta";
 const COMPANION_STORE = "companion_messages";
+const CHATS_STORE = "companion_chats";
 const REFLECTIONS = "week_reflections";
 const PANIC_EPISODES = "panic_episodes";
 
@@ -23,10 +24,29 @@ export interface MoodEntry {
 
 export interface CompanionMessage {
   id: string;
+  chatId: string;
   at: string;
   role: "user" | "assistant";
   content: string;
   crisis?: boolean;
+}
+
+/** One Quiet Companion dialog; groups local messages, never synced. */
+export interface CompanionChat {
+  id: string;
+  title: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/**
+ * Auto-title for a dialog, derived from its first user message:
+ * collapsed whitespace, capped length, ellipsis when cut.
+ */
+export function deriveChatTitle(text: string, max = 48): string {
+  const clean = text.replace(/\s+/g, " ").trim();
+  if (!clean) return "";
+  return clean.length > max ? `${clean.slice(0, max - 1).trimEnd()}…` : clean;
 }
 
 export interface MemoryMeta {
@@ -59,6 +79,8 @@ function openDb(): Promise<IDBDatabase> {
     req.onsuccess = () => resolve(req.result);
     req.onupgradeneeded = () => {
       const db = req.result;
+      const tx = req.transaction;
+      if (!tx) return;
       if (!db.objectStoreNames.contains(STORE)) {
         const store = db.createObjectStore(STORE, { keyPath: "id" });
         store.createIndex("at", "at", { unique: false });
@@ -66,11 +88,21 @@ function openDb(): Promise<IDBDatabase> {
       if (!db.objectStoreNames.contains(META)) {
         db.createObjectStore(META, { keyPath: "key" });
       }
+      let companion: IDBObjectStore;
       if (!db.objectStoreNames.contains(COMPANION_STORE)) {
-        const companion = db.createObjectStore(COMPANION_STORE, {
+        companion = db.createObjectStore(COMPANION_STORE, {
           keyPath: "id",
         });
         companion.createIndex("at", "at", { unique: false });
+      } else {
+        companion = tx.objectStore(COMPANION_STORE);
+      }
+      if (!companion.indexNames.contains("chatId")) {
+        companion.createIndex("chatId", "chatId", { unique: false });
+      }
+      if (!db.objectStoreNames.contains(CHATS_STORE)) {
+        const chats = db.createObjectStore(CHATS_STORE, { keyPath: "id" });
+        chats.createIndex("updatedAt", "updatedAt", { unique: false });
       }
       if (!db.objectStoreNames.contains(REFLECTIONS)) {
         const reflections = db.createObjectStore(REFLECTIONS, {
@@ -84,6 +116,27 @@ function openDb(): Promise<IDBDatabase> {
         });
         episodes.createIndex("startedAt", "startedAt", { unique: false });
       }
+      // v4 → v5: messages from the single flat transcript collapse into one
+      // dialog titled from the first user message (same rule as new dialogs).
+      const all = companion.getAll();
+      all.onsuccess = () => {
+        const rows = (all.result as CompanionMessage[]).filter(
+          (r) => !r.chatId,
+        );
+        if (rows.length === 0) return;
+        rows.sort((a, b) => (a.at < b.at ? -1 : 1));
+        const firstUser = rows.find((r) => r.role === "user");
+        const chat: CompanionChat = {
+          id: uuid(),
+          title: deriveChatTitle(firstUser?.content ?? ""),
+          createdAt: rows[0].at,
+          updatedAt: rows[rows.length - 1].at,
+        };
+        tx.objectStore(CHATS_STORE).put(chat);
+        for (const row of rows) {
+          companion.put({ ...row, chatId: chat.id });
+        }
+      };
     };
   });
 }
@@ -329,13 +382,106 @@ export async function deletePanicEpisode(id: string): Promise<void> {
   });
 }
 
+export async function createCompanionChat(
+  title = "",
+): Promise<CompanionChat> {
+  const now = new Date().toISOString();
+  const chat: CompanionChat = {
+    id: uuid(),
+    title,
+    createdAt: now,
+    updatedAt: now,
+  };
+  const db = await openDb();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(CHATS_STORE, "readwrite");
+    tx.objectStore(CHATS_STORE).put(chat);
+    tx.oncomplete = () => resolve(chat);
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
+/** All dialogs, newest activity first. */
+export async function listCompanionChats(): Promise<CompanionChat[]> {
+  const db = await openDb();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(CHATS_STORE, "readonly");
+    const req = tx.objectStore(CHATS_STORE).getAll();
+    req.onsuccess = () => {
+      const rows = (req.result as CompanionChat[]).sort((a, b) =>
+        a.updatedAt < b.updatedAt ? 1 : -1,
+      );
+      resolve(rows);
+    };
+    req.onerror = () => reject(req.error);
+  });
+}
+
+export async function renameCompanionChat(
+  id: string,
+  title: string,
+): Promise<void> {
+  const db = await openDb();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(CHATS_STORE, "readwrite");
+    const store = tx.objectStore(CHATS_STORE);
+    const req = store.get(id);
+    req.onsuccess = () => {
+      const row = req.result as CompanionChat | undefined;
+      if (row) store.put({ ...row, title });
+    };
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
+/** Bump updatedAt so the dialog floats to the top of the list. */
+export async function touchCompanionChat(id: string): Promise<void> {
+  const db = await openDb();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(CHATS_STORE, "readwrite");
+    const store = tx.objectStore(CHATS_STORE);
+    const req = store.get(id);
+    req.onsuccess = () => {
+      const row = req.result as CompanionChat | undefined;
+      if (row) store.put({ ...row, updatedAt: new Date().toISOString() });
+    };
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
+/** Delete the dialog and all of its messages in one transaction. */
+export async function deleteCompanionChat(id: string): Promise<void> {
+  const db = await openDb();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction([CHATS_STORE, COMPANION_STORE], "readwrite");
+    tx.objectStore(CHATS_STORE).delete(id);
+    const req = tx
+      .objectStore(COMPANION_STORE)
+      .index("chatId")
+      .openCursor(IDBKeyRange.only(id));
+    req.onsuccess = () => {
+      const cursor = req.result;
+      if (cursor) {
+        cursor.delete();
+        cursor.continue();
+      }
+    };
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
 export async function addCompanionMessage(
+  chatId: string,
   role: "user" | "assistant",
   content: string,
   crisis?: boolean,
 ): Promise<CompanionMessage> {
   const message: CompanionMessage = {
     id: uuid(),
+    chatId,
     at: new Date().toISOString(),
     role,
     content,
@@ -350,14 +496,18 @@ export async function addCompanionMessage(
   });
 }
 
-/** Chronological transcript (oldest first), capped to the last `limit`. */
+/** Chronological transcript of one dialog (oldest first), last `limit`. */
 export async function listCompanionMessages(
+  chatId: string,
   limit = 200,
 ): Promise<CompanionMessage[]> {
   const db = await openDb();
   return new Promise((resolve, reject) => {
     const tx = db.transaction(COMPANION_STORE, "readonly");
-    const req = tx.objectStore(COMPANION_STORE).getAll();
+    const req = tx
+      .objectStore(COMPANION_STORE)
+      .index("chatId")
+      .getAll(IDBKeyRange.only(chatId));
     req.onsuccess = () => {
       const rows = (req.result as CompanionMessage[]).sort((a, b) =>
         a.at < b.at ? -1 : 1,
@@ -372,12 +522,13 @@ export async function wipeAllMemory(): Promise<void> {
   const db = await openDb();
   return new Promise((resolve, reject) => {
     const tx = db.transaction(
-      [STORE, META, COMPANION_STORE, REFLECTIONS, PANIC_EPISODES],
+      [STORE, META, COMPANION_STORE, CHATS_STORE, REFLECTIONS, PANIC_EPISODES],
       "readwrite",
     );
     tx.objectStore(STORE).clear();
     tx.objectStore(META).clear();
     tx.objectStore(COMPANION_STORE).clear();
+    tx.objectStore(CHATS_STORE).clear();
     tx.objectStore(REFLECTIONS).clear();
     tx.objectStore(PANIC_EPISODES).clear();
     tx.oncomplete = () => resolve();
@@ -640,7 +791,7 @@ export function computeInsights(
 // --- Export / import of the whole ZK memory (local JSON file) ---
 
 export const ZK_SNAPSHOT_APP = "de-press-zk";
-const ZK_SNAPSHOT_VERSION = 4;
+const ZK_SNAPSHOT_VERSION = 5;
 
 export interface ZkSnapshot {
   app: typeof ZK_SNAPSHOT_APP;
@@ -650,6 +801,7 @@ export interface ZkSnapshot {
     mood_entries: MoodEntry[];
     week_reflections: WeekReflection[];
     panic_episodes: PanicEpisode[];
+    companion_chats: CompanionChat[];
     companion_messages: CompanionMessage[];
     meta: MemoryMeta;
   };
@@ -657,13 +809,15 @@ export interface ZkSnapshot {
 
 export async function exportZkSnapshot(): Promise<ZkSnapshot> {
   const db = await openDb();
-  const [mood, reflections, episodes, companion, meta] = await Promise.all([
-    readAll<MoodEntry>(db, STORE),
-    readAll<WeekReflection>(db, REFLECTIONS),
-    readAll<PanicEpisode>(db, PANIC_EPISODES),
-    readAll<CompanionMessage>(db, COMPANION_STORE),
-    getMeta(),
-  ]);
+  const [mood, reflections, episodes, chats, companion, meta] =
+    await Promise.all([
+      readAll<MoodEntry>(db, STORE),
+      readAll<WeekReflection>(db, REFLECTIONS),
+      readAll<PanicEpisode>(db, PANIC_EPISODES),
+      readAll<CompanionChat>(db, CHATS_STORE),
+      readAll<CompanionMessage>(db, COMPANION_STORE),
+      getMeta(),
+    ]);
   return {
     app: ZK_SNAPSHOT_APP,
     version: ZK_SNAPSHOT_VERSION,
@@ -672,6 +826,7 @@ export async function exportZkSnapshot(): Promise<ZkSnapshot> {
       mood_entries: mood,
       week_reflections: reflections,
       panic_episodes: episodes,
+      companion_chats: chats,
       companion_messages: companion,
       meta,
     },
@@ -755,13 +910,27 @@ export function sanitizeImportedCompanionMessage(
   }
   const content = raw.content.slice(0, 20000);
   const crisis = raw.crisis === true;
-  return { id, at, role, content, ...(crisis ? { crisis: true } : {}) };
+  const chatId = typeof raw.chatId === "string" ? shortId(raw.chatId) : "";
+  return { id, chatId, at, role, content, ...(crisis ? { crisis: true } : {}) };
+}
+
+export function sanitizeImportedCompanionChat(
+  raw: unknown,
+): CompanionChat | null {
+  if (!isRecord(raw)) return null;
+  const id = shortId(raw.id);
+  const createdAt = isoOrNull(raw.createdAt);
+  const updatedAt = isoOrNull(raw.updatedAt);
+  if (!id || !createdAt || !updatedAt) return null;
+  const title = typeof raw.title === "string" ? raw.title.slice(0, 200) : "";
+  return { id, title, createdAt, updatedAt };
 }
 
 export interface ZkParsed {
   mood: MoodEntry[];
   reflections: WeekReflection[];
   episodes: PanicEpisode[];
+  chats: CompanionChat[];
   companion: CompanionMessage[];
   meta: MemoryMeta | null;
 }
@@ -788,6 +957,11 @@ export function parseZkSnapshot(raw: unknown): ZkParsed | null {
     const e = sanitizeImportedEpisode(row);
     if (e) episodes.push(e);
   }
+  const chats: CompanionChat[] = [];
+  for (const row of arr(data.companion_chats)) {
+    const c = sanitizeImportedCompanionChat(row);
+    if (c) chats.push(c);
+  }
   const companion: CompanionMessage[] = [];
   for (const row of arr(data.companion_messages)) {
     const c = sanitizeImportedCompanionMessage(row);
@@ -797,7 +971,7 @@ export function parseZkSnapshot(raw: unknown): ZkParsed | null {
   if (isRecord(data.meta) && typeof data.meta.analyticsEnabled === "boolean") {
     meta = { analyticsEnabled: data.meta.analyticsEnabled };
   }
-  return { mood, reflections, episodes, companion, meta };
+  return { mood, reflections, episodes, chats, companion, meta };
 }
 
 export interface ZkImportResult {
@@ -846,17 +1020,53 @@ export async function importZkSnapshot(raw: unknown): Promise<ZkImportResult> {
   skipped += parsed.companion.length - freshCompanion.length;
   added += freshCompanion.length;
 
+  // Chats: additive by id. Messages whose dialog is unknown (v4 exports,
+  // or a dialog deleted on this device) land in one rescue dialog instead
+  // of being dropped or recreated with foreign ids.
+  const chatIds = new Set(
+    (await readAll<CompanionChat>(db, CHATS_STORE)).map((r) => r.id),
+  );
+  const freshChats = parsed.chats.filter((c) => !chatIds.has(c.id));
+  skipped += parsed.chats.length - freshChats.length;
+  added += freshChats.length;
+  for (const c of freshChats) chatIds.add(c.id);
+
+  let rescueChat: CompanionChat | null = null;
+  const finalCompanion = freshCompanion.map((r) => {
+    if (chatIds.has(r.chatId)) return r;
+    if (!rescueChat) {
+      const oldest = [...freshCompanion].sort((a, b) =>
+        a.at < b.at ? -1 : 1,
+      )[0];
+      const firstUser = [...freshCompanion]
+        .sort((a, b) => (a.at < b.at ? -1 : 1))
+        .find((x) => x.role === "user");
+      rescueChat = {
+        id: uuid(),
+        title: deriveChatTitle(firstUser?.content ?? ""),
+        createdAt: oldest?.at ?? new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      added += 1;
+    }
+    return { ...r, chatId: rescueChat.id };
+  });
+
   if (added > 0) {
     await new Promise<void>((resolve, reject) => {
       const tx = db.transaction(
-        [STORE, REFLECTIONS, PANIC_EPISODES, COMPANION_STORE],
+        [STORE, REFLECTIONS, PANIC_EPISODES, COMPANION_STORE, CHATS_STORE],
         "readwrite",
       );
       for (const row of freshMood) tx.objectStore(STORE).put(row);
       for (const row of freshRefl) tx.objectStore(REFLECTIONS).put(row);
       for (const row of freshEpisodes) tx.objectStore(PANIC_EPISODES).put(row);
-      for (const row of freshCompanion) {
+      for (const row of finalCompanion) {
         tx.objectStore(COMPANION_STORE).put(row);
+      }
+      if (rescueChat) tx.objectStore(CHATS_STORE).put(rescueChat);
+      for (const row of freshChats) {
+        tx.objectStore(CHATS_STORE).put(row);
       }
       tx.oncomplete = () => resolve();
       tx.onerror = () => reject(tx.error);

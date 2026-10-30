@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   computeInsights,
   dailyAverages,
+  deriveChatTitle,
   parseZkSnapshot,
   summarizePatterns,
   type MoodEntry,
@@ -257,8 +258,23 @@ describe("parseZkSnapshot", () => {
         { id: "p2", startedAt: "2026-09-08T10:00:00Z", endedAt: "nope" },
       ],
       companion_messages: [
-        { id: "c1", at: "2026-09-08T10:00:00Z", role: "user", content: "hi" },
+        {
+          id: "c1",
+          chatId: "ch1",
+          at: "2026-09-08T10:00:00Z",
+          role: "user",
+          content: "hi",
+        },
         { id: "c2", at: "2026-09-08T10:00:00Z", role: "admin", content: "hi" },
+      ],
+      companion_chats: [
+        {
+          id: "ch1",
+          title: "Imported dialog",
+          createdAt: "2026-09-08T09:00:00Z",
+          updatedAt: "2026-09-08T10:00:00Z",
+        },
+        { id: "", title: "no id", createdAt: "2026-09-08T09:00:00Z" },
       ],
       meta: { analyticsEnabled: false },
     },
@@ -274,6 +290,9 @@ describe("parseZkSnapshot", () => {
     expect(parsed?.reflections).toHaveLength(1);
     expect(parsed?.episodes).toHaveLength(1);
     expect(parsed?.companion).toHaveLength(1);
+    expect(parsed?.companion[0]?.chatId).toBe("ch1");
+    expect(parsed?.chats).toHaveLength(1);
+    expect(parsed?.chats[0]?.id).toBe("ch1");
     expect(parsed?.meta).toEqual({ analyticsEnabled: false });
   });
 
@@ -281,5 +300,21 @@ describe("parseZkSnapshot", () => {
     expect(parseZkSnapshot(null)).toBeNull();
     expect(parseZkSnapshot({ app: "other", data: {} })).toBeNull();
     expect(parseZkSnapshot({ app: "de-press-zk" })).toBeNull();
+  });
+});
+
+describe("deriveChatTitle", () => {
+  it("collapses whitespace and trims", () => {
+    expect(deriveChatTitle("  hi   there  ")).toBe("hi there");
+  });
+
+  it("caps long messages with an ellipsis", () => {
+    const title = deriveChatTitle("a".repeat(60));
+    expect(title).toHaveLength(48);
+    expect(title.endsWith("…")).toBe(true);
+  });
+
+  it("returns empty for whitespace-only text", () => {
+    expect(deriveChatTitle("   ")).toBe("");
   });
 });

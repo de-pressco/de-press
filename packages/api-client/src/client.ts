@@ -182,12 +182,14 @@ async function aiSupportStreamRequest(
   messages: { role: string; content: string }[],
   surface: string,
   handlers: AiStreamHandlers,
+  signal?: AbortSignal,
 ): Promise<void> {
   const res = await fetch(`${API_URL}/api/v1/ai/support/stream`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
     body: JSON.stringify({ messages, surface }),
+    signal,
   });
 
   if (!res.ok) {
@@ -723,7 +725,8 @@ export const api = {
     messages: { role: string; content: string }[],
     surface: "companion" | "anti_panic" = "companion",
     handlers: AiStreamHandlers = {},
-  ) => aiSupportStreamRequest(messages, surface, handlers),
+    signal?: AbortSignal,
+  ) => aiSupportStreamRequest(messages, surface, handlers, signal),
 
   quietPhrases: (lang: "ru" | "en" = "ru") =>
     request<QuietPhrase[]>(`/api/v1/quiet-phrases?lang=${lang}`),

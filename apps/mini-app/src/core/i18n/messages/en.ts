@@ -424,6 +424,14 @@ export const en: Messages = {
     error: "Couldn’t reply",
     wipe: "Erase AI dialogs and local memory",
     wipeConfirm: "Erase AI dialogs and all local records on this device?",
+    newChat: "New chat",
+    chats: "Dialogs",
+    rename: "Rename",
+    deleteChat: "Delete",
+    deleteConfirm:
+      "Delete this dialog? The messages will be erased from this device.",
+    untitled: "Untitled",
+    stop: "Stop",
   },
   antiPanic: {
     menuTitle: "What do you need right now?",

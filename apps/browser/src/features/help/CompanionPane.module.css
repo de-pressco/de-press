@@ -1,13 +1,36 @@
+/* Full-viewport chat: dialogs rail + chat column; the thread scrolls inside,
+   header and composer stay put. <1100px the rail becomes an overlay drawer. */
+
 .pane {
+  display: flex;
+  position: relative;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  flex: 1;
+  background: var(--bg-chat);
+}
+
+.side {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 15.5rem;
+  flex-shrink: 0;
+  padding: 1rem 0.85rem;
+  background: var(--bg-main);
+  border-right: 1px solid var(--border-subtle);
+  overflow-y: auto;
+}
+
+.chatCol {
   display: flex;
   flex-direction: column;
   gap: 1rem;
   padding: 1.25rem;
-  min-height: 0;
-  height: 100%;
-  overflow-y: auto;
   flex: 1;
-  background: var(--bg-chat);
+  min-width: 0;
+  min-height: 0;
 }
 
 .head {
@@ -15,8 +38,6 @@
   flex-direction: column;
   gap: 0.5rem;
   width: 100%;
-  max-width: 56rem;
-  margin-inline: auto;
 }
 
 .title {
@@ -43,7 +64,8 @@
   min-width: 0;
 }
 
-/* Small ghost button shared by the wipe and back actions. */
+/* Small ghost button shared by the rail toggle, wipe and back actions. */
+.listToggle,
 .wipe,
 .back {
   flex-shrink: 0;
@@ -60,12 +82,19 @@
   transition-duration: 0.15s;
 }
 
+.listToggle {
+  min-width: 2.25rem;
+  padding-inline: 0.5rem;
+}
+
+.listToggle:hover,
 .wipe:hover,
 .back:hover {
   background: var(--bg-hover);
   color: var(--text-primary);
 }
 
+.listToggle:active,
 .wipe:active,
 .back:active {
   transform: scale(0.96);
@@ -73,6 +102,152 @@
 
 .wipe {
   margin-inline-start: auto;
+}
+
+.sideHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.sideTitle {
+  margin: 0;
+  font-size: var(--fs-md);
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.sideClose {
+  padding: 0.25rem 0.5rem;
+  border: none;
+  border-radius: 0.5rem;
+  background: transparent;
+  color: var(--text-muted);
+  font: inherit;
+  cursor: pointer;
+}
+
+.sideClose:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.newChat {
+  min-height: 2.5rem;
+  padding: 0.4rem 0.75rem;
+  border: 1px solid var(--border-subtle);
+  border-radius: 0.75rem;
+  background: transparent;
+  color: var(--accent-hope);
+  font: inherit;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  transition-property: background-color, transform, opacity;
+  transition-duration: 0.15s;
+}
+
+.newChat:hover:not(:disabled) {
+  background: var(--bg-hover);
+}
+
+.newChat:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.newChat:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.chatList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.chatItem {
+  display: flex;
+  align-items: center;
+  gap: 0.15rem;
+  border-radius: 0.6rem;
+}
+
+.chatActive {
+  background: var(--bg-hover);
+}
+
+.chatOpen {
+  flex: 1;
+  min-width: 0;
+  padding: 0.45rem 0.6rem;
+  border: none;
+  border-radius: 0.6rem;
+  background: transparent;
+  color: var(--text-primary);
+  font: inherit;
+  font-size: var(--fs-sm);
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.chatOpen:hover:not(:disabled) {
+  background: var(--bg-hover);
+}
+
+.chatOpen:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.chatActions {
+  display: flex;
+  flex-shrink: 0;
+}
+
+.chatAction {
+  padding: 0.3rem 0.35rem;
+  border: none;
+  border-radius: 0.5rem;
+  background: transparent;
+  color: var(--text-muted);
+  font: inherit;
+  font-size: var(--fs-sm);
+  cursor: pointer;
+}
+
+.chatAction:hover:not(:disabled) {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.chatAction:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.renameInput {
+  flex: 1;
+  min-width: 0;
+  padding: 0.4rem 0.6rem;
+  border: 1px solid var(--accent-hope);
+  border-radius: 0.6rem;
+  background: var(--bg-main);
+  color: var(--text-primary);
+  font: inherit;
+  font-size: var(--fs-sm);
+}
+
+.renameInput:focus-visible {
+  outline: 2px solid var(--accent-hope);
+  outline-offset: 1px;
 }
 
 .banner {
@@ -124,14 +299,15 @@
   flex-direction: column;
   gap: 0.65rem;
   flex: 1;
-  min-height: 8rem;
+  min-height: 0;
   width: 100%;
-  max-width: 56rem;
-  margin-inline: auto;
+  overflow-y: auto;
 }
 
 .msg {
-  max-width: 85%;
+  /* 90rem keeps very wide monitors readable while the pane itself spans the
+     whole window (fullscreen ask). */
+  max-width: min(85%, 90rem);
   padding: 0.75rem 0.9rem;
   border-radius: var(--radius-lg);
   font-size: var(--fs-md);
@@ -200,22 +376,6 @@
   border: 1px solid var(--border-subtle);
   box-shadow: var(--shadow-elev-1);
   width: 100%;
-  max-width: 56rem;
-  margin-inline: auto;
-}
-
-/* Desktop: anchor head/thread/composer to the rail edge; the back pill is
-   phone/tablet chrome — the rail covers navigation. */
-@media (min-width: 1100px) {
-  .head,
-  .thread,
-  .compose {
-    margin-inline: 0;
-  }
-
-  .back {
-    display: none;
-  }
 }
 
 .label {
@@ -287,4 +447,53 @@
   color: var(--text-muted);
   line-height: 1.45;
   text-wrap: pretty;
+}
+
+/* Desktop ≥1100px: the rail is a static column, the back pill is chrome the
+   rail replaces, and the scrim never shows. */
+@media (min-width: 1100px) {
+  .back,
+  .sideClose,
+  .scrim {
+    display: none;
+  }
+}
+
+/* Phone/tablet <1100px: the rail slides over the chat as a drawer. */
+@media (max-width: 1099px) {
+  .side {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: calc(var(--z-menu) + 1);
+    width: min(19rem, 84vw);
+    box-shadow: var(--shadow-elev-3);
+    transform: translateX(-105%);
+    transition: transform 0.2s ease;
+  }
+
+  .sideOpen {
+    transform: translateX(0);
+  }
+
+  .scrim {
+    position: absolute;
+    inset: 0;
+    z-index: var(--z-menu);
+    border: none;
+    background: color-mix(in srgb, var(--bg-main) 55%, transparent);
+    cursor: pointer;
+  }
+
+  :global(html[data-layout="phone"]) .chatCol {
+    padding: 1rem;
+  }
+
+  /* Telegram-style keyboard: lift the composer above the inset Shell reports. */
+  :global(html[data-layout="phone"]) .compose {
+    padding-bottom: calc(
+      1rem + env(safe-area-inset-bottom) + var(--keyboard-inset, 0px)
+    );
+  }
 }
